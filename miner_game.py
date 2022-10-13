@@ -19,6 +19,7 @@ timer = pygame.time.Clock()
 oreAmount = 0
 orePerClick = 1
 coinAmount = 0
+multiplier = 1
 
 def drawWallet():
     wallet = pygame.draw.rect(screen, Colors.baige, (10, 10, 100, 50))
@@ -42,6 +43,12 @@ def drawConversion():
     oreToCash = pygame.draw.circle(screen, Colors.black, (500, 200), 20, 20) #The click circle to generate ores
     return oreToCash
 
+def drawMultiplier():
+    clickMult = pygame.draw.circle(screen, Colors.black, (500, 300), 20, 20) #The click circle to generate ores
+    multValue = font.render(str(multiplier), True, Colors.white)
+    screen.blit(multValue, (500, 300))
+    return clickMult
+
 # Main body of code
 running = True
 while running:
@@ -52,17 +59,22 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             if mineArea.collidepoint(event.pos):
-                oreAmount += orePerClick
+                oreAmount += (orePerClick * multiplier)
             if upgradeArea.collidepoint(event.pos):
                 orePerClick += 1
             if oreToCash.collidepoint(event.pos):
                 coinAmount += oreAmount
                 oreAmount = 0
+            if clickMult.collidepoint(event.pos) and coinAmount > 9:
+                coinAmount -= 10
+                multiplier += 1
+
     screen.fill(background)
     wallet = drawWallet()
     mineArea = drawMine()
     oreToCash = drawConversion()  
     upgradeArea = drawUpgrade()
+    clickMult = drawMultiplier()
     pygame.display.flip()
 
 pygame.quit()
