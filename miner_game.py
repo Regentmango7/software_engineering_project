@@ -28,6 +28,10 @@ def drawMine():
     screen.blit(totOre, (10, 10))
     return mineArea
 
+def drawUpgrade():
+    upgradeArea = pygame.draw.circle(screen, Colors.black, (500, 100), 20, 20) #The click circle to generate ores
+    return upgradeArea
+
 # Main body of code
 running = True
 while running:
@@ -38,9 +42,12 @@ while running:
             running = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             if mineArea.collidepoint(event.pos):
-                oreAmount += 1
+                oreAmount += orePerClick
+            if upgradeArea.collidepoint(event.pos):
+                orePerClick += 1
     screen.fill(background)
     mineArea = drawMine()
+    upgradeArea = drawUpgrade()
     pygame.display.flip()
 
 pygame.quit()
