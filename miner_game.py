@@ -23,7 +23,9 @@ coinAmount = 0
 def drawWallet():
     wallet = pygame.draw.rect(screen, Colors.baige, (10, 10, 100, 50))
     totOre = font.render(str(oreAmount), True, Colors.black)
+    totCoin = font.render(str(coinAmount), True, Colors.black)
     screen.blit(totOre, (15, 15))
+    screen.blit(totCoin, (15, 30))
     return wallet
 
 def drawMine():
@@ -35,6 +37,10 @@ def drawMine():
 def drawUpgrade():
     upgradeArea = pygame.draw.circle(screen, Colors.black, (500, 100), 20, 20) #The click circle to generate ores
     return upgradeArea
+
+def drawConversion():
+    oreToCash = pygame.draw.circle(screen, Colors.black, (500, 200), 20, 20) #The click circle to generate ores
+    return oreToCash
 
 # Main body of code
 running = True
@@ -49,9 +55,13 @@ while running:
                 oreAmount += orePerClick
             if upgradeArea.collidepoint(event.pos):
                 orePerClick += 1
+            if oreToCash.collidepoint(event.pos):
+                coinAmount += oreAmount
+                oreAmount = 0
     screen.fill(background)
     wallet = drawWallet()
     mineArea = drawMine()
+    oreToCash = drawConversion()  
     upgradeArea = drawUpgrade()
     pygame.display.flip()
 
