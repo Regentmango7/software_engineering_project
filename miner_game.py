@@ -1,4 +1,4 @@
-# CLICKER GAME
+# MINE CLICKER GAME
 
 import pygame
 import Colors
