@@ -19,18 +19,12 @@ timer = pygame.time.Clock()
 oreAmount = 0
 orePerClick = 1
 coinAmount = 0
-<<<<<<< Updated upstream
 multiplier = 1
-=======
 totalWorkers = 0
 activeWorkers = 0
->>>>>>> Stashed changes
 
-<<<<<<< Updated upstream
 # Draws the wallet text box.
-=======
 #draws in the wallet, which contains the ore amount and coin amount
->>>>>>> Stashed changes
 def drawWallet():
     wallet = pygame.draw.rect(screen, Colors.baige, (10, 10, 100, 50))
     totOre = font.render(str(oreAmount), True, Colors.black)
@@ -39,31 +33,22 @@ def drawWallet():
     screen.blit(totCoin, (15, 30))
     return wallet
 
-<<<<<<< Updated upstream
 # Draws the mine button
-=======
 #draws in the mine clicking area, and displays the ores per click
->>>>>>> Stashed changes
 def drawMine():
     mineArea = pygame.draw.circle(screen, Colors.black, (320, 300), 60, 60) #The click circle to generate ores
     clickValue = font.render(str(orePerClick), True, Colors.white)
     screen.blit(clickValue, (320, 300))
     return mineArea
 
-<<<<<<< Updated upstream
 # Draws the upgrade button
-=======
 #draws in the upgrade circle
->>>>>>> Stashed changes
 def drawUpgrade():
     upgradeArea = pygame.draw.circle(screen, Colors.black, (500, 100), 20, 20) #The click circle to generate ores
     return upgradeArea
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
+
 #draws in the conversion circle
->>>>>>> Stashed changes
 def drawConversion():
     oreToCash = pygame.draw.circle(screen, Colors.black, (500, 200), 20, 20) #The click circle to generate ores
     return oreToCash
@@ -74,14 +59,13 @@ def drawMultiplier():
     multValue = font.render(str(multiplier), True, Colors.white)
     screen.blit(multValue, (500, 300))
     return clickMult
-=======
+    
 def drawWorkers():
     buyWorker = pygame.draw.circle(screen, Colors.red, (50, 100), 20, 20)
     screen.blit((font.render(str(totalWorkers), True, Colors.white)), (50, 100))
     assignWorker = pygame.draw.circle(screen, Colors.blue, (100, 100), 20, 20)
     screen.blit((font.render(str(activeWorkers), True, Colors.white)), (100, 100))
     return buyWorker, assignWorker
->>>>>>> Stashed changes
 
 # Main body of code
 running = True
@@ -98,7 +82,6 @@ while running:
                 oreAmount += (orePerClick * multiplier)
             #increases the base ore per click
             if upgradeArea.collidepoint(event.pos):
-<<<<<<< Updated upstream
                 orePerClick += 1
             #converts all ore to cash at a one to one ration
             if oreToCash.collidepoint(event.pos):
@@ -108,19 +91,13 @@ while running:
             if clickMult.collidepoint(event.pos) and coinAmount > 9:
                 coinAmount -= 10
                 multiplier += 1
-<<<<<<< Updated upstream
-=======
                 orePerClick *= 2
             if buyWorkers.collidepoint(event.pos):
                 totalWorkers += 1
             if assignWorkers.collidepoint(event.pos) and activeWorkers < totalWorkers:
                 activeWorkers += 1
->>>>>>> Stashed changes
-
-=======
     
     #draws a series of objects
->>>>>>> Stashed changes
     screen.fill(background)
     buyWorkers, assignWorkers = drawWorkers()
     wallet = drawWallet()
