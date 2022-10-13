@@ -22,8 +22,6 @@ coinAmount = 0
 multiplier = 1
 totalWorkers = 0
 activeWorkers = 0
-
-# Draws the wallet text box.
 #draws in the wallet, which contains the ore amount and coin amount
 def drawWallet():
     wallet = pygame.draw.rect(screen, Colors.baige, (10, 10, 100, 50))
@@ -33,7 +31,6 @@ def drawWallet():
     screen.blit(totCoin, (15, 30))
     return wallet
 
-# Draws the mine button
 #draws in the mine clicking area, and displays the ores per click
 def drawMine():
     mineArea = pygame.draw.circle(screen, Colors.black, (320, 300), 60, 60) #The click circle to generate ores
@@ -41,7 +38,6 @@ def drawMine():
     screen.blit(clickValue, (320, 300))
     return mineArea
 
-# Draws the upgrade button
 #draws in the upgrade circle
 def drawUpgrade():
     upgradeArea = pygame.draw.circle(screen, Colors.black, (500, 100), 20, 20) #The click circle to generate ores
