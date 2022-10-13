@@ -15,8 +15,8 @@ framerate = 60
 font = pygame.font.Font("freesansbold.ttf", 16)
 timer = pygame.time.Clock()
 
-def drawtask():
-    pygame.draw.circle(screen, Colors.black, (320, 100), 40, 40)
+def drawCircle():
+    pygame.draw.circle(screen, Colors.black, (320, 300), 60, 60)
 
 # Main body of code
 running = True
@@ -27,7 +27,7 @@ while running:
             save()
             running = False
     screen.fill(background)
-
+    drawCircle()
     pygame.display.flip()
 
 pygame.quit()
