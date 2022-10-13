@@ -10,7 +10,7 @@ def save():
 #create screen, background, framerate, and font
 screen = pygame.display.set_mode([640, 400])
 pygame.display.set_caption("Click Miners")
-background = Colors.white
+background = Colors.gray
 framerate = 60
 font = pygame.font.Font("freesansbold.ttf", 16)
 timer = pygame.time.Clock()
