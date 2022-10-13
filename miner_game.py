@@ -1,6 +1,7 @@
 # CLICKER GAME
 
 import pygame
+import Colors
 pygame.init()
 
 # color library
