@@ -59,7 +59,8 @@ def drawMultiplier():
     multValue = font.render(str(multiplier), True, Colors.white)
     screen.blit(multValue, (500, 300))
     return clickMult
-    
+
+#draws in the circles to buy workers and assign workers, displays worker counts.
 def drawWorkers():
     buyWorker = pygame.draw.circle(screen, Colors.red, (50, 100), 20, 20)
     screen.blit((font.render(str(totalWorkers), True, Colors.white)), (50, 100))
