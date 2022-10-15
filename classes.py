@@ -29,8 +29,19 @@ class OreType:
     def addOre(self, amount):
         self.amount += amount
 
+class OreRate:
+    def __init__(self, oreType=OreType, rate=float):
+        self.ore = oreType
+        self.rate = rate
+
+    def getOre(self):
+        return self.ore
+    
+    def getRate(self):
+        return self.rate
+
 class MineType:
-    def __init__(self, name=str, rates=list):
+    def __init__(self, name=str, rates=list(OreRate)):
         self.name = name
         self.minerCount = 0
         self.oreRates = rates
@@ -129,10 +140,10 @@ class Data:
 
     # Stores all of the mine values
     mines = {
-        "Copper": MineType("Copper", [{"Ore": ores["Copper"], "Rate": 1}]),
-        "Iron": MineType("Iron", [{"Ore": ores["Copper"], "Rate": 0.75}, {"Ore": ores["Iron"], "Rate": 0.25}]),
-        "Silver": MineType("Silver", [{"Ore": ores["Copper"], "Rate": 0.25},{"Ore": ores["Iron"], "Rate": 0.50}, {"Ore": ores["Silver"], "Rate": 0.25}]),
-        "Gold": MineType("Gold", [{"Ore": ores["Copper"], "Rate": 0.10}, {"Ore": ores["Iron"], "Rate": 0.20}, {"Ore": ores["Silver"], "Rate": 0.40}, {"Ore": ores["Gold"], "Rate": 0.30}])
+        "Copper": MineType("Copper", [OreRate(ores["Copper"], 1)]),
+        "Iron": MineType("Iron", [OreRate(ores["Copper"], 0.75), OreRate(ores["Iron"], 0.25)]),
+        "Silver": MineType("Silver", [OreRate(ores["Copper"], 0.25), OreRate(ores["Iron"], 0.50), OreRate(ores["Silver"], 0.25)]),
+        "Gold": MineType("Gold", [OreRate(ores["Copper"], 0.10), OreRate(ores["Iron"], 0.20), OreRate(ores["Silver"], 0.40), OreRate(ores["Gold"], 0.30)])
     }
 
     upgrades = {
