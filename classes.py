@@ -110,7 +110,7 @@ class Data:
     def __init__(self) -> None:
         pass
     
-    coin = 0
+    coin = OreType("Coin", "", 0)
 
     clickBaseValue = Stat("Base Click Value", 1)
     clickMulti = Stat("Click Multiplier", 1)
