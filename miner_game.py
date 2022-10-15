@@ -4,8 +4,6 @@ import pygame
 import Colors
 pygame.init()
 
-def save():
-    print("Game is closed")
 
 #create screen, background, framerate, and font
 screen = pygame.display.set_mode([640, 400])
@@ -63,6 +61,9 @@ def drawWorkers():
     assignWorker = pygame.draw.circle(screen, Colors.blue, (100, 100), 20, 20)
     screen.blit((font.render(str(activeWorkers), True, Colors.white)), (100, 100))
     return buyWorker, assignWorker
+
+def save():
+    print("Game is closed")
 
 # Main body of code
 running = True
