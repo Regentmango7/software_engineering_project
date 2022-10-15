@@ -20,11 +20,12 @@ coinAmount = 0
 multiplier = 1
 totalWorkers = 0
 activeWorkers = 0
+workerTime = 0
 
-#upgrade/workers
+#Costs
 upCost = 1
-bought = False
 workCost = 10
+multCost = 10
 
 #draws in the wallet, which contains the ore amount and coin amount
 def drawWallet():
@@ -45,8 +46,8 @@ def drawMine():
 #draws in the upgrade circle
 def drawUpgrade(upCost):
     upgradeArea = pygame.draw.circle(screen, Colors.black, (500, 100), 20, 20) #The click circle to generate ores
-    upgradeCost = font.render(str(round(upCost, 2)), True, Colors.white)
-    screen.blit(upgradeCost, (500, 100))
+    upgradeValue = font.render(str(round(upCost, 2)), True, Colors.white)
+    screen.blit(upgradeValue, (500, 100))
     return upgradeArea
 
 
@@ -69,8 +70,7 @@ def drawWorkers():
     assignWorker = pygame.draw.circle(screen, Colors.blue, (100, 100), 20, 20)
     screen.blit((font.render(str(activeWorkers), True, Colors.white)), (100, 100))
     return buyWorker, assignWorker
-
-
+    
 def save():
     print("Game is closed")
 
@@ -88,7 +88,8 @@ while running:
             if mineArea.collidepoint(event.pos):
                 oreAmount += (orePerClick * multiplier)
             #increases the base ore per click
-            if upgradeArea.collidepoint(event.pos) and coinAmount > 0:
+            if upgradeArea.collidepoint(event.pos) and coinAmount >= upCost:
+                upCost = upCost * 2
                 orePerClick += 1
                 coinAmount -= 1
             #converts all ore to cash at a one to one ration
@@ -96,14 +97,22 @@ while running:
                 coinAmount += oreAmount
                 oreAmount = 0
             #decreases coin amount by 10, and increases the multiplier by one (buys an incerase in a multipier for 10 coins)
-            if clickMult.collidepoint(event.pos) and coinAmount > 9:
+            if clickMult.collidepoint(event.pos) and coinAmount >= multCost:
+                multCost = multCost * 2
                 coinAmount -= 10
                 multiplier += 1
                 orePerClick *= 2
-            if buyWorkers.collidepoint(event.pos):
+            if buyWorkers.collidepoint(event.pos) and coinAmount >= workCost:
+                workCost = workCost * 2
                 totalWorkers += 1
+                coinAmount -= workCost
             if assignWorkers.collidepoint(event.pos) and activeWorkers < totalWorkers:
                 activeWorkers += 1
+        if activeWorkers > 0:
+            workerTime += activeWorkers * 5
+            if workerTime > 50:
+                workerTime = 0
+                oreAmount += 1
     
     #draws a series of objects
     screen.fill(background)
