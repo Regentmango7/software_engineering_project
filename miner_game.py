@@ -16,11 +16,14 @@ timer = pygame.time.Clock()
 #game variables
 oreAmount = 0
 orePerClick = 1
-coinAmount = 0
+coinAmount = 100
 multiplier = 1
 totalWorkers = 0
 activeWorkers = 0
 workerTime = 0
+benchmark = 0
+store = 0
+firstRun = False
 
 #Costs
 upCost = 1
@@ -70,7 +73,21 @@ def drawWorkers():
     assignWorker = pygame.draw.circle(screen, Colors.blue, (100, 100), 20, 20)
     screen.blit((font.render(str(activeWorkers), True, Colors.white)), (100, 100))
     return buyWorker, assignWorker
-    
+
+"""
+def work(actWorks):
+    global firstRun
+    global oreAmount
+    if firstRun == False:
+        benchmark = store
+        firstRun = True
+    else:
+        if (store - benchmark) >= (1000 / actWorks):
+            oreAmount += 1
+            firstRun = False
+    store = timer.get_time
+"""    
+
 def save():
     print("Game is closed")
 
@@ -103,16 +120,13 @@ while running:
                 multiplier += 1
                 orePerClick *= 2
             if buyWorkers.collidepoint(event.pos) and coinAmount >= workCost:
+                coinAmount -= workCost
                 workCost = workCost * 2
                 totalWorkers += 1
-                coinAmount -= workCost
             if assignWorkers.collidepoint(event.pos) and activeWorkers < totalWorkers:
                 activeWorkers += 1
-        if activeWorkers > 0:
-            workerTime += activeWorkers * 5
-            if workerTime > 50:
-                workerTime = 0
-                oreAmount += 1
+        #if activeWorkers > 0:
+            #work(activeWorkers)
     
     #draws a series of objects
     screen.fill(background)
