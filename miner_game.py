@@ -78,19 +78,21 @@ def drawWorkers():
     screen.blit((font.render(str(activeWorkers), True, Colors.white)), (100, 100))
     return buyWorker, assignWorker
 
-
-def work(actWorks):
-    gameData.mines["Copper"].workTimer
-    global firstRun
+#makes the workers work
+def work(actWorks, store, benchmark, firstRun):
+    #workTimer = gameData.getMine("Copper").getWorkerTimer()
     global oreAmount
     if firstRun == False:
+        store = 0
         benchmark = store
         firstRun = True
     else:
-        if (store - benchmark) >= (1000 / actWorks):
+        if store >= (100 / actWorks):
+            #gameData.getOre("Copper").addOre(1)
             oreAmount += 1
             firstRun = False
-    store = timer.get_time
+    store += 1
+    return store, benchmark, firstRun
 
 
 def save():
@@ -130,9 +132,9 @@ while running:
                 totalWorkers += 1
             if assignWorkers.collidepoint(event.pos) and activeWorkers < totalWorkers:
                 activeWorkers += 1
-        #if activeWorkers > 0:
-            #work(activeWorkers)
-    
+    if activeWorkers > 0:
+        store, benchmark, firstRun = work(activeWorkers, store, benchmark, firstRun)
+
     #draws a series of objects
     screen.fill(background)
     buyWorkers, assignWorkers = drawWorkers()
