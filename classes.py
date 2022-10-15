@@ -13,7 +13,10 @@ class OreType:
         self.image = image
         self.amount = 0
         self.value = value
-    
+
+    def setAmount(self, amount):
+        self.amount = amount
+
     def getName(self):
         return self.name
     
@@ -41,7 +44,7 @@ class OreRate:
         return self.rate
 
 class MineType:
-    def __init__(self, name=str, rates=list(OreRate)):
+    def __init__(self, name=str, rates=list):
         self.name = name
         self.minerCount = 0
         self.oreRates = rates
@@ -79,7 +82,7 @@ class Stat:
 class Upgrade:
     def __init__(self, name=str, costOres=list, costMult=float, statModified=Stat, magnitude=float, upType=str):
         self.name = name
-        # List of tuples containing (cost, OreType)
+        # List of OreRate objects
         self.costOres = costOres
         self.costMult = costMult
         self.statModified = statModified
@@ -87,12 +90,22 @@ class Upgrade:
         self.magnitude = magnitude
         self.type = upType
     
-    def getCostOres(self):
-        return self.costOres
-    
-    def getCostMult(self):
-        return self.costMult
-    
+    def getCost(self):
+        sellRate = []
+        for rate in self.costOres:
+            totCost = (self.count+1) * self.costMult * rate.getRate()
+            sellRate.append(OreRate(rate.getOre(), round(totCost, 2)))
+        return sellRate
+
+    def getCostString(self):
+        costString = "Cost: "
+        for rate in self.getCost():   
+            costString += str(rate.getRate()) + " " + rate.getOre().getName()
+        return costString
+
+    def getEffect(self):
+        return self.count * self.magnitude
+
     def getStatModified(self):
         return self.statModified
     
@@ -105,12 +118,17 @@ class Upgrade:
     def getType(self):
         return self.type
 
+    def canAfford(self):
+        for rate in self.getCost():
+            if rate.getRate() > rate.getOre().amount:
+                return False
+        return True
+
     def buyUpgrade(self):
-        for cost, ore in self.costOres:
-            totCost = self.count * self.costMult * cost
-            if totCost > ore.amount:
-                return
-        ore.value -= totCost
+        if self.canAfford():
+            for rate in self.getCost():
+                rate.getOre().addOre(-rate.getRate())
+
         self.count += 1
         if self.type == "Add":
             self.statModified.value += self.count * self.magnitude
@@ -129,7 +147,7 @@ class Data:
     minerSpeedMulti = Stat("Miner Speed Multiplier", 1)
     minersAvailable = Stat("Miners Available", 0)
     minersTotal = Stat("Total Miners", 0)
-
+    
     # Initializes a list of OreType objects
     ores = {
         "Copper": OreType("Copper", "", 2),
@@ -147,8 +165,8 @@ class Data:
     }
 
     upgrades = {
-        "Click_Multiplier": Upgrade("Click Multiplier", [(1, ores["Copper"])], 10, clickMulti, 10, "Multiply"),
-        "Click_Base_Count": Upgrade("Base Click Value", [(1, ores["Copper"])], 1.2, clickBaseValue, 1, "Add")
+        "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(ores["Copper"], 1)], 10, clickMulti, 10, "Add"),
+        "Click_Base_Count": Upgrade("Base Click Value", [OreRate(ores["Copper"], 1)], 1.2, clickBaseValue, 1, "Add")
     }
 
     def getOre(self, ore=str):
@@ -159,3 +177,5 @@ class Data:
     
     def getUpgrade(self, upgrade=str):
         return self.upgrades[upgrade]
+
+    activeMine = mines["Copper"]

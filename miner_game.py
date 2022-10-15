@@ -1,5 +1,7 @@
 # MINE CLICKER GAME
 
+from msilib.schema import Upgrade
+from numpy.random import choice
 import pygame
 import Colors
 import classes
@@ -20,7 +22,6 @@ gameData = classes.Data()
 #game variables
 oreAmount = 0
 orePerClick = 1
-coinAmount = 100
 multiplier = 1
 totalWorkers = 0
 activeWorkers = 0
@@ -29,31 +30,62 @@ benchmark = 0
 store = 0
 firstRun = False
 
-#Costs
-upCost = 1
-workCost = 10
-multCost = 10
+
+#sells ratio * ore.amount for coins
+# 1 <= ratio < 0
+def sellOre(ore=classes.OreType, ratio=float):
+    oreLeft = ore.getAmount() * (1-ratio)
+    oreSold = ore.getAmount() * ratio
+    ore.setAmount(oreLeft)
+    gameData.coin.addOre(oreSold * ore.getValue())
+        
 
 #draws in the wallet, which contains the ore amount and coin amount
 def drawWallet():
-    wallet = pygame.draw.rect(screen, Colors.baige, (10, 10, 100, 50))
-    totOre = font.render(str(oreAmount), True, Colors.black)
-    totCoin = font.render(str(coinAmount), True, Colors.black)
-    screen.blit(totOre, (15, 15))
-    screen.blit(totCoin, (15, 30))
+    wallet = pygame.draw.rect(screen, Colors.baige, (10, 10, 125, 55))
+    totCoin = font.render("Coins: " + str(round(gameData.coin.amount, 2)), True, Colors.black)
+    screen.blit(totCoin, (15, 15))    
+    totOre = font.render("Copper: " + str(round(gameData.getOre("Copper").amount, 2)), True, Colors.black)
+    screen.blit(totOre, (15, 30))
+    totIron = font.render("Iron: " + str(round(gameData.getOre("Iron").amount, 2)), True, Colors.black)
+    screen.blit(totIron, (15, 45))
     return wallet
 
 #draws in the mine clicking area, and displays the ores per click
 def drawMine():
     mineArea = pygame.draw.circle(screen, Colors.black, (320, 300), 60, 60) #The click circle to generate ores
-    clickValue = font.render(str(orePerClick * multiplier), True, Colors.white)
+    clickValue = font.render(str(gameData.clickBaseValue.getValue() * gameData.clickMulti.getValue()), True, Colors.white)
     screen.blit(clickValue, (320, 300))
     return mineArea
 
+def mineAction(isMiner=False):
+    ore = []
+    probability = []
+    for rate in gameData.activeMine.getOreRates():
+        ore.append(rate.getOre())
+        probability.append(rate.getRate())
+    obtainedOre = choice(ore, p=probability)
+    if isMiner:
+        obtainedOre.amount += gameData.minerValMulti.getValue() * gameData.activeMine.getMinerCount()
+    else: 
+        obtainedOre.amount += gameData.clickBaseValue.getValue() * gameData.clickMulti.getValue()
+
+def buyWorker():
+    cost = pow(10, gameData.minersTotal.getValue() + 1)
+    if gameData.coin.getAmount() >= cost:
+        gameData.minersTotal.value += 1
+        gameData.minersAvailable.value += 1
+        gameData.coin.addOre(-cost)
+
+def assignMiner():
+    if gameData.minersAvailable.getValue() > 0:
+        gameData.activeMine.assignMiner()
+        gameData.minersAvailable.value -= 1
+
 #draws in the upgrade circle
-def drawUpgrade(upCost):
+def drawBaseUpgrade(upgrade=classes.Upgrade):
     upgradeArea = pygame.draw.circle(screen, Colors.black, (500, 100), 20, 20) #The click circle to generate ores
-    upgradeValue = font.render(str(round(upCost, 2)), True, Colors.white)
+    upgradeValue = font.render(str(upgrade.getCostString()), True, Colors.white)
     screen.blit(upgradeValue, (500, 100))
     return upgradeArea
 
@@ -64,32 +96,30 @@ def drawConversion():
     return oreToCash
 
 #draws in the multiplier circle, and displays the current multiplier 
-def drawMultiplier():
+def drawMultiplierUpgrade(upgrade=classes.Upgrade):
     clickMult = pygame.draw.circle(screen, Colors.black, (500, 300), 20, 20) #The click circle to generate ores
-    multValue = font.render(str(multiplier), True, Colors.white)
+    multValue = font.render(str(upgrade.getCostString()), True, Colors.white)
     screen.blit(multValue, (500, 300))
     return clickMult
 
 #draws in the circles to buy workers and assign workers, displays worker counts.
 def drawWorkers():
     buyWorker = pygame.draw.circle(screen, Colors.red, (50, 100), 20, 20)
-    screen.blit((font.render(str(totalWorkers), True, Colors.white)), (50, 100))
+    screen.blit((font.render(str(gameData.minersTotal.getValue()), True, Colors.white)), (50, 100))
     assignWorker = pygame.draw.circle(screen, Colors.blue, (100, 100), 20, 20)
-    screen.blit((font.render(str(activeWorkers), True, Colors.white)), (100, 100))
+    screen.blit((font.render(str(gameData.activeMine.getMinerCount()), True, Colors.white)), (100, 100))
     return buyWorker, assignWorker
 
 #makes the workers work
-def work(actWorks, store, benchmark, firstRun):
+def work(store, benchmark, firstRun):
     #workTimer = gameData.getMine("Copper").getWorkerTimer()
-    global oreAmount
     if firstRun == False:
         store = 0
         benchmark = store
         firstRun = True
     else:
-        if store >= (100 / actWorks):
-            #gameData.getOre("Copper").addOre(1)
-            oreAmount += 1
+        if store >= (100):
+            mineAction(True)
             firstRun = False
     store += 1
     return store, benchmark, firstRun
@@ -110,30 +140,22 @@ while running:
         if event.type == pygame.MOUSEBUTTONDOWN:
             #gives the player ore based on the ore per click amount multiplied by the multiplier
             if mineArea.collidepoint(event.pos):
-                oreAmount += (orePerClick * multiplier)
+                mineAction()
             #increases the base ore per click
-            if upgradeArea.collidepoint(event.pos) and coinAmount >= upCost:
-                upCost = upCost * 2
-                orePerClick += 1
-                coinAmount -= 1
+            if clickBaseUpgrade.collidepoint(event.pos):
+                gameData.getUpgrade("Click_Base_Count").buyUpgrade()
             #converts all ore to cash at a one to one ration
             if oreToCash.collidepoint(event.pos):
-                coinAmount += oreAmount
-                oreAmount = 0
+                sellOre(gameData.getOre("Copper"), 1)
             #decreases coin amount by 10, and increases the multiplier by one (buys an incerase in a multipier for 10 coins)
-            if clickMult.collidepoint(event.pos) and coinAmount >= multCost:
-                multCost = multCost * 2
-                coinAmount -= 10
-                multiplier += 1
-                orePerClick *= 2
-            if buyWorkers.collidepoint(event.pos) and coinAmount >= workCost:
-                coinAmount -= workCost
-                workCost = workCost * 2
-                totalWorkers += 1
-            if assignWorkers.collidepoint(event.pos) and activeWorkers < totalWorkers:
-                activeWorkers += 1
-    if activeWorkers > 0:
-        store, benchmark, firstRun = work(activeWorkers, store, benchmark, firstRun)
+            if clickMultUpgrade.collidepoint(event.pos):
+                gameData.getUpgrade("Click_Multiplier").buyUpgrade()
+            if buyWorkers.collidepoint(event.pos):
+                buyWorker()
+            if assignWorkers.collidepoint(event.pos):
+                assignMiner()
+    if gameData.activeMine.getMinerCount() > 0:
+        store, benchmark, firstRun = work(store, benchmark, firstRun)
 
     #draws a series of objects
     screen.fill(background)
@@ -141,8 +163,8 @@ while running:
     wallet = drawWallet()
     mineArea = drawMine()
     oreToCash = drawConversion()  
-    upgradeArea = drawUpgrade(upCost)
-    clickMult = drawMultiplier()
+    clickBaseUpgrade = drawBaseUpgrade(gameData.getUpgrade("Click_Base_Count"))
+    clickMultUpgrade = drawMultiplierUpgrade(gameData.getUpgrade("Click_Multiplier"))
 
     pygame.display.flip()
 
