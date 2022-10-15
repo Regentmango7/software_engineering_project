@@ -20,6 +20,12 @@ coinAmount = 0
 multiplier = 1
 totalWorkers = 0
 activeWorkers = 0
+
+#upgrade/workers
+upCost = 1
+bought = False
+workCost = 10
+
 #draws in the wallet, which contains the ore amount and coin amount
 def drawWallet():
     wallet = pygame.draw.rect(screen, Colors.baige, (10, 10, 100, 50))
@@ -32,13 +38,15 @@ def drawWallet():
 #draws in the mine clicking area, and displays the ores per click
 def drawMine():
     mineArea = pygame.draw.circle(screen, Colors.black, (320, 300), 60, 60) #The click circle to generate ores
-    clickValue = font.render(str(orePerClick), True, Colors.white)
+    clickValue = font.render(str(orePerClick * multiplier), True, Colors.white)
     screen.blit(clickValue, (320, 300))
     return mineArea
 
 #draws in the upgrade circle
-def drawUpgrade():
+def drawUpgrade(upCost):
     upgradeArea = pygame.draw.circle(screen, Colors.black, (500, 100), 20, 20) #The click circle to generate ores
+    upgradeCost = font.render(str(round(upCost, 2)), True, Colors.white)
+    screen.blit(upgradeCost, (500, 100))
     return upgradeArea
 
 
@@ -62,6 +70,7 @@ def drawWorkers():
     screen.blit((font.render(str(activeWorkers), True, Colors.white)), (100, 100))
     return buyWorker, assignWorker
 
+
 def save():
     print("Game is closed")
 
@@ -79,8 +88,9 @@ while running:
             if mineArea.collidepoint(event.pos):
                 oreAmount += (orePerClick * multiplier)
             #increases the base ore per click
-            if upgradeArea.collidepoint(event.pos):
+            if upgradeArea.collidepoint(event.pos) and coinAmount > 0:
                 orePerClick += 1
+                coinAmount -= 1
             #converts all ore to cash at a one to one ration
             if oreToCash.collidepoint(event.pos):
                 coinAmount += oreAmount
@@ -101,8 +111,9 @@ while running:
     wallet = drawWallet()
     mineArea = drawMine()
     oreToCash = drawConversion()  
-    upgradeArea = drawUpgrade()
+    upgradeArea = drawUpgrade(upCost)
     clickMult = drawMultiplier()
+
     pygame.display.flip()
 
 pygame.quit()
