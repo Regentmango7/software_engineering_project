@@ -45,6 +45,8 @@ class Upgrade:
         self.count = 0
         self.magnitude = magnitude
         self.type = upType
+    
+    #def getCostOres
 
     def buyUpgrade(self):
         for cost, ore in self.costOres:

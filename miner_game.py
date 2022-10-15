@@ -14,6 +14,9 @@ framerate = 60
 font = pygame.font.Font("freesansbold.ttf", 16)
 timer = pygame.time.Clock()
 
+
+gameData = classes.Data()
+
 #game variables
 oreAmount = 0
 orePerClick = 1
@@ -75,8 +78,9 @@ def drawWorkers():
     screen.blit((font.render(str(activeWorkers), True, Colors.white)), (100, 100))
     return buyWorker, assignWorker
 
-"""
+
 def work(actWorks):
+    gameData.mines["Copper"].workTimer
     global firstRun
     global oreAmount
     if firstRun == False:
@@ -87,7 +91,7 @@ def work(actWorks):
             oreAmount += 1
             firstRun = False
     store = timer.get_time
-"""    
+
 
 def save():
     print("Game is closed")
