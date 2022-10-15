@@ -14,6 +14,18 @@ class OreType:
         self.amount = 0
         self.value = value
     
+    def getName(self):
+        return self.name
+    
+    def getImage(self):
+        return self.image
+    
+    def getAmount(self):
+        return self.amount
+    
+    def getValue(self):
+        return self.value
+    
     def addOre(self, amount):
         self.amount += amount
 
@@ -23,6 +35,18 @@ class MineType:
         self.minerCount = 0
         self.oreRates = rates
         self.workerTimer = 0
+    
+    def getName(self):
+        return self.name
+    
+    def getMinerCount(self):
+        return self.minerCount
+    
+    def getOreRates(self):
+        return self.oreRates
+    
+    def getWorkerTimer(self):
+        return self.workerTimer
 
     def mine():
         return OreType #recieved for a mine action
@@ -34,6 +58,12 @@ class Stat:
     def __init__(self, name, value):
         self.name = name
         self.value = value
+    
+    def getName(self):
+        return self.name
+    
+    def getValue(self):
+        return self.value
 
 class Upgrade:
     def __init__(self, name=str, costOres=list, costMult=float, statModified=Stat, magnitude=float, upType=str):
@@ -46,7 +76,23 @@ class Upgrade:
         self.magnitude = magnitude
         self.type = upType
     
-    #def getCostOres
+    def getCostOres(self):
+        return self.costOres
+    
+    def getCostMult(self):
+        return self.costMult
+    
+    def getStatModified(self):
+        return self.statModified
+    
+    def getCount(self):
+        return self.count
+
+    def getMagnitude(self):
+        return self.magnitude
+    
+    def getType(self):
+        return self.type
 
     def buyUpgrade(self):
         for cost, ore in self.costOres:
