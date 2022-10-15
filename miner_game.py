@@ -2,6 +2,7 @@
 
 import pygame
 import Colors
+import classes
 pygame.init()
 
 

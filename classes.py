@@ -25,7 +25,7 @@ class MineType:
         self.workerTimer = 0
 
     def mine():
-        return OreType
+        return OreType #recieved for a mine action
 
     def assignMiner(self):
         self.minerCount += 1
@@ -71,7 +71,6 @@ class Data:
     minersAvailable = Stat("Miners Available", 0)
     minersTotal = Stat("Total Miners", 0)
 
-
     # Initializes a list of OreType objects
     ores = {
         "Copper": OreType("Copper", "", 2),
@@ -92,3 +91,12 @@ class Data:
         "Click_Multiplier": Upgrade("Click Multiplier", [(1, ores["Copper"])], 10, clickMulti, 10, "Multiply"),
         "Click_Base_Count": Upgrade("Base Click Value", [(1, ores["Copper"])], 1.2, clickBaseValue, 1, "Add")
     }
+
+    def getOre(self, ore=str):
+        return self.ores[ore]
+
+    def getMine(self, ore=str):
+        return self.mines[ore]
+    
+    def getUpgrade(self, upgrade=str):
+        return self.upgrades[upgrade]
