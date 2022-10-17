@@ -50,6 +50,9 @@ def testSellOre():
 #function to test mineAction (JD)
 def testMineAction():
     print("testMineAction")
+
+    #setup for mineAction
+
     pass #change to return
 
 #function to test buyWorker

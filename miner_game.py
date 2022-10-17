@@ -61,10 +61,10 @@ def drawMine():
     screen.blit(clickValue, (320, 300))
     return mineArea
 
-def mineAction(isMiner=False):
+def mineAction(isMiner=False, mine=gameData.activeMine):
     ore = []
     probability = []
-    for rate in gameData.activeMine.getOreRates():
+    for rate in mine.getOreRates():
         ore.append(rate.getOre())
         probability.append(rate.getRate())
     obtainedOre = choice(ore, p=probability)
