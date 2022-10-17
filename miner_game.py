@@ -1,6 +1,5 @@
 # MINE CLICKER GAME
 
-from msilib.schema import Upgrade
 from numpy.random import choice
 import pygame
 import Colors
