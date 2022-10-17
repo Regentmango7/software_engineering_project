@@ -25,7 +25,6 @@ multiplier = 1
 totalWorkers = 0
 activeWorkers = 0
 workerTime = 0
-benchmark = 0
 store = 0
 firstRun = False
 
@@ -107,18 +106,13 @@ def drawWorkers():
     return buyWorker, assignWorker
 
 #makes the workers work
-def work(store, benchmark, firstRun):
-    #workTimer = gameData.getMine("Copper").getWorkerTimer()
-    if firstRun == False:
+def work(store, firstRun):
+    if store >= (100):
+        mineAction(True)
+        firstRun = False
         store = 0
-        benchmark = store
-        firstRun = True
-    else:
-        if store >= (100):
-            mineAction(True)
-            firstRun = False
     store += 1
-    return store, benchmark, firstRun
+    return store, firstRun
 
 
 def save():
@@ -151,7 +145,7 @@ while running:
             if assignWorkers.collidepoint(event.pos):
                 assignMiner()
     if gameData.activeMine.getMinerCount() > 0:
-        store, benchmark, firstRun = work(store, benchmark, firstRun)
+        store, firstRun = work(store, firstRun)
 
     #draws a series of objects
     screen.fill(background)
