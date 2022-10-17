@@ -138,51 +138,53 @@ def work(store, firstRun):
 def save():
     print("Game is closed")
 
-# Main body of code
-running = True
-while running:
-    timer.tick(framerate)
-    for event in pygame.event.get():
-        #quits the game
-        if event.type == pygame.QUIT:
-            save()
-            running = False
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            #gives the player ore based on the ore per click amount multiplied by the multiplier
-            if mineArea.collidepoint(event.pos):
-                mineAction()
-            #increases the base ore per click
-            if clickBaseUpgrade.collidepoint(event.pos):
-                gameData.getUpgrade("Click_Base_Count").buyUpgrade()
-            #converts all ore to cash at a one to one ration
-            if oreToCash.collidepoint(event.pos):
-                sellOre(gameData.getOre("Copper"), 1)
-            #decreases coin amount by 10, and increases the multiplier by one (buys an incerase in a multipier for 10 coins)
-            if clickMultUpgrade.collidepoint(event.pos):
-                gameData.getUpgrade("Click_Multiplier").buyUpgrade()
-            if buyWorkers.collidepoint(event.pos):
-                buyWorker()
-            if assignWorkers.collidepoint(event.pos):
-                assignMiner()
-            if previousMine.collidepoint(event.pos):
-                setPreviousMine()
-            if nextMine.collidepoint(event.pos):
-                setNextMine()
-    if gameData.activeMine.getMinerCount() > 0:
-        store, firstRun = work(store, firstRun)
 
-    #draws a series of objects
-    screen.fill(background)
-    buyWorkers, assignWorkers = drawWorkers()
-    wallet = drawWallet()
-    mineNameplate = drawMineName()
-    mineArea = drawMine()
-    oreToCash = drawConversion()
-    nextMine = drawNextMine()
-    previousMine = drawPrevMine()  
-    clickBaseUpgrade = drawUpgrade(gameData.getUpgrade("Click_Base_Count"), 500, 100)
-    clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), 500, 300)
+if __name__ == "__main__":
+    # Main body of code
+    running = True
+    while running:
+        timer.tick(framerate)
+        for event in pygame.event.get():
+            #quits the game
+            if event.type == pygame.QUIT:
+                save()
+                running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                #gives the player ore based on the ore per click amount multiplied by the multiplier
+                if mineArea.collidepoint(event.pos):
+                    mineAction()
+                #increases the base ore per click
+                if clickBaseUpgrade.collidepoint(event.pos):
+                    gameData.getUpgrade("Click_Base_Count").buyUpgrade()
+                #converts all ore to cash at a one to one ration
+                if oreToCash.collidepoint(event.pos):
+                    sellOre(gameData.getOre("Copper"), 1)
+                #decreases coin amount by 10, and increases the multiplier by one (buys an incerase in a multipier for 10 coins)
+                if clickMultUpgrade.collidepoint(event.pos):
+                    gameData.getUpgrade("Click_Multiplier").buyUpgrade()
+                if buyWorkers.collidepoint(event.pos):
+                    buyWorker()
+                if assignWorkers.collidepoint(event.pos):
+                    assignMiner()
+                if previousMine.collidepoint(event.pos):
+                    setPreviousMine()
+                if nextMine.collidepoint(event.pos):
+                    setNextMine()
+        if gameData.activeMine.getMinerCount() > 0:
+            store, firstRun = work(store, firstRun)
 
-    pygame.display.flip()
+        #draws a series of objects
+        screen.fill(background)
+        buyWorkers, assignWorkers = drawWorkers()
+        wallet = drawWallet()
+        mineNameplate = drawMineName()
+        mineArea = drawMine()
+        oreToCash = drawConversion()
+        nextMine = drawNextMine()
+        previousMine = drawPrevMine()  
+        clickBaseUpgrade = drawUpgrade(gameData.getUpgrade("Click_Base_Count"), 500, 100)
+        clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), 500, 300)
+
+        pygame.display.flip()
 
 pygame.quit()
