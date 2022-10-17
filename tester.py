@@ -226,7 +226,7 @@ def main():
     #testBuyWorker() #working!
     #testAssignMiner() #writing (JD)
     #testWork() #working!
-    testGetCost() #writing (Paul)
+    testGetCost() #working!
     #testGetCostString() #writing
     #testCanAfford() #writing
     #testBuyUpgrade() #writing
