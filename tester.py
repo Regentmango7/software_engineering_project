@@ -30,14 +30,14 @@ def testSellOre():
     #testing
     #beginning
     print("Ore amount to start should be: ", 10)
-    print("Ore amount to start is: ", testData.getOre("Copper"))
+    print("Ore amount to start is: ", testData.getOre("Copper").getAmount())
     print("coin amount to start should be: ,", 0)
     print("coin amount to start is: ,", testData.coin.getAmount())
     #test
     miner_game.sellOre(testData.getOre("Copper"), 1)
     #ending
     print("Ore amount at end should be: ", 0)
-    print("Ore amount at end is: ", testData.getOre("Copper"))
+    print("Ore amount at end is: ", testData.getOre("Copper").getAmount())
     print("coin amount at end should be: ,", 20)
     print("coin amount at end is: ,", testData.coin.getAmount())
     print("")
@@ -66,14 +66,14 @@ def testBuyWorker():
     #testing buying with no money
     #beginning
     print("worker amount to start should be: ", 0)
-    print("worker amount to start is: ", testData.getMine("Copper").getMinerCount())
+    print("worker amount to start is: ", testData.minersTotal.getValue())
     print("coin amount to start should be: ,", 0)
     print("coin amount to start is: ,", testData.coin.getAmount())
     #test
     miner_game.buyWorker()
     #ending
     print("worker amount at end should be: ", 0)
-    print("worker amount at end is: ", testData.getMine("Copper").getMinerCount())
+    print("worker amount at end is: ", testData.minersTotal.getValue())
     print("coin amount at end should be: ,", 0)
     print("coin amount at end is: ,", testData.coin.getAmount())
 
@@ -81,22 +81,22 @@ def testBuyWorker():
     testData.coin.setAmount(1001)
     #testing buying with enough money
     #beginning
-    print("worker amount to start should be: ", 0)
-    print("worker amount to start is: ", testData.getMine("Copper").getMinerCount())
+    print("worker amount to start should be: ", 1001)
+    print("worker amount to start is: ", testData.minersTotal.getValue())
     print("coin amount to start should be: ,", 0)
     print("coin amount to start is: ,", testData.coin.getAmount())
     #test
     miner_game.buyWorker()
     #middle
     print("worker amount at middle should be: ", 1)
-    print("worker amount at middle is: ", testData.getMine("Copper").getMinerCount())
+    print("worker amount at middle is: ", testData.minersTotal.getValue())
     print("coin amount at middle should be: ,", 991)
     print("coin amount at middle is: ,", testData.coin.getAmount())
     #test
     miner_game.buyWorker()
     #end
     print("worker amount at end should be: ", 2)
-    print("worker amount at end is: ", testData.getMine("Copper").getMinerCount())
+    print("worker amount at end is: ", testData.minersTotal.getValue())
     print("coin amount at end should be: ,", 891)
     print("coin amount at end is: ,", testData.coin.getAmount())
     print("")
@@ -156,7 +156,7 @@ def testBuyUpgrade():
 def main():
     testSellOre()
     #testMineAction()
-    #testBuyWorker()
+    testBuyWorker()
     #testAssignMiner()
     #testWork()
     #testGetCost()
