@@ -23,7 +23,7 @@ testData = miner_game.classes.Data()
 
 #function to test sellOre
 def testSellOre():
-    print("testSellOre")
+    print("TESTSELLORE:")
 
     #setup for testSellOre
     testData.getOre("Copper").setAmount(10)
@@ -49,19 +49,17 @@ def testSellOre():
 
 #function to test mineAction (JD)
 def testMineAction():
-    print("testMineAction")
-
-    #setup for mineAction
-
+    print("TESTMINEACTION:")
     pass #change to return
 
 #function to test buyWorker
 def testBuyWorker():
-    print("testBuyWorker")
+    print("TESTBUYWORKER:")
     #setup for buyWorker
     testData.coin.setAmount(0)
     
     #testing buying with no money
+    print("TESTING BUYING WITH NO MONEY")
     #beginning
     print("worker amount to start should be: ", 0)
     print("worker amount to start is: ", testData.minersTotal.getValue())
@@ -78,6 +76,7 @@ def testBuyWorker():
     #setup again
     testData.coin.setAmount(1001)
     #testing buying with enough money
+    print("TESTING BUYING WITH ENOUGH MONEY")
     #beginning
     print("worker amount to start should be: ", 1001)
     print("worker amount to start is: ", testData.minersTotal.getValue())
@@ -104,12 +103,12 @@ def testBuyWorker():
 
 #function to test assignMiner
 def testAssignMiner():
-    print("testAssignMiner")
+    print("TESTASSIGNMINER:")
     pass #change to return
 
 #function to test work
 def testWork():
-    print("testWork")
+    print("TESTWORK:")
 
     #setup for work
     testData.getOre("Copper").setAmount(0)
@@ -145,9 +144,7 @@ def testWork():
 
 #function to test getCost
 def testGetCost():
-    print("testGetCost")
-    
-    
+    print("TESTGETCOST:")
 
     #setup for "Add" upgrade
 
@@ -207,19 +204,62 @@ def testGetCost():
     print("")
     return
 
-#function to test getCostString
-def testGetCostString():
-    print("testGetCostString")
-    pass #change to return
-
 #function to test canAfford
 def testCanAfford():
-    print("testCanAfford")
-    pass #change to return
+    print("TESTCANAFFORD:")
+
+    print("TESTING FOR Click_Base_Count:")
+
+    #setup for no money
+    testData.getOre("Copper").setAmount(0)
+    print("TESTING WITH NO ORE")
+    #beginning
+    print("ore amount to start should be: ,", 0)
+    print("ore amount to start is: ,", testData.getOre("Copper").getAmount())
+    #end
+    print("affordable should be: FALSE")
+    print("affordable is: ", testData.getUpgrade("Click_Base_Count").canAfford())
+    #setup for enough money
+    testData.getOre("Copper").setAmount(1001)
+    print("TESTING WITH ENOUGH ORE")
+    #beginning
+    print("ore amount to start should be: ,", 1001)
+    print("ore amount to start is: ,", testData.getOre("Copper").getAmount())
+    #end
+    print("affordable should be: TRUE")
+    print("affordable is: ", testData.getUpgrade("Click_Base_Count").canAfford())
+    
+
+    print("TESTING FOR Click_Multiplier:")
+
+     #setup for no money
+    testData.getOre("Copper").setAmount(0)
+    print("TESTING WITH NO ORE")
+    #beginning
+    print("ore amount to start should be: ,", 0)
+    print("ore amount to start is: ,", testData.getOre("Copper").getAmount())
+    #end
+    print("affordable should be: FALSE")
+    print("affordable is: ", testData.getUpgrade("Click_Multiplier").canAfford())
+    #setup for enough money
+    testData.getOre("Copper").setAmount(1001)
+    print("TESTING WITH ENOUGH ORE")
+    #beginning
+    print("ore amount to start should be: ,", 1001)
+    print("ore amount to start is: ,", testData.getOre("Copper").getAmount())
+    #end
+    print("affordable should be: TRUE")
+    print("affordable is: ", testData.getUpgrade("Click_Multiplier").canAfford())
+
+    print("")
+    print("")
+    print("")
+
+    return 
 
 #function to test buyUpgrade
 def testBuyUpgrade():
-    print("testBuyUpgrade")
+    print("TESTBUYUPGRADE:")
     pass #change to return
 
 #main method to run the test functions
@@ -229,9 +269,9 @@ def main():
     #testBuyWorker() #working!
     #testAssignMiner() #writing (JD)
     #testWork() #working!
-    testGetCost() #working!
+    #testGetCost() #working!
     #testGetCostString() #writing
-    #testCanAfford() #writing
+    #testCanAfford() #working!
     #testBuyUpgrade() #writing
     return
 
