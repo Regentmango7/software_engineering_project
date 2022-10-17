@@ -103,6 +103,9 @@ class Upgrade:
             costString += str(rate.getRate()) + " " + rate.getOre().getName()
         return costString
 
+    def getName(self):
+        return self.name
+
     def getEffect(self):
         return self.count * self.magnitude
 

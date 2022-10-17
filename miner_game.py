@@ -82,31 +82,28 @@ def assignMiner():
         gameData.minersAvailable.value -= 1
 
 #draws in the upgrade circle
-def drawBaseUpgrade(upgrade=classes.Upgrade):
-    upgradeArea = pygame.draw.circle(screen, Colors.black, (500, 100), 20, 20) #The click circle to generate ores
+def drawUpgrade(upgrade=classes.Upgrade, x=float, y=float):
+    upgradeArea = pygame.draw.circle(screen, Colors.black, (x, y), 20, 20) #The click circle to generate ores
     upgradeValue = font.render(str(upgrade.getCostString()), True, Colors.white)
-    screen.blit(upgradeValue, (500, 100))
+    screen.blit(upgradeValue, (x-20, y))
+    screen.blit(font.render(upgrade.getName(), True, Colors.white), (x-20, y-20))
     return upgradeArea
 
 
 #draws in the conversion circle
 def drawConversion():
     oreToCash = pygame.draw.circle(screen, Colors.black, (500, 200), 20, 20) #The click circle to generate ores
+    screen.blit(font.render("Sell All Ore", True, Colors.white), (500-20, 200-20))
     return oreToCash
-
-#draws in the multiplier circle, and displays the current multiplier 
-def drawMultiplierUpgrade(upgrade=classes.Upgrade):
-    clickMult = pygame.draw.circle(screen, Colors.black, (500, 300), 20, 20) #The click circle to generate ores
-    multValue = font.render(str(upgrade.getCostString()), True, Colors.white)
-    screen.blit(multValue, (500, 300))
-    return clickMult
 
 #draws in the circles to buy workers and assign workers, displays worker counts.
 def drawWorkers():
     buyWorker = pygame.draw.circle(screen, Colors.red, (50, 100), 20, 20)
     screen.blit((font.render(str(gameData.minersTotal.getValue()), True, Colors.white)), (50, 100))
-    assignWorker = pygame.draw.circle(screen, Colors.blue, (100, 100), 20, 20)
-    screen.blit((font.render(str(gameData.activeMine.getMinerCount()), True, Colors.white)), (100, 100))
+    screen.blit((font.render("Buy Worker", True, Colors.white)), (50-20, 100-20))
+    assignWorker = pygame.draw.circle(screen, Colors.blue, (50, 150), 20, 20)
+    screen.blit((font.render("Assign Worker", True, Colors.white)), (50-20, 150-20))
+    screen.blit((font.render(str(gameData.activeMine.getMinerCount()), True, Colors.white)), (50, 150))
     return buyWorker, assignWorker
 
 #makes the workers work
@@ -162,8 +159,8 @@ while running:
     wallet = drawWallet()
     mineArea = drawMine()
     oreToCash = drawConversion()  
-    clickBaseUpgrade = drawBaseUpgrade(gameData.getUpgrade("Click_Base_Count"))
-    clickMultUpgrade = drawMultiplierUpgrade(gameData.getUpgrade("Click_Multiplier"))
+    clickBaseUpgrade = drawUpgrade(gameData.getUpgrade("Click_Base_Count"), 500, 100)
+    clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), 500, 300)
 
     pygame.display.flip()
 
