@@ -264,7 +264,6 @@ def main():
     #testAssignMiner() #writing (JD)
     #testWork() #working!
     #testGetCost() #working!
-    #testGetCostString() #writing
     #testCanAfford() #working!
     #testBuyUpgrade() #writing
     return
