@@ -47,11 +47,6 @@ def testSellOre():
     print("")
     return
 
-#function to test mineAction (JD)
-def testMineAction():
-    print("TESTMINEACTION:")
-    pass #change to return
-
 #function to test buyWorker
 def testBuyWorker():
     print("TESTBUYWORKER:")
@@ -265,7 +260,6 @@ def testBuyUpgrade():
 #main method to run the test functions
 def main():
     #testSellOre() #working!
-    #testMineAction() #writing (JD)
     #testBuyWorker() #working!
     #testAssignMiner() #writing (JD)
     #testWork() #working!
