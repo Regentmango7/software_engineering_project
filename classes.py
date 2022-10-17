@@ -93,7 +93,10 @@ class Upgrade:
     def getCost(self):
         sellRate = []
         for rate in self.costOres:
-            totCost = (self.count+1) * self.costMult * rate.getRate()
+            if self.type == "Add":
+                totCost = (self.count+1) * self.costMult * rate.getRate()
+            elif self.type == "Multiply":
+                totCost = pow((self.costMult * rate.getRate()), (self.count+1)) 
             sellRate.append(OreRate(rate.getOre(), round(totCost, 2)))
         return sellRate
 
@@ -131,12 +134,11 @@ class Upgrade:
         if self.canAfford():
             for rate in self.getCost():
                 rate.getOre().addOre(-rate.getRate())
-
-        self.count += 1
-        if self.type == "Add":
-            self.statModified.value += self.count * self.magnitude
-        elif self.type == "Multiply":
-            self.statModified.value *= self.count * self.magnitude
+            self.count += 1
+            if self.type == "Add":
+                self.statModified.value += self.count * self.magnitude
+            elif self.type == "Multiply":
+                self.statModified.value *= self.count * self.magnitude
 
 class Data:
     def __init__(self) -> None:
@@ -167,8 +169,10 @@ class Data:
         "Gold": MineType("Gold", [OreRate(ores["Copper"], 0.10), OreRate(ores["Iron"], 0.20), OreRate(ores["Silver"], 0.40), OreRate(ores["Gold"], 0.30)])
     }
 
+    MINE_ORDER = ["Copper", "Iron", "Silver", "Gold"]
+
     upgrades = {
-        "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(ores["Copper"], 1)], 10, clickMulti, 10, "Add"),
+        "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(ores["Copper"], 1)], 10, clickMulti, 10, "Multiply"),
         "Click_Base_Count": Upgrade("Base Click Value", [OreRate(ores["Copper"], 1)], 1.2, clickBaseValue, 1, "Add")
     }
 
@@ -177,7 +181,7 @@ class Data:
 
     def getMine(self, ore=str):
         return self.mines[ore]
-    
+
     def getUpgrade(self, upgrade=str):
         return self.upgrades[upgrade]
 

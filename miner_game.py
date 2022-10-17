@@ -15,16 +15,10 @@ framerate = 60
 font = pygame.font.Font("freesansbold.ttf", 16)
 timer = pygame.time.Clock()
 
-
 gameData = classes.Data()
 
 #game variables
-oreAmount = 0
-orePerClick = 1
-multiplier = 1
-totalWorkers = 0
-activeWorkers = 0
-workerTime = 0
+benchmark = 0
 store = 0
 firstRun = False
 
@@ -36,6 +30,18 @@ def sellOre(ore=classes.OreType, ratio=float):
     oreSold = ore.getAmount() * ratio
     ore.setAmount(oreLeft)
     gameData.coin.addOre(oreSold * ore.getValue())
+
+def setNextMine():
+    index = gameData.MINE_ORDER.index(gameData.activeMine.getName())+1
+    if not index >= len(gameData.MINE_ORDER):
+        gameData.activeMine = gameData.getMine(gameData.MINE_ORDER[index])
+        
+
+def setPreviousMine():
+    index = gameData.MINE_ORDER.index(gameData.activeMine.getName())-1
+    if not index < 0:
+        gameData.activeMine = gameData.getMine(gameData.MINE_ORDER[index])
+        
         
 
 #draws in the wallet, which contains the ore amount and coin amount
@@ -83,16 +89,30 @@ def assignMiner():
 #draws in the upgrade circle
 def drawUpgrade(upgrade=classes.Upgrade, x=float, y=float):
     upgradeArea = pygame.draw.circle(screen, Colors.black, (x, y), 20, 20) #The click circle to generate ores
-    upgradeValue = font.render(str(upgrade.getCostString()), True, Colors.white)
-    screen.blit(upgradeValue, (x-20, y))
+    screen.blit(font.render(str(upgrade.getCostString()), True, Colors.white), (x-20, y))
     screen.blit(font.render(upgrade.getName(), True, Colors.white), (x-20, y-20))
     return upgradeArea
+
+def drawMineName():
+    mineNameplate = pygame.draw.rect(screen, Colors.baige, (320-65, 50, 130, 60))
+    screen.blit(font.render(gameData.activeMine.getName(), True, Colors.black), (325-65, 65))
+    return mineNameplate
+
+def drawNextMine():
+    nextMine = pygame.draw.circle(screen, Colors.black, (50, 300), 20, 20)
+    screen.blit(font.render("Next Mine", True, Colors.white), (50, 300))
+    return nextMine
+
+def drawPrevMine():
+    prevMine = pygame.draw.circle(screen, Colors.black, (50, 250), 20, 20)
+    screen.blit(font.render("Previous Mine", True, Colors.white), (50, 250))
+    return prevMine
 
 
 #draws in the conversion circle
 def drawConversion():
     oreToCash = pygame.draw.circle(screen, Colors.black, (500, 200), 20, 20) #The click circle to generate ores
-    screen.blit(font.render("Sell All Ore", True, Colors.white), (500-20, 200-20))
+    screen.blit(font.render("Sell All Copper", True, Colors.white), (500-20, 200-20))
     return oreToCash
 
 #draws in the circles to buy workers and assign workers, displays worker counts.
@@ -144,6 +164,10 @@ while running:
                 buyWorker()
             if assignWorkers.collidepoint(event.pos):
                 assignMiner()
+            if previousMine.collidepoint(event.pos):
+                setPreviousMine()
+            if nextMine.collidepoint(event.pos):
+                setNextMine()
     if gameData.activeMine.getMinerCount() > 0:
         store, firstRun = work(store, firstRun)
 
@@ -151,8 +175,11 @@ while running:
     screen.fill(background)
     buyWorkers, assignWorkers = drawWorkers()
     wallet = drawWallet()
+    mineNameplate = drawMineName()
     mineArea = drawMine()
-    oreToCash = drawConversion()  
+    oreToCash = drawConversion()
+    nextMine = drawNextMine()
+    previousMine = drawPrevMine()  
     clickBaseUpgrade = drawUpgrade(gameData.getUpgrade("Click_Base_Count"), 500, 100)
     clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), 500, 300)
 
