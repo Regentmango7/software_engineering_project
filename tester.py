@@ -150,19 +150,25 @@ def testGetCost():
 
     #testing for "Add" upgrade
     #begining
-    baseList = testData.getUpgrade("Click_Base_Count").getCost()
-    index = 0
-    while index < len(baseList):
-        print(baseList[index].getRate())
-        index += 1
- 
-    baseList = testData.getUpgrade("Click_Base_Count").getCost()
-    index = 0
-    while index < len(baseList):
-        print(baseList[index].getRate())
-        index += 1
+    clickBase = testData.getUpgrade("Click_Base_Count")
 
-    #test
+    baseList = clickBase.getCost()
+    print("TESTING BASE CLICK UPGRADE")
+    print("COPPER COST SHOULD BE 1.2")
+
+    for rate in baseList:
+        print("ORE: " + rate.getOre().getName() + ", COST: " + str(rate.getRate()))
+
+    testData.getOre("Copper").setAmount(5)
+
+    clickBase.buyUpgrade()
+    print("Upgraded successfully")
+
+    print("COPPER COST SHOULD BE 2.4 after 1 upgrade")
+    baseList = clickBase.getCost()
+    for rate in baseList:
+        print("ORE: " + rate.getOre().getName() + ", COST: " + str(rate.getRate()))
+
 
     #end
 
@@ -171,8 +177,26 @@ def testGetCost():
 
     #testing for "Multiply" upgrade
     #begining
-    #testData.getUpgrade("Click_Multiplier").getCost()
-    #test
+    
+    
+    
+    multUp = testData.getUpgrade("Click_Multiplier")
+
+    baseList = multUp.getCost()
+    print("TESTING CLICK MULTIPLIER UPGRADE\n COPPER COST SHOULD BE 10")
+
+    for rate in baseList:
+        print("ORE: " + rate.getOre().getName() + ", COST: " + str(rate.getRate()))
+
+    testData.getOre("Copper").setAmount(10)
+
+    multUp.buyUpgrade()
+    print("Upgraded successfully")
+
+    print("COPPER COST SHOULD BE 100 after 1 upgrade")
+    baseList = multUp.getCost()
+    for rate in baseList:
+        print("ORE: " + rate.getOre().getName() + ", COST: " + str(rate.getRate()))
 
     #end
     print("")
