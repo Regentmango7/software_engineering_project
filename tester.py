@@ -15,13 +15,15 @@ buyUpgrade
 
 #import the file we are testing
 import miner_game
+import pygame
+pygame.init()
 
 #create the class object we are t=using to set values directly
 testData = miner_game.classes.Data()
 
-
 #function to test sellOre
 def testSellOre():
+    print("testSellOre")
 
     #setup for testSellOre
     testData.getOre("Copper").setAmount(10)
@@ -47,19 +49,12 @@ def testSellOre():
 
 #function to test mineAction (JD)
 def testMineAction():
-    pass
+    print("testMineAction")
+    pass #change to return
 
 #function to test buyWorker
-"""
-def buyWorker():
-    cost = pow(10, gameData.minersTotal.getValue() + 1)
-    if gameData.coin.getAmount() >= cost:
-        gameData.minersTotal.value += 1
-        gameData.minersAvailable.value += 1
-        gameData.coin.addOre(-cost)
-"""
 def testBuyWorker():
-
+    print("testBuyWorker")
     #setup for buyWorker
     testData.coin.setAmount(0)
     
@@ -106,31 +101,40 @@ def testBuyWorker():
 
 #function to test assignMiner
 def testAssignMiner():
-    pass
+    print("testAssignMiner")
+    pass #change to return
 
 #function to test work
 def testWork():
+    print("testWork")
 
     #setup for work
     testData.getOre("Copper").setAmount(0)
-    testData.coin.setAmount(0)
+    testData.coin.setAmount(1001)
+    miner_game.buyWorker()
+    miner_game.assignMiner()
+    store = 0
+    firstRun = False
+    timer = pygame.time.Clock()
+    framerate = 60
     
     #testing
     #beginning
     print("Ore amount to start should be: ", 0)
-    print("Ore amount to start is: ", testData.getOre("Copper"))
-    print("worker amount to start should be: ", 0)
-    print("worker amount to start is: ", testData.getMine("Copper").getMinerCount())
-    print("coin amount to start should be: ,", 0)
+    print("Ore amount to start is: ", testData.getOre("Copper").getAmount())
+    print("worker amount to start should be: ", 1)
+    print("total worker amount to start is: ", testData.minersTotal.getValue())
+    print("assigned worker amount to start is: ", testData.getMine("Copper").getMinerCount())
+    print("coin amount to start should be: ,", 991)
     print("coin amount to start is: ,", testData.coin.getAmount())
     #test
-
-    #middle
-
-    #test
-
+    running = True
+    while running and testData.getOre("Copper").getAmount() == 0:
+        timer.tick(framerate)
+        store, firstRun = miner_game.work(store, firstRun)
     #ending
-
+    print("Ore amount to end should be: ", 1)
+    print("Ore amount to end is: ", testData.getOre("Copper").getAmount())
     print("")
     print("")
     print("")
@@ -138,31 +142,71 @@ def testWork():
 
 #function to test getCost
 def testGetCost():
-    pass
+    print("testGetCost")
+    
+    
+
+    #setup for "Add" upgrade
+
+    #testing for "Add" upgrade
+    #begining
+    baseList = testData.getUpgrade("Click_Base_Count").getCost()
+    index = 0
+    while index < len(baseList):
+        print(baseList[index].getRate())
+        index += 1
+ 
+    baseList = testData.getUpgrade("Click_Base_Count").getCost()
+    index = 0
+    while index < len(baseList):
+        print(baseList[index].getRate())
+        index += 1
+
+    #test
+
+    #end
+
+
+    #setup for "Multiply" upgrade
+
+    #testing for "Multiply" upgrade
+    #begining
+    #testData.getUpgrade("Click_Multiplier").getCost()
+    #test
+
+    #end
+    print("")
+    print("")
+    print("")
+    return
 
 #function to test getCostString
 def testGetCostString():
-    pass
+    print("testGetCostString")
+    pass #change to return
 
 #function to test canAfford
 def testCanAfford():
-    pass
+    print("testCanAfford")
+    pass #change to return
 
 #function to test buyUpgrade
 def testBuyUpgrade():
-    pass
+    print("testBuyUpgrade")
+    pass #change to return
 
 #main method to run the test functions
 def main():
-    testSellOre()
-    #testMineAction()
-    testBuyWorker()
-    #testAssignMiner()
-    #testWork()
-    #testGetCost()
-    #testGetCostString()
-    #testCanAfford()
-    #testBuyUpgrade()
+    #testSellOre() #working!
+    #testMineAction() #writing (JD)
+    #testBuyWorker() #working!
+    #testAssignMiner() #writing (JD)
+    #testWork() #working!
+    testGetCost() #writing (Paul)
+    #testGetCostString() #writing
+    #testCanAfford() #writing
+    #testBuyUpgrade() #writing
+    return
 
 main()
 

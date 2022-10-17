@@ -18,7 +18,6 @@ timer = pygame.time.Clock()
 gameData = classes.Data()
 
 #game variables
-benchmark = 0
 store = 0
 firstRun = False
 
