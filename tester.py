@@ -324,7 +324,7 @@ def testBuyUpgrade():
     print("ore amount to end is: ,", testData.getOre("Copper").getAmount())
     print("click multiplier value to end should be: ", 10)
     print("click multiplier value to end is: ", testData.clickMulti.getValue())
-    pass #change to return
+    return
 
 #main method to run the test functions
 def main():
@@ -334,7 +334,7 @@ def main():
     #testWork() #working!
     #testGetCost() #working!
     #testCanAfford() #working!
-    testBuyUpgrade() #writing (Paul)
+    #testBuyUpgrade() #working!
     return
 
 main()
