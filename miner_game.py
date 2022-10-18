@@ -1,5 +1,6 @@
 # MINE CLICKER GAME
 
+from re import X
 from numpy.random import choice
 import pygame
 import Colors
@@ -30,18 +31,17 @@ def sellOre(ore=classes.OreType, ratio=float):
     ore.setAmount(oreLeft)
     gameData.coin.addOre(oreSold * ore.getValue())
 
+#if there is one, set activeMine to the mine after the current activeMine
 def setNextMine():
     index = gameData.MINE_ORDER.index(gameData.activeMine.getName())+1
     if not index >= len(gameData.MINE_ORDER):
         gameData.activeMine = gameData.getMine(gameData.MINE_ORDER[index])
-        
 
+#if there is one, set activeMine to the mine before the current activeMine.
 def setPreviousMine():
     index = gameData.MINE_ORDER.index(gameData.activeMine.getName())-1
     if not index < 0:
         gameData.activeMine = gameData.getMine(gameData.MINE_ORDER[index])
-        
-        
 
 #draws in the wallet, which contains the ore amount and coin amount
 def drawWallet():
@@ -61,6 +61,7 @@ def drawMine():
     screen.blit(clickValue, (320, 300))
     return mineArea
 
+#
 def mineAction(isMiner=False, mine=gameData.activeMine):
     ore = []
     probability = []
@@ -73,6 +74,7 @@ def mineAction(isMiner=False, mine=gameData.activeMine):
     else: 
         obtainedOre.amount += gameData.clickBaseValue.getValue() * gameData.clickMulti.getValue()
 
+#if the player has enough coins, buy the next worker
 def buyWorker():
     cost = pow(10, gameData.minersTotal.getValue() + 1)
     if gameData.coin.getAmount() >= cost:
@@ -80,10 +82,21 @@ def buyWorker():
         gameData.minersAvailable.value += 1
         gameData.coin.addOre(-cost)
 
-def assignMiner():
-    if gameData.minersAvailable.getValue() > 0:
-        gameData.activeMine.assignMiner()
-        gameData.minersAvailable.value -= 1
+#if the player has enough miners available, assign x miners to the mine given.
+def assignMiners(mine=classes.MineType, x=int):
+    if gameData.minersAvailable.getValue() >= x:
+        mine.assignMiners(x)
+        gameData.minersAvailable.value -= x
+
+# if the player has x or more miners assigned to the mine, remove them from the mine and add x to minersAvailable
+# if the player has less than x miners assigned, will remove all active miners from mine and add that number to minersAvailable
+def unassignMiners(mine=classes.MineType, x=int):
+    if mine.getMinerCount() <= x:
+        mine.unassignMiners(x)
+        gameData.minersAvailable.value += x
+    else:
+        mine.unassignMiners(mine.getMinerCount())
+        gameData.minersAvailable.value += mine.getMinerCount()
 
 #draws in the upgrade circle
 def drawUpgrade(upgrade=classes.Upgrade, x=float, y=float):
@@ -164,7 +177,7 @@ if __name__ == "__main__":
                 if buyWorkers.collidepoint(event.pos):
                     buyWorker()
                 if assignWorkers.collidepoint(event.pos):
-                    assignMiner()
+                    assignMiners(gameData.activeMine, 1)
                 if previousMine.collidepoint(event.pos):
                     setPreviousMine()
                 if nextMine.collidepoint(event.pos):

@@ -65,8 +65,11 @@ class MineType:
     def mine():
         return OreType #recieved for a mine action
 
-    def assignMiner(self):
-        self.minerCount += 1
+    def assignMiners(self, x):
+        self.minerCount += x
+    
+    def unassignMiners(self, x):
+        self.minerCount -= x
 
 class Stat:
     def __init__(self, name, value):
@@ -136,9 +139,9 @@ class Upgrade:
                 rate.getOre().addOre(-rate.getRate())
             self.count += 1
             if self.type == "Add":
-                self.statModified.value += self.count * self.magnitude
+                self.statModified.value += self.magnitude
             elif self.type == "Multiply":
-                self.statModified.value *= self.count * self.magnitude
+                self.statModified.value *= self.magnitude
 
 class Data:
     def __init__(self) -> None:

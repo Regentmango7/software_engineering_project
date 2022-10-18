@@ -1,16 +1,6 @@
 '''tester.py
 
-
-sellOre
-mineAction
-buyWorker
-assignMiner
-work
-getCost?
-getCostString?
-canAfford?
-buyUpgrade
-
+Unit testing for miner_game
 '''
 
 #import the file we are testing
@@ -95,11 +85,6 @@ def testBuyWorker():
     print("")
     print("")
     return
-
-#function to test assignMiner
-def testAssignMiner():
-    print("TESTASSIGNMINER:")
-    pass #change to return
 
 #function to test work
 def testWork():
