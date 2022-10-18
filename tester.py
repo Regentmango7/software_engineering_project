@@ -255,6 +255,75 @@ def testCanAfford():
 #function to test buyUpgrade
 def testBuyUpgrade():
     print("TESTBUYUPGRADE:")
+
+    print("TESTING FOR Click_Base_Count:")
+
+    #setup for no money
+    testData.getOre("Copper").setAmount(0)
+    print("TESTING WITH NO ORE")
+    #beginning
+    print("ore amount to start should be: ,", 0)
+    print("ore amount to start is: ,", testData.getOre("Copper").getAmount())
+    print("click base value to start should be: ", 1)
+    print("click base value to start is: ", testData.clickBaseValue.getValue())
+    #test
+    testData.getUpgrade("Click_Base_Count").buyUpgrade()
+    #end
+    print("ore amount to end should be: ,", 0)
+    print("ore amount to end is: ,", testData.getOre("Copper").getAmount())
+    print("click base value to end should be: ", 1)
+    print("click base value to end is: ", testData.clickBaseValue.getValue())
+
+    #setup for enough money
+    testData.getOre("Copper").setAmount(1001)
+    print("TESTING WITH ENOUGH ORE")
+    #beginning
+    print("ore amount to start should be: ,", 1001)
+    print("ore amount to start is: ,", testData.getOre("Copper").getAmount())
+    print("click base value to start should be: ", 1)
+    print("click base value to start is: ", testData.clickBaseValue.getValue())
+    #test
+    testData.getUpgrade("Click_Base_Count").buyUpgrade()
+    #end
+    print("ore amount to end should be: ,", 999.8)
+    print("ore amount to end is: ,", testData.getOre("Copper").getAmount())
+    print("click base value to end should be: ", 2)
+    print("click base value to end is: ", testData.clickBaseValue.getValue())
+    
+
+    print("TESTING FOR Click_Multiplier:")
+
+    #setup for no money
+    testData.getOre("Copper").setAmount(0)
+    print("TESTING WITH NO ORE")
+    #beginning
+    print("ore amount to start should be: ,", 0)
+    print("ore amount to start is: ,", testData.getOre("Copper").getAmount())
+    print("click multiplier value to start should be: ", 1)
+    print("click multiplier value to start is: ", testData.clickMulti.getValue())
+    #test
+    testData.getUpgrade("Click_Multiplier").buyUpgrade()
+    #end
+    print("ore amount to end should be: ,", 0)
+    print("ore amount to end is: ,", testData.getOre("Copper").getAmount())
+    print("click multiplier value to end should be: ", 1)
+    print("click multiplier value to end is: ", testData.clickMulti.getValue())
+
+    #setup for enough money
+    testData.getOre("Copper").setAmount(1001)
+    print("TESTING WITH ENOUGH ORE")
+    #beginning
+    print("ore amount to start should be: ,", 1001)
+    print("ore amount to start is: ,", testData.getOre("Copper").getAmount())
+    print("click multiplier value to start should be: ", 1)
+    print("click multiplier value to start is: ", testData.clickMulti.getValue())
+    #test
+    testData.getUpgrade("Click_Multiplier").buyUpgrade()
+    #end
+    print("ore amount to end should be: ,", 991)
+    print("ore amount to end is: ,", testData.getOre("Copper").getAmount())
+    print("click multiplier value to end should be: ", 10)
+    print("click multiplier value to end is: ", testData.clickMulti.getValue())
     pass #change to return
 
 #main method to run the test functions
@@ -265,7 +334,7 @@ def main():
     #testWork() #working!
     #testGetCost() #working!
     #testCanAfford() #working!
-    #testBuyUpgrade() #writing
+    testBuyUpgrade() #writing (Paul)
     return
 
 main()
