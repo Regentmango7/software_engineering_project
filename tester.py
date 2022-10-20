@@ -313,13 +313,12 @@ def testBuyUpgrade():
 
 #main method to run the test functions
 def main():
-    #testSellOre() #working!
-    #testBuyWorker() #working!
-    #testAssignMiner() #writing (JD)
-    #testWork() #working!
-    #testGetCost() #working!
-    #testCanAfford() #working!
-    #testBuyUpgrade() #working!
+    testSellOre() #working!
+    testBuyWorker() #working!
+    testWork() #working!
+    testGetCost() #working!
+    testCanAfford() #working!
+    testBuyUpgrade() #working!
     return
 
 main()
