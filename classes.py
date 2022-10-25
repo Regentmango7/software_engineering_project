@@ -8,7 +8,7 @@
 
 
 class OreType:
-    def __init__(self, name=str, image=str, value=float):
+    def __init__(self, name:str, image:str, value:float):
         self.name = name
         self.image = image
         self.amount = 0
@@ -33,7 +33,7 @@ class OreType:
         self.amount += amount
 
 class OreRate:
-    def __init__(self, oreType=OreType, rate=float):
+    def __init__(self, oreType:OreType, rate:float):
         self.ore = oreType
         self.rate = rate
 
@@ -44,7 +44,7 @@ class OreRate:
         return self.rate
 
 class MineType:
-    def __init__(self, name=str, rates=list):
+    def __init__(self, name:str, rates:list):
         self.name = name
         self.minerCount = 0
         self.oreRates = rates
@@ -83,7 +83,7 @@ class Stat:
         return self.value
 
 class Upgrade:
-    def __init__(self, name=str, costOres=list, costMult=float, statModified=Stat, magnitude=float, upType=str):
+    def __init__(self, name:str, costOres:list, costMult:float, statModified:Stat, magnitude:float, upType:str):
         self.name = name
         # List of OreRate objects
         self.costOres = costOres
@@ -179,13 +179,13 @@ class Data:
         "Click_Base_Count": Upgrade("Base Click Value", [OreRate(ores["Copper"], 1)], 1.2, clickBaseValue, 1, "Add")
     }
 
-    def getOre(self, ore=str):
+    def getOre(self, ore:str):
         return self.ores[ore]
 
-    def getMine(self, ore=str):
+    def getMine(self, ore:str):
         return self.mines[ore]
 
-    def getUpgrade(self, upgrade=str):
+    def getUpgrade(self, upgrade:str):
         return self.upgrades[upgrade]
 
     activeMine = mines["Copper"]

@@ -25,7 +25,7 @@ firstRun = False
 
 #sells ratio * ore.amount for coins
 # 1 <= ratio < 0
-def sellOre(ore=classes.OreType, ratio=float):
+def sellOre(ore:classes.OreType, ratio:float):
     oreLeft = ore.getAmount() * (1-ratio)
     oreSold = ore.getAmount() * ratio
     ore.setAmount(oreLeft)
@@ -99,7 +99,7 @@ def unassignMiners(mine=classes.MineType, x=int):
         gameData.minersAvailable.value += mine.getMinerCount()
 
 #draws in the upgrade circle
-def drawUpgrade(upgrade=classes.Upgrade, x=float, y=float):
+def drawUpgrade(upgrade:classes.Upgrade, x=float, y=float):
     upgradeArea = pygame.draw.circle(screen, Colors.black, (x, y), 20, 20) #The click circle to generate ores
     screen.blit(font.render(str(upgrade.getCostString()), True, Colors.white), (x-20, y))
     screen.blit(font.render(upgrade.getName(), True, Colors.white), (x-20, y-20))
