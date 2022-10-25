@@ -1,5 +1,5 @@
 
-
+from numpy.random import choice
 # Defines an oretype object that contains the
 # name of the ore
 # image for the ore type
@@ -145,39 +145,39 @@ class Upgrade:
 
 class Data:
     def __init__(self) -> None:
-        pass
-    
-    coin = OreType("Coin", "", 0)
+        self.coin = OreType("Coin", "", 0)
 
-    clickBaseValue = Stat("Base Click Value", 1)
-    clickMulti = Stat("Click Multiplier", 1)
-    minerValMulti = Stat("Miner Value Multiplier", 1)
-    minerSpeedMulti = Stat("Miner Speed Multiplier", 1)
-    minersAvailable = Stat("Miners Available", 0)
-    minersTotal = Stat("Total Miners", 0)
-    
-    # Initializes a list of OreType objects
-    ores = {
-        "Copper": OreType("Copper", "", 2),
-        "Iron": OreType("Iron", "", 5),
-        "Silver": OreType("Silver", "", 25),
-        "Gold": OreType("Gold", "", 100)
-    }
+        self.clickBaseValue = Stat("Base Click Value", 1)
+        self.clickMulti = Stat("Click Multiplier", 1)
+        self.minerValMulti = Stat("Miner Value Multiplier", 1)
+        self.minerSpeedMulti = Stat("Miner Speed Multiplier", 1)
+        self.minersAvailable = Stat("Miners Available", 0)
+        self.minersTotal = Stat("Total Miners", 0)
+        
+        # Initializes a list of OreType objects
+        self.ores = {
+            "Copper": OreType("Copper", "", 2),
+            "Iron": OreType("Iron", "", 5),
+            "Silver": OreType("Silver", "", 25),
+            "Gold": OreType("Gold", "", 100)
+        }
 
-    # Stores all of the mine values
-    mines = {
-        "Copper": MineType("Copper", [OreRate(ores["Copper"], 1)]),
-        "Iron": MineType("Iron", [OreRate(ores["Copper"], 0.75), OreRate(ores["Iron"], 0.25)]),
-        "Silver": MineType("Silver", [OreRate(ores["Copper"], 0.25), OreRate(ores["Iron"], 0.50), OreRate(ores["Silver"], 0.25)]),
-        "Gold": MineType("Gold", [OreRate(ores["Copper"], 0.10), OreRate(ores["Iron"], 0.20), OreRate(ores["Silver"], 0.40), OreRate(ores["Gold"], 0.30)])
-    }
+        # Stores all of the mine values
+        self.mines = {
+            "Copper": MineType("Copper", [OreRate(self.ores["Copper"], 1)]),
+            "Iron": MineType("Iron", [OreRate(self.ores["Copper"], 0.75), OreRate(self.ores["Iron"], 0.25)]),
+            "Silver": MineType("Silver", [OreRate(self.ores["Copper"], 0.25), OreRate(self.ores["Iron"], 0.50), OreRate(self.ores["Silver"], 0.25)]),
+            "Gold": MineType("Gold", [OreRate(self.ores["Copper"], 0.10), OreRate(self.ores["Iron"], 0.20), OreRate(self.ores["Silver"], 0.40), OreRate(self.ores["Gold"], 0.30)])
+        }
 
-    MINE_ORDER = ["Copper", "Iron", "Silver", "Gold"]
+        self.MINE_ORDER = ["Copper", "Iron", "Silver", "Gold"]
 
-    upgrades = {
-        "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(ores["Copper"], 1)], 10, clickMulti, 10, "Multiply"),
-        "Click_Base_Count": Upgrade("Base Click Value", [OreRate(ores["Copper"], 1)], 1.2, clickBaseValue, 1, "Add")
-    }
+        self.upgrades = {
+            "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1)], 10, self.clickMulti, 10, "Multiply"),
+            "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 1)], 1.2, self.clickBaseValue, 1, "Add")
+        }
+
+        self.activeMine = self.mines["Copper"]
 
     def getOre(self, ore:str):
         return self.ores[ore]
@@ -188,4 +188,60 @@ class Data:
     def getUpgrade(self, upgrade:str):
         return self.upgrades[upgrade]
 
-    activeMine = mines["Copper"]
+    
+
+    #if the player has enough coins, buy the next worker
+    def buyWorker(self):
+        cost = pow(10, self.minersTotal.getValue() + 1)
+        if self.coin.getAmount() >= cost:
+            self.minersTotal.value += 1
+            self.minersAvailable.value += 1
+            self.coin.addOre(-cost)
+
+    #if the player has enough miners available, assign x miners to the mine given.
+    def assignMiners(self, mine:MineType, x:int=1):
+        if self.minersAvailable.getValue() >= x:
+            mine.assignMiners(x)
+            self.minersAvailable.value -= x
+
+    #if there is one, set activeMine to the mine after the current activeMine
+    def setNextMine(self):
+        index = self.MINE_ORDER.index(self.activeMine.getName())+1
+        if not index >= len(self.MINE_ORDER):
+            self.activeMine = self.getMine(self.MINE_ORDER[index])
+
+    #if there is one, set activeMine to the mine before the current activeMine.
+    def setPreviousMine(self):
+        index = self.MINE_ORDER.index(self.activeMine.getName())-1
+        if not index < 0:
+            self.activeMine = self.getMine(self.MINE_ORDER[index])
+
+    #sells ratio * ore.amount for coins
+    # 1 <= ratio < 0
+    def sellOre(self, ore:OreType, ratio:float):
+        oreLeft = ore.getAmount() * (1-ratio)
+        oreSold = ore.getAmount() * ratio
+        ore.setAmount(oreLeft)
+        self.coin.addOre(oreSold * ore.getValue())
+
+    #Commits mine action on mine passed in
+    def mineAction(self, mine:MineType, isMiner=False):
+        ore = []
+        probability = []
+        for rate in mine.getOreRates():
+            ore.append(rate.getOre())
+            probability.append(rate.getRate())
+        obtainedOre = choice(ore, p=probability)
+        if isMiner:
+            obtainedOre.amount += self.minerValMulti.getValue() * self.activeMine.getMinerCount()
+        else: 
+            obtainedOre.amount += self.clickBaseValue.getValue() * self.clickMulti.getValue()
+
+    #makes the workers work
+    def work(self, store, firstRun, mine):
+        if store >= (100):
+            self.mineAction(mine, True)
+            firstRun = False
+            store = 0
+        store += 1
+        return store, firstRun
