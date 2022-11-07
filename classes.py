@@ -48,7 +48,6 @@ class MineType:
         self.name = name
         self.minerCount = 0
         self.oreRates = rates
-        self.workerTimer = 0
     
     def getName(self):
         return self.name
@@ -153,7 +152,8 @@ class Data:
         self.minerSpeedMulti = Stat("Miner Speed Multiplier", 1)
         self.minersAvailable = Stat("Miners Available", 0)
         self.minersTotal = Stat("Total Miners", 0)
-        
+        self.workerTimer = 0
+
         # Initializes a list of OreType objects
         self.ores = {
             "Copper": OreType("Copper", "", 2),
@@ -188,7 +188,11 @@ class Data:
     def getUpgrade(self, upgrade:str):
         return self.upgrades[upgrade]
 
-    
+    def getAllMines(self):
+        mineList = []
+        for ore, mine in self.mines.items():
+            mineList.append(mine)
+        return mineList
 
     #if the player has enough coins, buy the next worker
     def buyWorker(self):
@@ -233,15 +237,16 @@ class Data:
             probability.append(rate.getRate())
         obtainedOre = choice(ore, p=probability)
         if isMiner:
-            obtainedOre.amount += self.minerValMulti.getValue() * self.activeMine.getMinerCount()
+            obtainedOre.amount += self.minerValMulti.getValue() * mine.getMinerCount()
         else: 
             obtainedOre.amount += self.clickBaseValue.getValue() * self.clickMulti.getValue()
 
     #makes the workers work
-    def work(self, store, firstRun, mine):
-        if store >= (100):
-            self.mineAction(mine, True)
-            firstRun = False
-            store = 0
-        store += 1
-        return store, firstRun
+    def work(self):
+        if self.workerTimer >= (100):
+            for key, mine in self.mines.items():
+                if mine.getMinerCount() > 0:
+                    self.mineAction(mine, True)
+            self.workerTimer = 0
+        else:
+            self.workerTimer += 1
