@@ -62,6 +62,12 @@ def drawWallet():
     totDiamond = font.render("Diamond: " + str(round(diamondHold, 2)) + numScaleList[diamondAppend], True, Colors.black)
     screen.blit(totDiamond, (150, 45))
 
+def drawSwapMines():
+    swapArea = pygame.draw.circle(screen, Colors.black, (600, 600), 30, 30)
+    text = font.render("To Smith", True, Colors.white)
+    screen.blit(text, (600, 600))
+    return swapArea
+
 #draws in the mine clicking area, and displays the ores per click
 def drawMine():
     mineArea = pygame.draw.circle(screen, Colors.black, (320, 300), 60, 60) #The click circle to generate ores
@@ -142,7 +148,8 @@ def save():
 
 if __name__ == "__main__":
     # Main body of code
-    singleUseCost = True
+    toChangeScreen = 0
+    tfChangeScreen = False
     running = True
     while running:
         timer.tick(framerate)
@@ -170,6 +177,9 @@ if __name__ == "__main__":
                         gameData.setPreviousMine()
                     if nextMine.collidepoint(event.pos):
                         gameData.setNextMine()
+                    if swapScreen.collidepoint(event.pos):
+                        toChangeScreen = SMITH_SCREEN
+                        tfChangeScreen = True
                     if workSpeed.collidepoint(event.pos):
                         if gameData.getUpgrade("Worker_Speed").getCap() > 0:
                             gameData.getUpgrade("Worker_Speed").buyUpgrade()
@@ -186,6 +196,12 @@ if __name__ == "__main__":
                         gameData.sellOre(gameData.getOre("Copper"), 0.5)
                     if sellAllCopper.collidepoint(event.pos):
                         gameData.sellOre(gameData.getOre("Copper"), 1)
+                    if swapScreen.collidepoint(event.pos):
+                        toChangeScreen = MINE_SCREEN
+                        tfChangeScreen = True
+            if tfChangeScreen:
+                activeScreen = toChangeScreen
+                tfChangeScreen = False
 
         # OUTSIDE EVENT LOOP
         if activeScreen == MINE_SCREEN:
@@ -201,10 +217,12 @@ if __name__ == "__main__":
             clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), 500, 300)
             workSpeed =  drawUpgrade(gameData.getUpgrade("Worker_Speed"), 400, 200)
             workCost =  drawUpgrade(gameData.getUpgrade("Worker_Cost"), 700, 200)
+            swapScreen = drawSwapMines()
         if activeScreen == SMITH_SCREEN:
             screen.fill(background)
             wallet = drawWallet()
             sellTenPercentCopper, sellFiftyPercentCopper, sellAllCopper = drawConversion("Copper", 30, 110)
+            swapScreen = drawSwapMines()
             #buyCopperWorkers, assignCopperWorkers = drawWorkers()
         if activeScreen == CONTRACT_SCREEN:
             pass
