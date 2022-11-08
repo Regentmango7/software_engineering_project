@@ -123,7 +123,6 @@ if __name__ == "__main__":
                 if event.type == pygame.QUIT:
                     save()
                     running = False
-            
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     #gives the player ore based on the ore per click amount multiplied by the multiplier
                     if mineArea.collidepoint(event.pos):
@@ -145,6 +144,10 @@ if __name__ == "__main__":
                         gameData.setPreviousMine()
                     if nextMine.collidepoint(event.pos):
                         gameData.setNextMine()
+                    if workSpeed.collidepoint(event.pos):
+                        if gameData.getUpgrade("Worker_Speed").getCap() > 0:
+                            gameData.getUpgrade("Worker_Speed").buyUpgrade()
+                            gameData.getUpgrade("Worker_Speed").setCap(gameData.getUpgrade("Worker_Speed").getCap() - 1)
 
             #draws a series of objects
             screen.fill(background)
@@ -157,6 +160,7 @@ if __name__ == "__main__":
             previousMine = drawPrevMine()  
             clickBaseUpgrade = drawUpgrade(gameData.getUpgrade("Click_Base_Count"), 500, 100)
             clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), 500, 300)
+            workSpeed =  drawUpgrade(gameData.getUpgrade("Worker_Speed"), 400, 200)
         if smith_screen:
             pass
         if town_screen:

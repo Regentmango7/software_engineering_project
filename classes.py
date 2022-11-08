@@ -82,7 +82,7 @@ class Stat:
         return self.value
 
 class Upgrade:
-    def __init__(self, name:str, costOres:list, costMult:float, statModified:Stat, magnitude:float, upType:str):
+    def __init__(self, name:str, costOres:list, costMult:float, statModified:Stat, magnitude:float, upType:str, cap:int):
         self.name = name
         # List of OreRate objects
         self.costOres = costOres
@@ -91,6 +91,7 @@ class Upgrade:
         self.count = 0
         self.magnitude = magnitude
         self.type = upType
+        self.cap = cap
     
     def getCost(self):
         sellRate = []
@@ -126,6 +127,12 @@ class Upgrade:
     def getType(self):
         return self.type
 
+    def getCap(self):
+        return self.cap
+
+    def setCap(self, x):
+        self.cap = x
+
     def canAfford(self):
         for rate in self.getCost():
             if rate.getRate() > rate.getOre().amount:
@@ -153,6 +160,7 @@ class Data:
         self.minersAvailable = Stat("Miners Available", 0)
         self.minersTotal = Stat("Total Miners", 0)
         self.workerTimer = 0
+        self.workerTimeUpgradable = Stat("Worker Time Upgradable", 100)
 
         # Initializes a list of OreType objects
         self.ores = {
@@ -173,8 +181,9 @@ class Data:
         self.MINE_ORDER = ["Copper", "Iron", "Silver", "Gold"]
 
         self.upgrades = {
-            "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1)], 10, self.clickMulti, 10, "Multiply"),
-            "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 1)], 1.2, self.clickBaseValue, 1, "Add")
+            "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1)], 10, self.clickMulti, 10, "Multiply", -1),
+            "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 1)], 1.2, self.clickBaseValue, 1, "Add", -1),
+            "Worker_Speed": Upgrade("Worker Speed", [OreRate(self.ores["Copper"], 1)], 1.2, self.workerTimeUpgradable, -5, "Add", 19)
         }
 
         self.activeMine = self.mines["Copper"]
@@ -243,7 +252,7 @@ class Data:
 
     #makes the workers work
     def work(self):
-        if self.workerTimer >= (100):
+        if self.workerTimer >= (self.workerTimeUpgradable.getValue()): #Make sure to cap
             for key, mine in self.mines.items():
                 if mine.getMinerCount() > 0:
                     self.mineAction(mine, True)
