@@ -161,6 +161,7 @@ class Data:
         self.minersTotal = Stat("Total Miners", 0)
         self.workerTimer = 0
         self.workerTimeUpgradable = Stat("Worker Time Upgradable", 100)
+        self.workerCostReduce = Stat("Worker Cost Reduce", 1.0)
 
         # Initializes a list of OreType objects
         self.ores = {
@@ -185,7 +186,8 @@ class Data:
         self.upgrades = {
             "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1)], 10, self.clickMulti, 10, "Multiply", -1),
             "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 1)], 1.2, self.clickBaseValue, 1, "Add", -1),
-            "Worker_Speed": Upgrade("Worker Speed", [OreRate(self.ores["Copper"], 1)], 1.2, self.workerTimeUpgradable, -5, "Add", 19)
+            "Worker_Speed": Upgrade("Worker Speed", [OreRate(self.ores["Copper"], 1)], 1.2, self.workerTimeUpgradable, -5, "Add", 19),
+            "Worker_Cost": Upgrade("Worker Cost", [OreRate(self.ores["Copper"], 1)], 1.2, self.workerTimeUpgradable, 0.5, "Multiply", 1)
         }
 
         self.activeMine = self.mines["Copper"]
@@ -208,7 +210,7 @@ class Data:
     #if the player has enough coins, buy the next worker
     def buyWorker(self):
         cost = pow(10, self.minersTotal.getValue() + 1)
-        if self.coin.getAmount() >= cost:
+        if self.coin.getAmount() >= (cost * self.workerCostReduce.getValue()):
             self.minersTotal.value += 1
             self.minersAvailable.value += 1
             self.coin.addOre(-cost)
@@ -254,7 +256,7 @@ class Data:
 
     #makes the workers work
     def work(self):
-        if self.workerTimer >= (self.workerTimeUpgradable.getValue()): #Make sure to cap
+        if self.workerTimer >= (self.workerTimeUpgradable.getValue()):
             for key, mine in self.mines.items():
                 if mine.getMinerCount() > 0:
                     self.mineAction(mine, True)

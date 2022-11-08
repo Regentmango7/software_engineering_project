@@ -142,6 +142,7 @@ def save():
 
 if __name__ == "__main__":
     # Main body of code
+    singleUseCost = True
     running = True
     while running:
         timer.tick(framerate)
