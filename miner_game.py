@@ -184,7 +184,7 @@ if __name__ == "__main__":
                         if gameData.getUpgrade("Worker_Speed").getCap() > 0:
                             gameData.getUpgrade("Worker_Speed").buyUpgrade()
                             gameData.getUpgrade("Worker_Speed").setCap(gameData.getUpgrade("Worker_Speed").getCap() - 1)
-                    if workSpeed.collidepoint(event.pos):
+                    if workCost.collidepoint(event.pos):
                         if gameData.getUpgrade("Worker_Cost").getCap() > 0:
                             gameData.getUpgrade("Worker_Cost").buyUpgrade()
                             gameData.getUpgrade("Worker_Cost").setCap(gameData.getUpgrade("Worker_Cost").getCap() - 1)
@@ -215,8 +215,8 @@ if __name__ == "__main__":
             previousMine = drawPrevMine()
             clickBaseUpgrade = drawUpgrade(gameData.getUpgrade("Click_Base_Count"), 500, 100)
             clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), 500, 300)
-            workSpeed =  drawUpgrade(gameData.getUpgrade("Worker_Speed"), 400, 200)
-            workCost =  drawUpgrade(gameData.getUpgrade("Worker_Cost"), 700, 200)
+            workSpeed = drawUpgrade(gameData.getUpgrade("Worker_Speed"), 400, 200)
+            workCost = drawUpgrade(gameData.getUpgrade("Worker_Cost"), 700, 200)
             swapScreen = drawSwapMines()
         if activeScreen == SMITH_SCREEN:
             screen.fill(background)

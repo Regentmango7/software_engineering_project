@@ -213,7 +213,7 @@ class Data:
         if self.coin.getAmount() >= (cost * self.workerCostReduce.getValue()):
             self.minersTotal.value += 1
             self.minersAvailable.value += 1
-            self.coin.addOre(-cost)
+            self.coin.addOre(-cost * self.workerCostReduce.getValue())
 
     #if the player has enough miners available, assign x miners to the mine given.
     def assignMiners(self, mine:MineType, x:int=1):
