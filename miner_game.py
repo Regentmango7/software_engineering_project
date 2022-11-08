@@ -24,15 +24,29 @@ stat_screen = False
 
 mineList = gameData.getAllMines()
 
+#lisst meant to contain the possible suffixes for number scaling
+numScaleList = ["", "K", "M", "B", "t”, “q", "Q", "s", "S", "o", "n", "d", "U", "D", "T", "Qt", "Qd", "Sd", "St", "O", "N", "v", "c"]
+
+#scales the numbers appropriately for the wallet to look nice
+def numberScaling(input):
+    x = input
+    amount = 0
+    while x >= 1000:
+        x = x / 1000
+        amount += 1
+    return x, amount
 
 #draws in the wallet, which contains the ore amount and coin amount
 def drawWallet():
     wallet = pygame.draw.rect(screen, Colors.baige, (10, 10, 125, 55))
-    totCoin = font.render("Coins: " + str(round(gameData.coin.amount, 2)), True, Colors.black)
+    coinHold, oreAppend = numberScaling(round(gameData.coin.amount, 2))
+    totCoin = font.render("Coins: " + str(round(coinHold, 2)) + numScaleList[oreAppend], True, Colors.black)
     screen.blit(totCoin, (15, 15))    
-    totOre = font.render("Copper: " + str(round(gameData.getOre("Copper").amount, 2)), True, Colors.black)
+    oreHold, oreAppend = numberScaling(round(gameData.getOre("Copper").amount, 2))
+    totOre = font.render("Copper: " + str(round(oreHold, 2)) + numScaleList[oreAppend], True, Colors.black)
     screen.blit(totOre, (15, 30))
-    totIron = font.render("Iron: " + str(round(gameData.getOre("Iron").amount, 2)), True, Colors.black)
+    ironHold, ironAppend = numberScaling(round(gameData.getOre("Iron").amount, 2))
+    totIron = font.render("Iron: " + str(round(ironHold, 2)) + numScaleList[ironAppend], True, Colors.black)
     screen.blit(totIron, (15, 45))
     return wallet
 
