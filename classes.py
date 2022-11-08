@@ -187,7 +187,7 @@ class Data:
             "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1)], 10, self.clickMulti, 10, "Multiply", -1),
             "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 1)], 1.2, self.clickBaseValue, 1, "Add", -1),
             "Worker_Speed": Upgrade("Worker Speed", [OreRate(self.ores["Copper"], 1)], 1.2, self.workerTimeUpgradable, -5, "Add", 19),
-            "Worker_Cost": Upgrade("Worker Cost", [OreRate(self.ores["Copper"], 1)], 1.2, self.workerTimeUpgradable, 0.5, "Multiply", 1)
+            "Worker_Cost": Upgrade("Worker Cost", [OreRate(self.ores["Copper"], 1)], 1.2, self.workerCostReduce, 0.5, "Multiply", 1)
         }
 
         self.activeMine = self.mines["Copper"]
