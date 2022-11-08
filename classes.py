@@ -167,7 +167,8 @@ class Data:
             "Copper": OreType("Copper", "", 2),
             "Iron": OreType("Iron", "", 5),
             "Silver": OreType("Silver", "", 25),
-            "Gold": OreType("Gold", "", 100)
+            "Gold": OreType("Gold", "", 100),
+            "Diamond": OreType("Diamond", "", 500)
         }
 
         # Stores all of the mine values
@@ -175,7 +176,8 @@ class Data:
             "Copper": MineType("Copper", [OreRate(self.ores["Copper"], 1)]),
             "Iron": MineType("Iron", [OreRate(self.ores["Copper"], 0.75), OreRate(self.ores["Iron"], 0.25)]),
             "Silver": MineType("Silver", [OreRate(self.ores["Copper"], 0.25), OreRate(self.ores["Iron"], 0.50), OreRate(self.ores["Silver"], 0.25)]),
-            "Gold": MineType("Gold", [OreRate(self.ores["Copper"], 0.10), OreRate(self.ores["Iron"], 0.20), OreRate(self.ores["Silver"], 0.40), OreRate(self.ores["Gold"], 0.30)])
+            "Gold": MineType("Gold", [OreRate(self.ores["Copper"], 0.10), OreRate(self.ores["Iron"], 0.20), OreRate(self.ores["Silver"], 0.40), OreRate(self.ores["Gold"], 0.30)]),
+            "Diamond": MineType("Diamond", [OreRate(self.ores["Iron"], 0.10), OreRate(self.ores["Silver"], 0.20), OreRate(self.ores["Gold"], 0.35), OreRate(self.ores["Diamond"], 0.35)])
         }
 
         self.MINE_ORDER = ["Copper", "Iron", "Silver", "Gold"]
