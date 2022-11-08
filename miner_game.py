@@ -2,12 +2,19 @@
 import pygame
 import Colors
 import classes
+import json
 pygame.init()
 
-screenWidth = 1280
-screenHeight = 720
+MINE_SCREEN = 0
+SMITH_SCREEN = 1
+CONTRACT_SCREEN = 2
+RETIRE_SCREEN = 3
+STAT_SCREEN = 4
+
+SCREEN_WIDTH = 1280
+SCREEN_HEIGHT = 720
 #create screen, background, framerate, and font
-screen = pygame.display.set_mode([screenWidth, screenHeight])
+screen = pygame.display.set_mode([SCREEN_WIDTH, SCREEN_HEIGHT])
 pygame.display.set_caption("Click Miners")
 background = Colors.gray
 framerate = 60
@@ -17,11 +24,7 @@ timer = pygame.time.Clock()
 gameData = classes.Data()
 
 #flags for which screen we are on
-mine_screen = False
-smith_screen = True
-town_screen = False
-retire_screen = False
-stat_screen = False
+activeScreen = 0
 
 mineList = gameData.getAllMines()
 
@@ -129,6 +132,13 @@ def drawWorkers():
 def save():
     print("Game is closed")
 
+    dataDump = gameData.dump()
+
+    with open("./local_data.json", "w") as saveFile:
+        json.dump(dataDump, saveFile, indent=4)
+
+    print("Game is Saved")
+
 
 if __name__ == "__main__":
     # Main body of code
@@ -140,7 +150,7 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 save()
                 running = False
-            if mine_screen:
+            if activeScreen == MINE_SCREEN:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     #gives the player ore based on the ore per click amount multiplied by the multiplier
                     if mineArea.collidepoint(event.pos):
@@ -163,7 +173,7 @@ if __name__ == "__main__":
                         if gameData.getUpgrade("Worker_Speed").getCap() > 0:
                             gameData.getUpgrade("Worker_Speed").buyUpgrade()
                             gameData.getUpgrade("Worker_Speed").setCap(gameData.getUpgrade("Worker_Speed").getCap() - 1)
-            if smith_screen:
+            if activeScreen == SMITH_SCREEN:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if sellTenPercentCopper.collidepoint(event.pos):
                         gameData.sellOre(gameData.getOre("Copper"), 0.1)
@@ -173,7 +183,7 @@ if __name__ == "__main__":
                         gameData.sellOre(gameData.getOre("Copper"), 1)
 
         # OUTSIDE EVENT LOOP
-        if mine_screen:
+        if activeScreen == MINE_SCREEN:
             #draws a series of objects
             screen.fill(background)
             buyWorkers, assignWorkers = drawWorkers()
@@ -185,16 +195,16 @@ if __name__ == "__main__":
             clickBaseUpgrade = drawUpgrade(gameData.getUpgrade("Click_Base_Count"), 500, 100)
             clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), 500, 300)
             workSpeed =  drawUpgrade(gameData.getUpgrade("Worker_Speed"), 400, 200)
-        if smith_screen:
+        if activeScreen == SMITH_SCREEN:
             screen.fill(background)
             wallet = drawWallet()
             sellTenPercentCopper, sellFiftyPercentCopper, sellAllCopper = drawConversion("Copper", 30, 110)
             #buyCopperWorkers, assignCopperWorkers = drawWorkers()
-        if town_screen:
+        if activeScreen == CONTRACT_SCREEN:
             pass
-        if stat_screen:
+        if activeScreen == STAT_SCREEN:
             pass
-        if retire_screen:
+        if activeScreen == RETIRE_SCREEN:
             pass
 
 
