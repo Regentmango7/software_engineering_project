@@ -4,6 +4,7 @@ import Colors
 import classes
 import json
 import os
+from classes import numberScaling
 pygame.init()
 
 MINE_SCREEN = 0
@@ -29,17 +30,7 @@ activeScreen = 0
 
 mineList = gameData.getAllMines()
 
-#lisst meant to contain the possible suffixes for number scaling
-numScaleList = ["", "K", "M", "B", "t”, “q", "Q", "s", "S", "o", "n", "d", "U", "D", "T", "Qt", "Qd", "Sd", "St", "O", "N", "v", "c"]
 
-#scales the numbers appropriately for the wallet to look nice
-def numberScaling(input):
-    x = input
-    amount = 0
-    while x >= 1000:
-        x = x / 1000
-        amount += 1
-    return str(round(x, 2)) + numScaleList[amount]
 
 #draws in the wallet, which contains the ore amount and coin amount
 def drawWallet():
@@ -73,7 +64,7 @@ def drawMine():
 #draws in the upgrade circle
 def drawUpgrade(upgrade:classes.Upgrade, x:float, y:float):
     upgradeArea = pygame.draw.rect(screen, Colors.black, (x - 30, y - 28, 200, 50)) #The click circle to generate ores
-    screen.blit(font.render("Cost: " + str(numberScaling(upgrade.getRawCost())) + upgrade.getUpgradeOre(), True, Colors.white), (x-20, y))
+    screen.blit(font.render("Cost: " + upgrade.getCostString(), True, Colors.white), (x-20, y))
     screen.blit(font.render(upgrade.getName(), True, Colors.white), (x-20, y-20))
     return upgradeArea
 
@@ -125,8 +116,8 @@ def drawConversion(oreName:str, x:int, y:int, color):
 
 def drawMinersHeader():
     drawLabel("Miners", SCREEN_WIDTH/2 - 65, 100)
-    pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 100, 150, 25, 100))
-    screen.blit((font.render("Total Miners: " + numberScaling(gameData.getStat("Total Miners").getValue()), True, Colors.black)), (SCREEN_WIDTH/2 - 95, 155))
+    pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 250, 200, 100, 25))
+    screen.blit((font.render("Total Miners: " + numberScaling(gameData.getStat("Total Miners").getValue()), True, Colors.white)), (SCREEN_WIDTH/2 - 245, 205))
 
 def drawUpgradesHeader():
     drawLabel("Upgrades", (SCREEN_WIDTH * 3) / 4, 100)
@@ -225,13 +216,9 @@ if __name__ == "__main__":
                     if clickMultUpgrade.collidepoint(event.pos):
                         gameData.getUpgrade("Click_Multiplier").buyUpgrade()
                     if workSpeed.collidepoint(event.pos):
-                        if gameData.getUpgrade("Miner_Speed").getCap() > 0:
                             gameData.getUpgrade("Miner_Speed").buyUpgrade()
-                            gameData.getUpgrade("Miner_Speed").setCap(gameData.getUpgrade("Miner_Speed").getCap() - 1)
                     if workCost.collidepoint(event.pos):
-                        if gameData.getUpgrade("Miner_Cost").getCap() > 0:
                             gameData.getUpgrade("Miner_Cost").buyUpgrade()
-                            gameData.getUpgrade("Miner_Cost").setCap(gameData.getUpgrade("Miner_Cost").getCap() - 1)
                     if swapScreenToMine.collidepoint(event.pos):
                         toChangeScreen = MINE_SCREEN
                         tfChangeScreen = True

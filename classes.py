@@ -1,4 +1,3 @@
-
 from numpy.random import choice
 # Defines an oretype object that contains the
 # name of the ore
@@ -6,6 +5,18 @@ from numpy.random import choice
 # amount of ore we have
 # coin value for 1 ore of this type
 
+
+#lisst meant to contain the possible suffixes for number scaling
+numScaleList = ["", "K", "M", "B", "t”, “q", "Q", "s", "S", "o", "n", "d", "U", "D", "T", "Qt", "Qd", "Sd", "St", "O", "N", "v", "c"]
+
+#scales the numbers appropriately for the wallet to look nice
+def numberScaling(input):
+    x = input
+    amount = 0
+    while x >= 1000:
+        x = x / 1000
+        amount += 1
+    return str(round(x, 2)) + numScaleList[amount]
 
 class OreType:
     def __init__(self, name:str, image:str, value:float):
@@ -65,7 +76,7 @@ class MineType:
     
     def unassignMiners(self, x):
         self.minerCount -= x
-    
+
     def getUnlockCost(self):
         return self.unlockCost
 
@@ -113,21 +124,11 @@ class Upgrade:
         return sellRate
 
     def getCostString(self):
+        if self.cap > 0 and self.count >= self.cap:
+            return "Upgrade Maxed"
         costString = "Cost: "
         for rate in self.getCost():   
-            costString += str(rate.getRate()) + " " + rate.getOre().getName()
-        return costString
-
-    def getRawCost(self):
-        rawCost = 0
-        for rate in self.getCost():   
-            rawCost += rate.getRate()
-        return rawCost
-
-    def getUpgradeOre(self):
-        costString = ""
-        for rate in self.getCost():   
-            costString += " " + rate.getOre().getName()
+            costString += numberScaling(rate.getRate()) + " " + rate.getOre().getName()
         return costString
 
     def getName(self):
@@ -161,7 +162,7 @@ class Upgrade:
         return True
 
     def buyUpgrade(self):
-        if self.canAfford():
+        if self.canAfford() and self.cap < 0 or self.count < self.cap:
             for rate in self.getCost():
                 rate.getOre().addOre(-rate.getRate())
             self.count += 1
