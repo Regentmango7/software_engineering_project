@@ -39,8 +39,6 @@ def numberScaling(input):
     while x >= 1000:
         x = x / 1000
         amount += 1
-
-    
     return str(round(x, 2)) + numScaleList[amount]
 
 #draws in the wallet, which contains the ore amount and coin amount
@@ -74,8 +72,8 @@ def drawMine():
 
 #draws in the upgrade circle
 def drawUpgrade(upgrade:classes.Upgrade, x:float, y:float):
-    upgradeArea = pygame.draw.circle(screen, Colors.black, (x, y), 20, 20) #The click circle to generate ores
-    screen.blit(font.render(upgrade.getCostString(), True, Colors.white), (x-20, y))
+    upgradeArea = pygame.draw.rect(screen, Colors.black, (x - 30, y - 28, 200, 50)) #The click circle to generate ores
+    screen.blit(font.render("Cost: " + str(numberScaling(upgrade.getRawCost())) + upgrade.getUpgradeOre(), True, Colors.white), (x-20, y))
     screen.blit(font.render(upgrade.getName(), True, Colors.white), (x-20, y-20))
     return upgradeArea
 
@@ -129,6 +127,11 @@ def drawMinersHeader():
     drawLabel("Miners", SCREEN_WIDTH/2 - 65, 100)
     pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 100, 150, 25, 100))
     screen.blit((font.render("Total Miners: " + numberScaling(gameData.getStat("Total Miners").getValue()), True, Colors.black)), (SCREEN_WIDTH/2 - 95, 155))
+
+def drawUpgradesHeader():
+    drawLabel("Upgrades", (SCREEN_WIDTH * 3) / 4, 100)
+    #pygame.draw.rect(screen, Colors.black, ((SCREEN_WIDTH * 3) / 4 - 165, 150, 25, 100))
+    #screen.blit((font.render("Total Miners: " + numberScaling(gameData.getStat("Total Miners").getValue()), True, Colors.black)), (SCREEN_WIDTH/2 - 95, 155))
 
 
 #draws in the circles to buy miners and assign miners, displays miner counts.
@@ -186,11 +189,7 @@ if __name__ == "__main__":
                         gameData.getStat("Total Clicks").setValue(gameData.getStat("Total Clicks").getValue() + 1)
                         gameData.mineAction(gameData.activeMine)
                     #increases the base ore per click
-                    if clickBaseUpgrade.collidepoint(event.pos):
-                        gameData.getUpgrade("Click_Base_Count").buyUpgrade()
-                    #decreases coin amount by 10, and increases the multiplier by one (buys an incerase in a multipier for 10 coins)
-                    if clickMultUpgrade.collidepoint(event.pos):
-                        gameData.getUpgrade("Click_Multiplier").buyUpgrade()
+                    
                     if gameData.getPreviousMine() and previousMine.collidepoint(event.pos):
                         tfChangeMine = True
                         mineChange = "PREV"
@@ -200,14 +199,7 @@ if __name__ == "__main__":
                     if swapScreenToSmith.collidepoint(event.pos):
                         toChangeScreen = SMITH_SCREEN
                         tfChangeScreen = True
-                    if workSpeed.collidepoint(event.pos):
-                        if gameData.getUpgrade("Miner_Speed").getCap() > 0:
-                            gameData.getUpgrade("Miner_Speed").buyUpgrade()
-                            gameData.getUpgrade("Miner_Speed").setCap(gameData.getUpgrade("Miner_Speed").getCap() - 1)
-                    if workCost.collidepoint(event.pos):
-                        if gameData.getUpgrade("Miner_Cost").getCap() > 0:
-                            gameData.getUpgrade("Miner_Cost").buyUpgrade()
-                            gameData.getUpgrade("Miner_Cost").setCap(gameData.getUpgrade("Miner_Cost").getCap() - 1)
+                    
                     if swapScreenToStats.collidepoint(event.pos):
                         toChangeScreen = STAT_SCREEN
                         tfChangeScreen = True
@@ -227,7 +219,19 @@ if __name__ == "__main__":
                     #     gameData.buyMiner()
                     # if assignMiners.collidepoint(event.pos):
                     #     gameData.assignMiners(gameData.activeMine, 1)
-
+                    if clickBaseUpgrade.collidepoint(event.pos):
+                        gameData.getUpgrade("Click_Base_Count").buyUpgrade()
+                    #decreases coin amount by 10, and increases the multiplier by one (buys an incerase in a multipier for 10 coins)
+                    if clickMultUpgrade.collidepoint(event.pos):
+                        gameData.getUpgrade("Click_Multiplier").buyUpgrade()
+                    if workSpeed.collidepoint(event.pos):
+                        if gameData.getUpgrade("Miner_Speed").getCap() > 0:
+                            gameData.getUpgrade("Miner_Speed").buyUpgrade()
+                            gameData.getUpgrade("Miner_Speed").setCap(gameData.getUpgrade("Miner_Speed").getCap() - 1)
+                    if workCost.collidepoint(event.pos):
+                        if gameData.getUpgrade("Miner_Cost").getCap() > 0:
+                            gameData.getUpgrade("Miner_Cost").buyUpgrade()
+                            gameData.getUpgrade("Miner_Cost").setCap(gameData.getUpgrade("Miner_Cost").getCap() - 1)
                     if swapScreenToMine.collidepoint(event.pos):
                         toChangeScreen = MINE_SCREEN
                         tfChangeScreen = True
@@ -255,10 +259,6 @@ if __name__ == "__main__":
             mineArea = drawMine()
             nextMine = drawNextMine()
             previousMine = drawPrevMine()
-            clickBaseUpgrade = drawUpgrade(gameData.getUpgrade("Click_Base_Count"), 500, 100)
-            clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), 500, 300)
-            workSpeed = drawUpgrade(gameData.getUpgrade("Miner_Speed"), 400, 200)
-            workCost = drawUpgrade(gameData.getUpgrade("Miner_Cost"), 700, 200)
             swapScreenToSmith = drawButton("To Smithing", 600, 600)
             swapScreenToStats = drawButton("To Stats", 700, 600)
         if activeScreen == SMITH_SCREEN:
@@ -267,6 +267,10 @@ if __name__ == "__main__":
             #SELLERS
             drawLabel("Sell Ores", 95, 100)
             drawMinersHeader()
+            clickBaseUpgrade = drawUpgrade(gameData.getUpgrade("Click_Base_Count"), (SCREEN_WIDTH * 3) / 4, 250)
+            clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), (SCREEN_WIDTH * 3) / 4, 350)
+            workSpeed = drawUpgrade(gameData.getUpgrade("Miner_Speed"), (SCREEN_WIDTH * 3) / 4, 450)
+            workCost = drawUpgrade(gameData.getUpgrade("Miner_Cost"), (SCREEN_WIDTH * 3) / 4, 550)
             sellTenPercentCopper, sellFiftyPercentCopper, sellAllCopper = drawConversion("Copper", 25, 200, Colors.copper)
             sellTenPercentIron, sellFiftyPercentIron, sellAllIron = drawConversion("Iron", 25, 250, Colors.iron)
             sellTenPercentSilver, sellFiftyPercentSilver, sellAllSilver = drawConversion("Silver", 25, 300, Colors.silver)
@@ -274,6 +278,7 @@ if __name__ == "__main__":
             sellTenPercentDiamond, sellFiftyPercentDiamond, sellAllDiamond = drawConversion("Diamond", 25, 400, Colors.diamond)
             swapScreenToMine = drawButton("To Mine", 600, 600)
             #buyCopperMiners, assignCopperMiners = drawMiners()
+            drawUpgradesHeader()
         if activeScreen == CONTRACT_SCREEN:
             pass
         if activeScreen == STAT_SCREEN:

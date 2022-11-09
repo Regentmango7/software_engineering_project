@@ -118,6 +118,18 @@ class Upgrade:
             costString += str(rate.getRate()) + " " + rate.getOre().getName()
         return costString
 
+    def getRawCost(self):
+        rawCost = 0
+        for rate in self.getCost():   
+            rawCost += rate.getRate()
+        return rawCost
+
+    def getUpgradeOre(self):
+        costString = ""
+        for rate in self.getCost():   
+            costString += " " + rate.getOre().getName()
+        return costString
+
     def getName(self):
         return self.name
 
