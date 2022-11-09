@@ -63,7 +63,7 @@ def drawMine():
 
 #draws in the upgrade circle
 def drawUpgrade(upgrade:classes.Upgrade, x:float, y:float):
-    upgradeArea = pygame.draw.rect(screen, Colors.black, (x - 30, y - 28, 200, 50)) 
+    upgradeArea = pygame.draw.rect(screen, Colors.black, (x - 55, y - 28, 250, 50)) 
     screen.blit(font.render("Cost: " + upgrade.getCostString(), True, Colors.white), (x-20, y))
     screen.blit(font.render(upgrade.getName(), True, Colors.white), (x-20, y-20))
     return upgradeArea
