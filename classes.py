@@ -44,11 +44,12 @@ class OreRate:
         return self.rate
 
 class MineType:
-    def __init__(self, name:str, rates:list, unlocked:bool):
+    def __init__(self, name:str, rates:list, unlocked:bool, unlockCost:int=0):
         self.name = name
         self.minerCount = 0
         self.oreRates = rates
         self.unlocked = unlocked
+        self.unlockCost = unlockCost
     
     def getName(self):
         return self.name
@@ -58,9 +59,6 @@ class MineType:
     
     def getOreRates(self):
         return self.oreRates
-    
-    def getWorkerTimer(self):
-        return self.workerTimer
 
     def assignMiners(self, x):
         self.minerCount += x
@@ -68,8 +66,14 @@ class MineType:
     def unassignMiners(self, x):
         self.minerCount -= x
     
+    def getUnlockCost(self):
+        return self.unlockCost
+
     def isUnlocked(self):
         return self.unlocked
+
+    def unlock(self):
+        self.unlocked = True
 
 class Stat:
     def __init__(self, name, value, toReset):
@@ -157,7 +161,7 @@ class Upgrade:
 class StatHolder:
     def __init__(self):
         self.gameStats = [
-            Stat("Base Click Value", 1, True), #Note: true is for reset on rest, and false is dont reset on reset
+            Stat("Base Click Value", 1, True), #Note: true is for reset on retire, and false is dont reset on retire
             Stat("Click Multiplier", 1, True), 
             Stat("Miner Value Multiplier", 1, True), 
             Stat("Miners Available", 0, True), 
@@ -323,8 +327,25 @@ class Data:
         else:
             self.workerTimer += 1
 
-    def dataLoad(self, data):
-        pass
+    def unlockMine(self, mine:MineType):
+        if self.coin.getAmount() >= mine.getUnlockCost():
+            self.coin.addOre(-mine.getUnlockCost())
+            mine.unlock()
+
+    def dataLoad(self, data:dict):
+        for mineName, count in data["Miners Assigned"].items():
+            self.getMine(mineName).assignMiners(count)
+        for mineName, unlock in data["Mines Unlocked"].items():
+            if unlock:
+                self.getMine(mineName).unlock()
+        for oreName, amount in data["Ores"].items():
+            self.getOre(oreName).addOre(amount)
+        for name, count in data["Upgrades"].items():
+            self.getUpgrade(name).count = count
+        self.activeMine = self.getMine(data["Active Mine"])
+        for statName, value in data["Stats"].items():
+            self.getStat(statName).setValue(value)
+        
 
     def dataDump(self):
         data = {}

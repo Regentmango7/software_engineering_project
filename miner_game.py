@@ -3,6 +3,7 @@ import pygame
 import Colors
 import classes
 import json
+import os
 pygame.init()
 
 MINE_SCREEN = 0
@@ -62,10 +63,10 @@ def drawWallet():
     totDiamond = font.render("Diamond: " + str(round(diamondHold, 2)) + numScaleList[diamondAppend], True, Colors.black)
     screen.blit(totDiamond, (150, 45))
 
-def drawSwapMines():
-    swapArea = pygame.draw.circle(screen, Colors.black, (600, 600), 30, 30)
-    text = font.render("To Smith", True, Colors.white)
-    screen.blit(text, (600, 600))
+def drawButton(string:str, x:int, y:int):
+    swapArea = pygame.draw.circle(screen, Colors.black, (x, y), 30, 30)
+    text = font.render(string, True, Colors.white)
+    screen.blit(text, (x, y))
     return swapArea
 
 #draws in the mine clicking area, and displays the ores per click
@@ -145,7 +146,9 @@ def save():
 
     print("Game is Saved")
 
-
+if os.path.exists("./local_data.json"):
+    with open("./local_data.json", "r") as file:
+        gameData.dataLoad(json.load(file))
 if __name__ == "__main__":
     # Main body of code
     toChangeScreen = 0
@@ -179,7 +182,7 @@ if __name__ == "__main__":
                         gameData.setPreviousMine()
                     if nextMine.collidepoint(event.pos):
                         gameData.setNextMine()
-                    if swapScreen.collidepoint(event.pos):
+                    if swapScreenToSmith.collidepoint(event.pos):
                         toChangeScreen = SMITH_SCREEN
                         tfChangeScreen = True
                     if workSpeed.collidepoint(event.pos):
@@ -190,6 +193,9 @@ if __name__ == "__main__":
                         if gameData.getUpgrade("Worker_Cost").getCap() > 0:
                             gameData.getUpgrade("Worker_Cost").buyUpgrade()
                             gameData.getUpgrade("Worker_Cost").setCap(gameData.getUpgrade("Worker_Cost").getCap() - 1)
+                    if swapScreenToStats.collidepoint(event.pos):
+                        toChangeScreen = STAT_SCREEN
+                        tfChangeScreen = True
             if activeScreen == SMITH_SCREEN:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if sellTenPercentCopper.collidepoint(event.pos):
@@ -210,7 +216,12 @@ if __name__ == "__main__":
                         gameData.getStat("Total Coin Earned").setValue(gameData.getStat("Total Coin Earned").getValue() + oreSold * gameData.getOre("Copper").getValue())
 
                         gameData.sellOre(gameData.getOre("Copper"), 1)
-                    if swapScreen.collidepoint(event.pos):
+                    if swapScreenToMine.collidepoint(event.pos):
+                        toChangeScreen = MINE_SCREEN
+                        tfChangeScreen = True
+            if activeScreen == STAT_SCREEN:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if swapScreenToMine.collidepoint(event.pos):
                         toChangeScreen = MINE_SCREEN
                         tfChangeScreen = True
             if tfChangeScreen:
@@ -231,16 +242,18 @@ if __name__ == "__main__":
             clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), 500, 300)
             workSpeed = drawUpgrade(gameData.getUpgrade("Worker_Speed"), 400, 200)
             workCost = drawUpgrade(gameData.getUpgrade("Worker_Cost"), 700, 200)
-            swapScreen = drawSwapMines()
+            swapScreenToSmith = drawButton("To Smithing", 600, 600)
+            swapScreenToStats = drawButton("To Stats", 700, 600)
         if activeScreen == SMITH_SCREEN:
             screen.fill(background)
             wallet = drawWallet()
             sellTenPercentCopper, sellFiftyPercentCopper, sellAllCopper = drawConversion("Copper", 30, 110)
-            swapScreen = drawSwapMines()
+            swapScreenToMine = drawButton("To Mine", 600, 600)
             #buyCopperWorkers, assignCopperWorkers = drawWorkers()
         if activeScreen == CONTRACT_SCREEN:
             pass
         if activeScreen == STAT_SCREEN:
+            screen.fill(background)
             screen.blit(font.render(str(gameData.getStat("Total Clicks").getValue()), True, Colors.white), (700, 100)) #TO move
             screen.blit(font.render(str(gameData.getStat("Total Coin Earned").getValue()), True, Colors.white), (700, 200)) #TO move
             screen.blit(font.render(str(round(gameData.getStat("Time Played").getValue(), 2)), True, Colors.white), (700, 300)) #TO move
@@ -249,6 +262,7 @@ if __name__ == "__main__":
             screen.blit(font.render(str(round(gameData.getStat("Total Silver Earned").getValue(), 2)), True, Colors.white), (900, 200)) #TO move
             screen.blit(font.render(str(round(gameData.getStat("Total Gold Earned").getValue(), 2)), True, Colors.white), (900, 300)) #TO move
             screen.blit(font.render(str(round(gameData.getStat("Total Diamond Earned").getValue(), 2)), True, Colors.white), (900, 400)) #TO move
+            swapScreenToMine = drawButton("To Mine", 700, 600)
         if activeScreen == RETIRE_SCREEN:
             pass
 
