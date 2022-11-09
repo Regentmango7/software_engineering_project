@@ -7,7 +7,7 @@ from numpy.random import choice
 
 
 #lisst meant to contain the possible suffixes for number scaling
-numScaleList = ["", "K", "M", "B", "t”, “q", "Q", "s", "S", "o", "n", "d", "U", "D", "T", "Qt", "Qd", "Sd", "St", "O", "N", "v", "c"]
+numScaleList = ["", "K", "M", "B", "t", "q", "Q", "s", "S", "o", "n", "d", "U", "D", "T", "Qt", "Qd", "Sd", "St", "O", "N", "v", "c"]
 
 #scales the numbers appropriately for the wallet to look nice
 def numberScaling(input):
