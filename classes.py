@@ -44,10 +44,11 @@ class OreRate:
         return self.rate
 
 class MineType:
-    def __init__(self, name:str, rates:list):
+    def __init__(self, name:str, rates:list, unlocked:bool):
         self.name = name
         self.minerCount = 0
         self.oreRates = rates
+        self.unlocked = unlocked
     
     def getName(self):
         return self.name
@@ -61,14 +62,14 @@ class MineType:
     def getWorkerTimer(self):
         return self.workerTimer
 
-    def mine():
-        return OreType #recieved for a mine action
-
     def assignMiners(self, x):
         self.minerCount += x
     
     def unassignMiners(self, x):
         self.minerCount -= x
+    
+    def isUnlocked(self):
+        return self.unlocked
 
 class Stat:
     def __init__(self, name, value):
@@ -149,19 +150,41 @@ class Upgrade:
             elif self.type == "Multiply":
                 self.statModified.value *= self.magnitude
 
+class StatHolder:
+    def __init__(self):
+        self.gameStats = [
+            Stat("Base Click Value", 1), 
+            Stat("Click Multiplier", 1), 
+            Stat("Miner Value Multiplier", 1), 
+            Stat("Miners Available", 0), 
+            Stat("Total Miners", 0), 
+            Stat("Worker Speed", 100),
+            Stat("Worker Time Upgradable", 100),
+            Stat("Worker Cost Reduce", 1.0)
+        ]
+    
+    def adjustStat(self, statName:str, amount:float):
+        pass
+    
+    def dumpStats(self):
+        statDump = {}
+        for stat in self.gameStats:
+            statDump[stat.getName()] = stat.getValue()
+        return statDump
+
+    def getStat(self, statName:str):
+        for stat in self.gameStats:
+            if statName == stat.getName():
+                return stat
+        return None
+
 class Data:
     def __init__(self) -> None:
         self.coin = OreType("Coin", "", 0)
 
-        self.clickBaseValue = Stat("Base Click Value", 1)
-        self.clickMulti = Stat("Click Multiplier", 1)
-        self.minerValMulti = Stat("Miner Value Multiplier", 1)
-        self.minerSpeedMulti = Stat("Miner Speed Multiplier", 1)
-        self.minersAvailable = Stat("Miners Available", 0)
-        self.minersTotal = Stat("Total Miners", 0)
+        self.stats = StatHolder()
+
         self.workerTimer = 0
-        self.workerTimeUpgradable = Stat("Worker Time Upgradable", 100)
-        self.workerCostReduce = Stat("Worker Cost Reduce", 1.0)
 
         # Initializes a list of OreType objects
         self.ores = {
@@ -174,26 +197,29 @@ class Data:
 
         # Stores all of the mine values
         self.mines = {
-            "Copper": MineType("Copper", [OreRate(self.ores["Copper"], 1)]),
-            "Iron": MineType("Iron", [OreRate(self.ores["Copper"], 0.75), OreRate(self.ores["Iron"], 0.25)]),
-            "Silver": MineType("Silver", [OreRate(self.ores["Copper"], 0.25), OreRate(self.ores["Iron"], 0.50), OreRate(self.ores["Silver"], 0.25)]),
-            "Gold": MineType("Gold", [OreRate(self.ores["Copper"], 0.10), OreRate(self.ores["Iron"], 0.20), OreRate(self.ores["Silver"], 0.40), OreRate(self.ores["Gold"], 0.30)]),
-            "Diamond": MineType("Diamond", [OreRate(self.ores["Iron"], 0.10), OreRate(self.ores["Silver"], 0.20), OreRate(self.ores["Gold"], 0.35), OreRate(self.ores["Diamond"], 0.35)])
+            "Copper": MineType("Copper", [OreRate(self.ores["Copper"], 1)], True),
+            "Iron": MineType("Iron", [OreRate(self.ores["Copper"], 0.75), OreRate(self.ores["Iron"], 0.25)], False),
+            "Silver": MineType("Silver", [OreRate(self.ores["Copper"], 0.25), OreRate(self.ores["Iron"], 0.50), OreRate(self.ores["Silver"], 0.25)], False),
+            "Gold": MineType("Gold", [OreRate(self.ores["Copper"], 0.10), OreRate(self.ores["Iron"], 0.20), OreRate(self.ores["Silver"], 0.40), OreRate(self.ores["Gold"], 0.30)], False),
+            "Diamond": MineType("Diamond", [OreRate(self.ores["Iron"], 0.10), OreRate(self.ores["Silver"], 0.20), OreRate(self.ores["Gold"], 0.35), OreRate(self.ores["Diamond"], 0.35)], False)
         }
 
-        self.MINE_ORDER = ["Copper", "Iron", "Silver", "Gold"]
+        self.MINE_ORDER = ["Copper", "Iron", "Silver", "Gold", "Diamond"]
 
         self.upgrades = {
-            "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1)], 10, self.clickMulti, 10, "Multiply", -1),
-            "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 1)], 1.2, self.clickBaseValue, 1, "Add", -1),
-            "Worker_Speed": Upgrade("Worker Speed", [OreRate(self.ores["Copper"], 1)], 1.2, self.workerTimeUpgradable, -5, "Add", 19),
-            "Worker_Cost": Upgrade("Worker Cost", [OreRate(self.ores["Copper"], 1)], 1.2, self.workerCostReduce, 0.5, "Multiply", 1)
+            "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1)], 10, self.getStat("Click Multiplier"), 10, "Multiply", -1),
+            "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 1)], 1.2, self.getStat("Base Click Value"), 1, "Add", -1),
+            "Worker_Speed": Upgrade("Worker Speed", [OreRate(self.ores["Copper"], 1)], 1.2, self.getStat("Worker Speed"), -5, "Add", 19),
+            "Worker_Cost": Upgrade("Worker Cost", [OreRate(self.ores["Copper"], 1)], 1.2, self.getStat("Worker Cost Reduce"), 0.5, "Multiply", 1)
         }
 
         self.activeMine = self.mines["Copper"]
 
     def getOre(self, ore:str):
         return self.ores[ore]
+
+    def getStat(self, statName:str):
+        return self.stats.getStat(statName)
 
     def getMine(self, ore:str):
         return self.mines[ore]
@@ -209,17 +235,17 @@ class Data:
 
     #if the player has enough coins, buy the next worker
     def buyWorker(self):
-        cost = pow(10, self.minersTotal.getValue() + 1)
-        if self.coin.getAmount() >= (cost * self.workerCostReduce.getValue()):
-            self.minersTotal.value += 1
-            self.minersAvailable.value += 1
-            self.coin.addOre(-cost * self.workerCostReduce.getValue())
+        cost = pow(10, self.getStat("Total Miners").getValue() + 1)
+        if self.coin.getAmount() >= (cost * self.getStat("Worker Cost Reduce").getValue()):
+            self.getStat("Total Miners").value += 1
+            self.getStat("Miners Available").value += 1
+            self.coin.addOre(-cost * self.getStat("Worker Cost Reduce").getValue())
 
     #if the player has enough miners available, assign x miners to the mine given.
     def assignMiners(self, mine:MineType, x:int=1):
-        if self.minersAvailable.getValue() >= x:
+        if self.getStat("Miners Available").getValue() >= x:
             mine.assignMiners(x)
-            self.minersAvailable.value -= x
+            self.getStat("Miners Available").value -= x
 
     #if there is one, set activeMine to the mine after the current activeMine
     def setNextMine(self):
@@ -250,16 +276,37 @@ class Data:
             probability.append(rate.getRate())
         obtainedOre = choice(ore, p=probability)
         if isMiner:
-            obtainedOre.amount += self.minerValMulti.getValue() * mine.getMinerCount()
+            obtainedOre.amount += self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()
         else: 
-            obtainedOre.amount += self.clickBaseValue.getValue() * self.clickMulti.getValue()
+            obtainedOre.amount += self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()
 
     #makes the workers work
     def work(self):
-        if self.workerTimer >= (self.workerTimeUpgradable.getValue()):
+        if self.workerTimer >= (self.getStat("Worker Speed").getValue()): #Make sure to cap
             for key, mine in self.mines.items():
                 if mine.getMinerCount() > 0:
                     self.mineAction(mine, True)
             self.workerTimer = 0
         else:
             self.workerTimer += 1
+
+    def dataLoad(self, data):
+        pass
+
+    def dataDump(self):
+        data = {}
+
+        data["Miners Assigned"] = {}
+        data["Mines Unlocked"] = {}
+        for name, mine in self.mines.items():
+            data["Mines Unlocked"][name] = mine.isUnlocked()
+            data["Miners Assigned"][name] = mine.getMinerCount()
+        data["Ores"] = {}
+        for key, ore in self.ores.items():
+            data["Ores"][key] = ore.getAmount()
+        data["Upgrades"] = {}
+        for name, upgrade in self.upgrades.items():
+            data["Upgrades"][name] = upgrade.getCount()
+        data["Active Mine"] = self.activeMine.getName()
+        data["Stats"] = self.stats.dumpStats()
+        return data

@@ -1,0 +1,40 @@
+{
+    "Miners Assigned": {
+        "Copper": 1,
+        "Iron": 0,
+        "Silver": 0,
+        "Gold": 0,
+        "Diamond": 0
+    },
+    "Mines Unlocked": {
+        "Copper": true,
+        "Iron": false,
+        "Silver": false,
+        "Gold": false,
+        "Diamond": false
+    },
+    "Ores": {
+        "Copper": 4,
+        "Iron": 0,
+        "Silver": 0,
+        "Gold": 0,
+        "Diamond": 0
+    },
+    "Upgrades": {
+        "Click_Multiplier": 0,
+        "Click_Base_Count": 0,
+        "Worker_Speed": 0,
+        "Worker_Cost": 0
+    },
+    "Active Mine": "Copper",
+    "Stats": {
+        "Base Click Value": 1,
+        "Click Multiplier": 1,
+        "Miner Value Multiplier": 1,
+        "Miners Available": 0,
+        "Total Miners": 1,
+        "Worker Speed": 100,
+        "Worker Time Upgradable": 100,
+        "Worker Cost Reduce": 1.0
+    }
+}

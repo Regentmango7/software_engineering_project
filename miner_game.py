@@ -71,7 +71,7 @@ def drawSwapMines():
 #draws in the mine clicking area, and displays the ores per click
 def drawMine():
     mineArea = pygame.draw.circle(screen, Colors.black, (320, 300), 60, 60) #The click circle to generate ores
-    clickValue = font.render(str(gameData.clickBaseValue.getValue() * gameData.clickMulti.getValue()), True, Colors.white)
+    clickValue = font.render(str(gameData.getStat("Base Click Value").getValue() * gameData.getStat("Click Multiplier").getValue()), True, Colors.white)
     screen.blit(clickValue, (320, 300))
     return mineArea
 
@@ -105,6 +105,7 @@ def drawNextMine():
 def drawPrevMine():
     prevMine = pygame.draw.circle(screen, Colors.black, (50, 250), 20, 20)
     screen.blit(font.render("Previous Mine", True, Colors.white), (50, 250))
+
     return prevMine
 
 
@@ -127,7 +128,7 @@ def drawConversion(oreName:str, x:int, y:int):
 #draws in the circles to buy workers and assign workers, displays worker counts.
 def drawWorkers():
     buyWorker = pygame.draw.circle(screen, Colors.red, (50, 100), 20, 20)
-    screen.blit((font.render(str(gameData.minersTotal.getValue()), True, Colors.white)), (50, 100))
+    screen.blit((font.render(str(gameData.getStat("Total Miners").getValue()), True, Colors.white)), (50, 100))
     screen.blit((font.render("Buy Worker", True, Colors.white)), (50-20, 100-20))
     assignWorker = pygame.draw.circle(screen, Colors.blue, (50, 150), 20, 20)
     screen.blit((font.render("Assign Worker", True, Colors.white)), (50-20, 150-20))
@@ -138,7 +139,7 @@ def drawWorkers():
 def save():
     print("Game is closed")
 
-    dataDump = gameData.dump()
+    dataDump = gameData.dataDump()
 
     with open("./local_data.json", "w") as saveFile:
         json.dump(dataDump, saveFile, indent=4)
