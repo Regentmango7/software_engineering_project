@@ -72,15 +72,19 @@ class MineType:
         return self.unlocked
 
 class Stat:
-    def __init__(self, name, value):
+    def __init__(self, name, value, toReset):
         self.name = name
         self.value = value
+        self.toReset = toReset
     
     def getName(self):
         return self.name
     
     def getValue(self):
         return self.value
+
+    def setValue(self, x):
+        self.value = x
 
 class Upgrade:
     def __init__(self, name:str, costOres:list, costMult:float, statModified:Stat, magnitude:float, upType:str, cap:int):
@@ -153,14 +157,22 @@ class Upgrade:
 class StatHolder:
     def __init__(self):
         self.gameStats = [
-            Stat("Base Click Value", 1), 
-            Stat("Click Multiplier", 1), 
-            Stat("Miner Value Multiplier", 1), 
-            Stat("Miners Available", 0), 
-            Stat("Total Miners", 0), 
-            Stat("Worker Speed", 100),
-            Stat("Worker Time Upgradable", 100),
-            Stat("Worker Cost Reduce", 1.0)
+            Stat("Base Click Value", 1, True), #Note: true is for reset on rest, and false is dont reset on reset
+            Stat("Click Multiplier", 1, True), 
+            Stat("Miner Value Multiplier", 1, True), 
+            Stat("Miners Available", 0, True), 
+            Stat("Total Miners", 0, True), 
+            Stat("Worker Speed", 100, True),
+            Stat("Worker Time Upgradable", 100, True),
+            Stat("Worker Cost Reduce", 1.0, True),
+            Stat("Total Clicks", 0, False),
+            Stat("Total Coin Earned", 0, False),
+            Stat("Time Played", 0, False),
+            Stat("Total Copper Earned", 0, False),
+            Stat("Total Iron Earned", 0, False),
+            Stat("Total Silver Earned", 0, False),
+            Stat("Total Gold Earned", 0, False),
+            Stat("Total Diamond Earned", 0, False) 
         ]
     
     def adjustStat(self, statName:str, amount:float):

@@ -163,6 +163,7 @@ if __name__ == "__main__":
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     #gives the player ore based on the ore per click amount multiplied by the multiplier
                     if mineArea.collidepoint(event.pos):
+                        gameData.getStat("Total Clicks").setValue(gameData.getStat("Total Clicks").getValue() + 1)
                         gameData.mineAction(gameData.activeMine)
                     #increases the base ore per click
                     if clickBaseUpgrade.collidepoint(event.pos):
@@ -192,10 +193,22 @@ if __name__ == "__main__":
             if activeScreen == SMITH_SCREEN:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if sellTenPercentCopper.collidepoint(event.pos):
+
+                        oreSold = gameData.getOre("Copper").getAmount() * 0.1
+                        gameData.getStat("Total Coin Earned").setValue(gameData.getStat("Total Coin Earned").getValue() + oreSold * gameData.getOre("Copper").getValue())
+
                         gameData.sellOre(gameData.getOre("Copper"), 0.1)
                     if sellFiftyPercentCopper.collidepoint(event.pos):
+
+                        oreSold = gameData.getOre("Copper").getAmount() * 0.5
+                        gameData.getStat("Total Coin Earned").setValue(gameData.getStat("Total Coin Earned").getValue() + oreSold * gameData.getOre("Copper").getValue())     
+
                         gameData.sellOre(gameData.getOre("Copper"), 0.5)
                     if sellAllCopper.collidepoint(event.pos):
+
+                        oreSold = gameData.getOre("Copper").getAmount()
+                        gameData.getStat("Total Coin Earned").setValue(gameData.getStat("Total Coin Earned").getValue() + oreSold * gameData.getOre("Copper").getValue())
+
                         gameData.sellOre(gameData.getOre("Copper"), 1)
                     if swapScreen.collidepoint(event.pos):
                         toChangeScreen = MINE_SCREEN
@@ -219,12 +232,16 @@ if __name__ == "__main__":
             workSpeed = drawUpgrade(gameData.getUpgrade("Worker_Speed"), 400, 200)
             workCost = drawUpgrade(gameData.getUpgrade("Worker_Cost"), 700, 200)
             swapScreen = drawSwapMines()
+            screen.blit(font.render(str(gameData.getStat("Total Clicks").getValue()), True, Colors.white), (900, 100)) #TO move
+            screen.blit(font.render(str(gameData.getStat("Total Coin Earned").getValue()), True, Colors.white), (900, 200)) #TO move
         if activeScreen == SMITH_SCREEN:
             screen.fill(background)
             wallet = drawWallet()
             sellTenPercentCopper, sellFiftyPercentCopper, sellAllCopper = drawConversion("Copper", 30, 110)
             swapScreen = drawSwapMines()
             #buyCopperWorkers, assignCopperWorkers = drawWorkers()
+            screen.blit(font.render(str(gameData.getStat("Total Clicks").getValue()), True, Colors.white), (900, 100)) #TO move
+            screen.blit(font.render(str(gameData.getStat("Total Coin Earned").getValue()), True, Colors.white), (900, 200)) #TO move
         if activeScreen == CONTRACT_SCREEN:
             pass
         if activeScreen == STAT_SCREEN:
