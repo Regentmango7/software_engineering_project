@@ -279,6 +279,11 @@ class Data:
             mine.assignMiners(self.getStat("Miners Available"))
             self.getStat("Miners Available").setValue(0)
 
+    #Player unassignes all miners of a specific mine.
+    def unassignAllMiners(self, mine:MineType):
+        mine.unassignMiners(mine.getMinerCount())
+        self.getStat("Miners Available").setValue(self.getStat("Miners Available") + mine.getMinerCount())
+
     #if there is one, set activeMine to the mine after the current activeMine
     def setNextMine(self):
         index = self.MINE_ORDER.index(self.activeMine.getName())+1
