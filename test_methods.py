@@ -34,38 +34,38 @@ def testSellOre():
 
     return
 
-#function to test buyWorker
-def testBuyWorker():
-    testBuyWorkerData = classes.Data()
-    #setup for buyWorker
-    testBuyWorkerData.coin.setAmount(0)
+#function to test buyMiner
+def testBuyMiner():
+    testBuyMinerData = classes.Data()
+    #setup for buyMiner
+    testBuyMinerData.coin.setAmount(0)
     
     #testing buying with no money
     #beginning
-    assert 0 == testBuyWorkerData.getStat("Total Miners").getValue()  #is minersTotal 0 at beginning?
-    assert 0 == testBuyWorkerData.coin.getAmount()  #is coin count 0 at beginning?
+    assert 0 == testBuyMinerData.getStat("Total Miners").getValue()  #is minersTotal 0 at beginning?
+    assert 0 == testBuyMinerData.coin.getAmount()  #is coin count 0 at beginning?
     #test
-    testBuyWorkerData.buyWorker()
+    testBuyMinerData.buyMiner()
     #ending
-    assert 0 == testBuyWorkerData.getStat("Total Miners").getValue()  #is minersTotal 0 after buyWorker()?
-    assert 0 == testBuyWorkerData.coin.getAmount()  #is coin count 0 after buyWorker()?
+    assert 0 == testBuyMinerData.getStat("Total Miners").getValue()  #is minersTotal 0 after buyMiner()?
+    assert 0 == testBuyMinerData.coin.getAmount()  #is coin count 0 after buyMiner()?
 
     #setup again
-    testBuyWorkerData.coin.setAmount(1001)
+    testBuyMinerData.coin.setAmount(1001)
     #testing buying with enough money
     #beginning
-    assert 0 == testBuyWorkerData.getStat("Total Miners").getValue()  #is minersTotal 0 after initialization?
-    assert 1001 == testBuyWorkerData.coin.getAmount()  #is coin count 1001 after initialization?
+    assert 0 == testBuyMinerData.getStat("Total Miners").getValue()  #is minersTotal 0 after initialization?
+    assert 1001 == testBuyMinerData.coin.getAmount()  #is coin count 1001 after initialization?
     #test
-    testBuyWorkerData.buyWorker()
+    testBuyMinerData.buyMiner()
     #middle
-    assert 1 == testBuyWorkerData.getStat("Total Miners").getValue()  #is minersTotal 1 after successful buyWorker()?
-    assert 991 == testBuyWorkerData.coin.getAmount()  #is coin 991 after successful buyWorker()?
+    assert 1 == testBuyMinerData.getStat("Total Miners").getValue()  #is minersTotal 1 after successful buyMiner()?
+    assert 991 == testBuyMinerData.coin.getAmount()  #is coin 991 after successful buyMiner()?
     #test
-    testBuyWorkerData.buyWorker()
+    testBuyMinerData.buyMiner()
     #end
-    assert 2 == testBuyWorkerData.getStat("Total Miners").getValue()  #is minersTotal 2 after second successful buyWorker()?
-    assert 891 == testBuyWorkerData.coin.getAmount()  #is coin 891 after second successful buyWorker()?
+    assert 2 == testBuyMinerData.getStat("Total Miners").getValue()  #is minersTotal 2 after second successful buyMiner()?
+    assert 891 == testBuyMinerData.coin.getAmount()  #is coin 891 after second successful buyMiner()?
     return
 
 #function to test work
@@ -76,7 +76,7 @@ def testWork():
     #setup for work
     testWorkData.getOre("Copper").setAmount(0)
     testWorkData.coin.setAmount(1001)
-    testWorkData.buyWorker()
+    testWorkData.buyMiner()
     testWorkData.assignMiners(testWorkData.activeMine)
     store = 0
     firstRun = False
@@ -254,7 +254,7 @@ def testBuyUpgrade():
 #main method to run the test functions
 def main():
     testSellOre() #working!
-    testBuyWorker() #working!
+    testBuyMiner() #working!
     testWork() #working!
     testGetCost() #working!
     testCanAfford() #working!
