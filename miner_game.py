@@ -154,6 +154,7 @@ if __name__ == "__main__":
     running = True
     while running:
         timer.tick(framerate)
+        gameData.getStat("Time Played").setValue(gameData.getStat("Time Played").getValue() + (timer.get_time()/1000.0))
         for event in pygame.event.get():
             #quits the game
             if event.type == pygame.QUIT:
@@ -232,20 +233,23 @@ if __name__ == "__main__":
             workSpeed = drawUpgrade(gameData.getUpgrade("Worker_Speed"), 400, 200)
             workCost = drawUpgrade(gameData.getUpgrade("Worker_Cost"), 700, 200)
             swapScreen = drawSwapMines()
-            screen.blit(font.render(str(gameData.getStat("Total Clicks").getValue()), True, Colors.white), (900, 100)) #TO move
-            screen.blit(font.render(str(gameData.getStat("Total Coin Earned").getValue()), True, Colors.white), (900, 200)) #TO move
         if activeScreen == SMITH_SCREEN:
             screen.fill(background)
             wallet = drawWallet()
             sellTenPercentCopper, sellFiftyPercentCopper, sellAllCopper = drawConversion("Copper", 30, 110)
             swapScreen = drawSwapMines()
             #buyCopperWorkers, assignCopperWorkers = drawWorkers()
-            screen.blit(font.render(str(gameData.getStat("Total Clicks").getValue()), True, Colors.white), (900, 100)) #TO move
-            screen.blit(font.render(str(gameData.getStat("Total Coin Earned").getValue()), True, Colors.white), (900, 200)) #TO move
         if activeScreen == CONTRACT_SCREEN:
             pass
         if activeScreen == STAT_SCREEN:
-            pass
+            screen.blit(font.render(str(gameData.getStat("Total Clicks").getValue()), True, Colors.white), (700, 100)) #TO move
+            screen.blit(font.render(str(gameData.getStat("Total Coin Earned").getValue()), True, Colors.white), (700, 200)) #TO move
+            screen.blit(font.render(str(round(gameData.getStat("Time Played").getValue(), 2)), True, Colors.white), (700, 300)) #TO move
+            screen.blit(font.render(str(round(gameData.getStat("Total Copper Earned").getValue(), 2)), True, Colors.white), (700, 400)) #TO move
+            screen.blit(font.render(str(round(gameData.getStat("Total Iron Earned").getValue(), 2)), True, Colors.white), (900, 100)) #TO move
+            screen.blit(font.render(str(round(gameData.getStat("Total Silver Earned").getValue(), 2)), True, Colors.white), (900, 200)) #TO move
+            screen.blit(font.render(str(round(gameData.getStat("Total Gold Earned").getValue(), 2)), True, Colors.white), (900, 300)) #TO move
+            screen.blit(font.render(str(round(gameData.getStat("Total Diamond Earned").getValue(), 2)), True, Colors.white), (900, 400)) #TO move
         if activeScreen == RETIRE_SCREEN:
             pass
 

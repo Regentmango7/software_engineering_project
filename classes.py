@@ -289,8 +289,29 @@ class Data:
         obtainedOre = choice(ore, p=probability)
         if isMiner:
             obtainedOre.amount += self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()
+            if obtainedOre.getName() == "Copper":
+                self.getStat("Total Copper Earned").setValue(self.getStat("Total Copper Earned").getValue() + (self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()))
+            elif obtainedOre.getName() == "Iron":
+                self.getStat("Total Iron Earned").setValue(self.getStat("Total Iron Earned").getValue() + (self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()))
+            elif obtainedOre.getName() == "Silver":
+                self.getStat("Total Silver Earned").setValue(self.getStat("Total Silver Earned").getValue() + (self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()))
+            elif obtainedOre.getName() == "Gold":
+                self.getStat("Total Gold Earned").setValue(self.getStat("Total Gold Earned").getValue() + (self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()))
+            elif obtainedOre.getName() == "Diamond":
+                self.getStat("Total Diamond Earned").setValue(self.getStat("Total Diamond Earned").getValue() + (self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()))
         else: 
             obtainedOre.amount += self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()
+            if obtainedOre.getName() == "Copper":
+                self.getStat("Total Copper Earned").setValue(self.getStat("Total Copper Earned").getValue() + (self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()))
+            elif obtainedOre.getName() == "Iron":
+                self.getStat("Total Iron Earned").setValue(self.getStat("Total Iron Earned").getValue() + (self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()))
+            elif obtainedOre.getName() == "Silver":
+                self.getStat("Total Silver Earned").setValue(self.getStat("Total Silver Earned").getValue() + (self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()))
+            elif obtainedOre.getName() == "Gold":
+                self.getStat("Total Gold Earned").setValue(self.getStat("Total Gold Earned").getValue() + (self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()))
+            elif obtainedOre.getName() == "Diamond":
+                self.getStat("Total Diamond Earned").setValue(self.getStat("Total Diamond Earned").getValue() + (self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()))
+
 
     #makes the workers work
     def work(self):
