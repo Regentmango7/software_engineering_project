@@ -105,7 +105,6 @@ def drawNextMine():
 def drawPrevMine():
     prevMine = pygame.draw.circle(screen, Colors.black, (50, 250), 20, 20)
     screen.blit(font.render("Previous Mine", True, Colors.white), (50, 250))
-
     return prevMine
 
 

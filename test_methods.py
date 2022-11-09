@@ -8,6 +8,7 @@ import pytest
 import miner_game
 import classes
 import pygame
+import coverage
 pygame.init()
 
 #create the class object we are t=using to set values directly
@@ -41,29 +42,29 @@ def testBuyWorker():
     
     #testing buying with no money
     #beginning
-    assert 0 == testBuyWorkerData.minersTotal.getValue()  #is minersTotal 0 at beginning?
+    assert 0 == testBuyWorkerData.getStat("Total Miners").getValue()  #is minersTotal 0 at beginning?
     assert 0 == testBuyWorkerData.coin.getAmount()  #is coin count 0 at beginning?
     #test
     testBuyWorkerData.buyWorker()
     #ending
-    assert 0 == testBuyWorkerData.minersTotal.getValue()  #is minersTotal 0 after buyWorker()?
+    assert 0 == testBuyWorkerData.getStat("Total Miners").getValue()  #is minersTotal 0 after buyWorker()?
     assert 0 == testBuyWorkerData.coin.getAmount()  #is coin count 0 after buyWorker()?
 
     #setup again
     testBuyWorkerData.coin.setAmount(1001)
     #testing buying with enough money
     #beginning
-    assert 0 == testBuyWorkerData.minersTotal.getValue()  #is minersTotal 0 after initialization?
+    assert 0 == testBuyWorkerData.getStat("Total Miners").getValue()  #is minersTotal 0 after initialization?
     assert 1001 == testBuyWorkerData.coin.getAmount()  #is coin count 1001 after initialization?
     #test
     testBuyWorkerData.buyWorker()
     #middle
-    assert 1 == testBuyWorkerData.minersTotal.getValue()  #is minersTotal 1 after successful buyWorker()?
+    assert 1 == testBuyWorkerData.getStat("Total Miners").getValue()  #is minersTotal 1 after successful buyWorker()?
     assert 991 == testBuyWorkerData.coin.getAmount()  #is coin 991 after successful buyWorker()?
     #test
     testBuyWorkerData.buyWorker()
     #end
-    assert 2 == testBuyWorkerData.minersTotal.getValue()  #is minersTotal 2 after second successful buyWorker()?
+    assert 2 == testBuyWorkerData.getStat("Total Miners").getValue()  #is minersTotal 2 after second successful buyWorker()?
     assert 891 == testBuyWorkerData.coin.getAmount()  #is coin 891 after second successful buyWorker()?
     return
 
@@ -85,14 +86,14 @@ def testWork():
     #testing
     #beginning
     assert 0 == testWorkData.getOre("Copper").getAmount()  #Copper ore starts at 0
-    assert 1 == testWorkData.minersTotal.getValue()  #one worker has been purchased
+    assert 1 == testWorkData.getStat("Total Miners").getValue()  #one worker has been purchased
     assert 1 == testWorkData.getMine("Copper").getMinerCount() #one worker is assigned to Copper mine
     assert 991 == testWorkData.coin.getAmount()  #coin os 991 to start
     #test
     running = True
     while running and testWorkData.getOre("Copper").getAmount() == 0:
         timer.tick(framerate)
-        store, firstRun = testWorkData.work(store, firstRun, testWorkData.activeMine)
+        testWorkData.work()
 
     assert testWorkData.getOre("Copper").getAmount() == 1  #Ore should be one after work is run
     #ending
@@ -203,24 +204,24 @@ def testBuyUpgrade():
     #TESTING WITH NO ORE
     #beginning
     assert 0 == testBuyUpData.getOre("Copper").getAmount()
-    assert 1 == testBuyUpData.clickBaseValue.getValue()
+    assert 1 == testBuyUpData.getStat("Base Click Value").getValue()
     #test
     testBuyUpData.getUpgrade("Click_Base_Count").buyUpgrade()
     #end
     assert 0 == testBuyUpData.getOre("Copper").getAmount()
-    assert 1 == testBuyUpData.clickBaseValue.getValue()
+    assert 1 == testBuyUpData.getStat("Base Click Value").getValue()
 
     #setup for enough money
     testBuyUpData.getOre("Copper").setAmount(1001)
     #TESTING WITH ENOUGH ORE
     #beginning
     assert 1001 == testBuyUpData.getOre("Copper").getAmount()
-    assert 1 == testBuyUpData.clickBaseValue.getValue()
+    assert 1 == testBuyUpData.getStat("Base Click Value").getValue()
     #test
     testBuyUpData.getUpgrade("Click_Base_Count").buyUpgrade()
     #end
     assert 999.8 == testBuyUpData.getOre("Copper").getAmount()
-    assert 2 == testBuyUpData.clickBaseValue.getValue()
+    assert 2 == testBuyUpData.getStat("Base Click Value").getValue()
     
 
     #TESTING FOR Click_Multiplier
@@ -230,34 +231,34 @@ def testBuyUpgrade():
     #TESTING WITH NO ORE
     #beginning
     assert 0 == testBuyUpData.getOre("Copper").getAmount()
-    assert 1 == testBuyUpData.clickMulti.getValue()
+    assert 1 == testBuyUpData.getStat("Click Multiplier").getValue()
     #test
     testBuyUpData.getUpgrade("Click_Multiplier").buyUpgrade()
     #end
     assert 0 == testBuyUpData.getOre("Copper").getAmount()
-    assert 1 == testBuyUpData.clickMulti.getValue()
+    assert 1 == testBuyUpData.getStat("Click Multiplier").getValue()
 
     #setup for enough money
     testBuyUpData.getOre("Copper").setAmount(1001)
     #TESTING WITH ENOUGH ORE
     #beginning
     assert 1001 == testBuyUpData.getOre("Copper").getAmount()
-    assert 1 == testBuyUpData.clickMulti.getValue()
+    assert 1 == testBuyUpData.getStat("Click Multiplier").getValue()
     #test
     testBuyUpData.getUpgrade("Click_Multiplier").buyUpgrade()
     #end
     assert 991 == testBuyUpData.getOre("Copper").getAmount()
-    assert 10 == testBuyUpData.clickMulti.getValue()
+    assert 10 == testBuyUpData.getStat("Click Multiplier").getValue()
     return
 
 #main method to run the test functions
 def main():
     testSellOre() #working!
-    #testBuyWorker() #working!
-    #testWork() #working!
-    #testGetCost() #working!
-    #testCanAfford() #working!
-    #testBuyUpgrade() #working!
+    testBuyWorker() #working!
+    testWork() #working!
+    testGetCost() #working!
+    testCanAfford() #working!
+    testBuyUpgrade() #working!
     return
 
 main()
