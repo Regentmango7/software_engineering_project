@@ -375,6 +375,7 @@ class Data:
             mine.unlock()
 
     def dataLoad(self, data:dict):
+        self.coin.setAmount(data["Coins"])
         for mineName, count in data["Miners Assigned"].items():
             self.getMine(mineName).assignMiners(count)
         for mineName, unlock in data["Mines Unlocked"].items():
@@ -394,6 +395,7 @@ class Data:
 
         data["Miners Assigned"] = {}
         data["Mines Unlocked"] = {}
+        data["Coins"] = self.coin.getAmount()
         for name, mine in self.mines.items():
             data["Mines Unlocked"][name] = mine.isUnlocked()
             data["Miners Assigned"][name] = mine.getMinerCount()

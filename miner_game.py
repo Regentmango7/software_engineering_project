@@ -75,7 +75,7 @@ def drawNextMine():
         if mine.isUnlocked():
             screen.blit(font.render("Go to " + mine.getName() + " mine", True, Colors.white), (50, 350))
         else:
-            screen.blit(font.render("Unlock " + mine.getName() + " mine", True, Colors.white), (50, 350))
+            screen.blit(font.render("Unlock " + mine.getName() + " mine", True, Colors.white), (50, 330))
             screen.blit(font.render("Cost: " + numberScaling(mine.getUnlockCost()) + " coins", True, Colors.white), (50, 360))
         return nextMine
 
@@ -88,7 +88,7 @@ def drawPrevMine():
         if mine.isUnlocked():
             screen.blit(font.render("Go to " + mine.getName() + " mine", True, Colors.white), (50, 300))
         else:
-            screen.blit(font.render("Unlock " + mine.getName() + " mine", True, Colors.white), (50, 300))
+            screen.blit(font.render("Unlock " + mine.getName() + " mine", True, Colors.white), (50, 290))
             screen.blit(font.render("Cost: " + numberScaling(mine.getUnlockCost()) + " coins", True, Colors.white), (50, 310))
         return prevMine
 
@@ -114,10 +114,7 @@ def drawConversion(oreName:str, x:int, y:int, color):
     screen.blit(font.render(oreName, True, Colors.black), (x+185, y+20))
     return sellTenPercent, sellFiftyPercent, sellAll
 
-def drawMinersHeader():
-    drawLabel("Miners", SCREEN_WIDTH/2 - 95, 100)
-    pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 280, 200, 160, 25))
-    screen.blit((font.render("Miners Available: " + numberScaling(gameData.getStat("Miners Available").getValue()), True, Colors.white)), (SCREEN_WIDTH/2 - 275, 205))
+
 
 def drawUpgradesHeader():
     drawLabel("Upgrades", (SCREEN_WIDTH * 3) / 4, 100)
@@ -126,48 +123,62 @@ def drawUpgradesHeader():
 
 
 #draws in the circles to buy miners and assign miners, displays miner counts.
-def drawMinerButtons(mineName:str, y:float):
-    pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 210, y - 5, 85, 50))
-    screen.blit((font.render(mineName, True, Colors.white)), (SCREEN_WIDTH/2 - 200, y))
-    screen.blit((font.render(str(gameData.getMine(mineName).getMinerCount()), True, Colors.white)), (SCREEN_WIDTH/2 - 200, y + 25))
-    pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 100, y - 5, 250, 60))
-    oneMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 - 100, y, 50, 50))
-    screen.blit((font.render("1", True, Colors.white)), (SCREEN_WIDTH/2 - 75, y + 25))
-    fiveMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 - 0, y, 50, 50))
-    screen.blit((font.render("5", True, Colors.white)), (SCREEN_WIDTH/2 + 25, y + 25))
-    twentyFiveMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 + 100, y, 50, 50))
-    screen.blit((font.render("25", True, Colors.white)), (SCREEN_WIDTH/2 + 125, y + 25))
-    #assignMiner = pygame.draw.circle(screen, Colors.blue, (50, 150), 20, 20)
-    #screen.blit((font.render("Assign Miner", True, Colors.white)), (50-20, 150-20))
-    #screen.blit((font.render(numberScaling(gameData.getMine(mineName).getMinerCount()), True, Colors.white)), (50, 150))
-    return oneMiner, fiveMiner, twentyFiveMiner#, assignMiner
+def drawMinerButtons(mineName:str, y:float, color):
+    pygame.draw.rect(screen, color, (SCREEN_WIDTH/2 - 210, y - 5, 360, 50))
+    screen.blit((font.render(mineName, True, Colors.black)), (SCREEN_WIDTH/2 - 200, y))
+    screen.blit((font.render(str(gameData.getMine(mineName).getMinerCount()), True, Colors.black)), (SCREEN_WIDTH/2 - 200, y + 25))
+    #pygame.draw.rect(screen, color, (SCREEN_WIDTH/2 - 100, y - 5, 250, 60))
+    
+    if gameData.getMine(mineName).isUnlocked():
+        oneMiner = pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 100, y, 40, 40))
+        screen.blit((font.render("1", True, Colors.white)), (SCREEN_WIDTH/2 - 85, y + 15))
+        fiveMiner = pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 0, y, 40, 40))
+        screen.blit((font.render("5", True, Colors.white)), (SCREEN_WIDTH/2 + 15, y + 15))
+        twentyFiveMiner = pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 + 100, y, 40, 40))
+        screen.blit((font.render("25", True, Colors.white)), (SCREEN_WIDTH/2 + 115, y + 15))
+        #assignMiner = pygame.draw.circle(screen, Colors.blue, (50, 150), 20, 20)
+        #screen.blit((font.render("Assign Miner", True, Colors.white)), (50-20, 150-20))
+        #screen.blit((font.render(numberScaling(gameData.getMine(mineName).getMinerCount()), True, Colors.white)), (50, 150))
+        return oneMiner, fiveMiner, twentyFiveMiner
+    else: 
+        screen.blit((font.render("Unlock This Mine First", True, Colors.black)), (SCREEN_WIDTH/2 - 85, y + 15))
+        oneMiner = None
+        fiveMiner = None
+        twentyFiveMiner = None
+        return oneMiner, fiveMiner, twentyFiveMiner
+    #, assignMiner
 
-def drawAssignMinerButtons(y:float):
-    pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 100, y - 5, 250, 60))
-    oneMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 - 100, y, 50, 50))
-    screen.blit((font.render("1", True, Colors.white)), (SCREEN_WIDTH/2 - 75, y + 25))
-    fiveMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 - 0, y, 50, 50))
-    screen.blit((font.render("5", True, Colors.white)), (SCREEN_WIDTH/2 + 25, y + 25))
-    twentyFiveMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 + 100, y, 50, 50))
-    screen.blit((font.render("25", True, Colors.white)), (SCREEN_WIDTH/2 + 125, y + 25))
+def drawBuyMinerButtons(y:float):
+    drawLabel("Miners", SCREEN_WIDTH/2 - 95, 100)
+    pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 210, y - 5, 360, 50))
+    screen.blit((font.render("Buy Miners", True, Colors.white)), (SCREEN_WIDTH/2 - 200, y))
+    screen.blit((font.render(numberScaling(gameData.getStat("Miners Available").getValue()), True, Colors.white)), (SCREEN_WIDTH/2 - 200, y+25))
+    numberScaling(gameData.getStat("Miners Available").getValue())
+    oneMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 - 100, y, 40, 40))
+    screen.blit((font.render("1", True, Colors.white)), (SCREEN_WIDTH/2 - 85, y + 15))
+    fiveMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 - 0, y, 40, 40))
+    screen.blit((font.render("5", True, Colors.white)), (SCREEN_WIDTH/2 + 15, y + 15))
+    twentyFiveMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 + 100, y, 40, 40))
+    screen.blit((font.render("25", True, Colors.white)), (SCREEN_WIDTH/2 + 115, y + 15))
     #assignMiner = pygame.draw.circle(screen, Colors.blue, (50, 150), 20, 20)
     #screen.blit((font.render("Assign Miner", True, Colors.white)), (50-20, 150-20))
     #screen.blit((font.render(numberScaling(gameData.getMine(mineName).getMinerCount()), True, Colors.white)), (50, 150))
     return oneMiner, fiveMiner, twentyFiveMiner
 
 def handleAssignMiners(eventPos, oneMiner, fiveMiner, twentyFiveMiner, oreName):
-    if oneMiner.collidepoint(eventPos):
-        if (gameData.getStat("Miners Available").getValue() >= 1):
-            gameData.getStat("Miners Available").setValue(gameData.getStat("Miners Available").getValue() - 1)
-            gameData.getMine(oreName).assignMiners(1)
-    if fiveMiner.collidepoint(eventPos):
-        if (gameData.getStat("Miners Available").getValue() >= 5):
-            gameData.getStat("Miners Available").setValue(gameData.getStat("Miners Available").getValue() - 5)
-            gameData.getMine(oreName).assignMiners(5)
-    if twentyFiveMiner.collidepoint(eventPos):
-        if (gameData.getStat("Miners Available").getValue() >= 25):
-            gameData.getStat("Miners Available").setValue(gameData.getStat("Miners Available").getValue() - 25)
-            gameData.getMine(oreName).assignMiners(25)
+    if gameData.getMine(oreName).isUnlocked():
+        if oneMiner.collidepoint(eventPos):
+            if (gameData.getStat("Miners Available").getValue() >= 1):
+                gameData.getStat("Miners Available").setValue(gameData.getStat("Miners Available").getValue() - 1)
+                gameData.getMine(oreName).assignMiners(1)
+        if fiveMiner.collidepoint(eventPos):
+            if (gameData.getStat("Miners Available").getValue() >= 5):
+                gameData.getStat("Miners Available").setValue(gameData.getStat("Miners Available").getValue() - 5)
+                gameData.getMine(oreName).assignMiners(5)
+        if twentyFiveMiner.collidepoint(eventPos):
+            if (gameData.getStat("Miners Available").getValue() >= 25):
+                gameData.getStat("Miners Available").setValue(gameData.getStat("Miners Available").getValue() - 25)
+                gameData.getMine(oreName).assignMiners(25)
 
 def handleSellers(eventPos, tenSeller, fiftySeller, allSeller, oreName):
     if tenSeller.collidepoint(eventPos):
@@ -176,9 +187,6 @@ def handleSellers(eventPos, tenSeller, fiftySeller, allSeller, oreName):
         gameData.sellOre(gameData.getOre(oreName), 0.5)
     if allSeller.collidepoint(eventPos):
         gameData.sellOre(gameData.getOre(oreName), 1)
-
-def handleMiners():
-    pass
 
 def save():
     print("Game is closed")
@@ -301,7 +309,6 @@ if __name__ == "__main__":
             drawWallet()
             #SELLERS
             drawLabel("Sell Ores", 95, 100)
-            drawMinersHeader()
             clickBaseUpgrade = drawUpgrade(gameData.getUpgrade("Click_Base_Count"), (SCREEN_WIDTH * 3) / 4, 250)
             clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), (SCREEN_WIDTH * 3) / 4, 350)
             workSpeed = drawUpgrade(gameData.getUpgrade("Miner_Speed"), (SCREEN_WIDTH * 3) / 4, 450)
@@ -312,12 +319,12 @@ if __name__ == "__main__":
             sellTenPercentGold, sellFiftyPercentGold, sellAllGold = drawConversion("Gold", 25, 350, Colors.gold)
             sellTenPercentDiamond, sellFiftyPercentDiamond, sellAllDiamond = drawConversion("Diamond", 25, 400, Colors.diamond)
 
-            oneMiner, fiveMiner, twentyFiveMiner = drawAssignMinerButtons(200)
-            oneMinerCopper, fiveMinerCopper, twentyFiveMinerCopper = drawMinerButtons("Copper", 275)
-            oneMinerIron, fiveMinerIron, twentyFiveMinerIron = drawMinerButtons("Iron", 350)
-            oneMinerSilver, fiveMinerSilver, twentyFiveMinerSilver = drawMinerButtons("Silver", 425)
-            oneMinerGold, fiveMinerGold, twentyFiveMinerGold = drawMinerButtons("Gold", 500)
-            oneMinerDiamond, fiveMinerDiamond, twentyFiveMinerDiamond = drawMinerButtons("Diamond", 575)
+            oneMiner, fiveMiner, twentyFiveMiner = drawBuyMinerButtons(200)
+            oneMinerCopper, fiveMinerCopper, twentyFiveMinerCopper = drawMinerButtons("Copper", 275, Colors.copper)
+            oneMinerIron, fiveMinerIron, twentyFiveMinerIron = drawMinerButtons("Iron", 350, Colors.iron)
+            oneMinerSilver, fiveMinerSilver, twentyFiveMinerSilver = drawMinerButtons("Silver", 425, Colors.silver)
+            oneMinerGold, fiveMinerGold, twentyFiveMinerGold = drawMinerButtons("Gold", 500, Colors.gold)
+            oneMinerDiamond, fiveMinerDiamond, twentyFiveMinerDiamond = drawMinerButtons("Diamond", 575, Colors.diamond)
             swapScreenToMine = drawButton("To Mine", 100, 600)
             #buyCopperMiners, assignCopperMiners = drawMiners()
             drawUpgradesHeader()
