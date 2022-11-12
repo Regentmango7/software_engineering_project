@@ -56,41 +56,27 @@ def drawButton(title:str, x:int, y:int):
 
 #draws in the mine clicking area, and displays the ores per click
 def drawMine():
-    mineArea = pygame.draw.circle(screen, Colors.black, (320, 300), 60, 60) #The click circle to generate ores
-    clickValue = font.render(numberScaling(gameData.getStat("Base Click Value").getValue() * gameData.getStat("Click Multiplier").getValue()), True, Colors.white)
-    screen.blit(clickValue, (320, 300))
-    return mineArea
+    mineArea = pygame.draw.circle(screen, Colors.black, (SCREEN_WIDTH/2, SCREEN_HEIGHT/5*3), 90, 90) #The click circle to generate ores
+    screen.blit(font.render(numberScaling(gameData.getClickValue()), True, Colors.white), (SCREEN_WIDTH/2 - 5, SCREEN_HEIGHT/5*3))
+    return mineArea, drawMineSwitcher(gameData.getNextMine(), SCREEN_WIDTH/2 + 120, SCREEN_HEIGHT/4*3), drawMineSwitcher(gameData.getPreviousMine(), SCREEN_WIDTH/2 - 300, SCREEN_HEIGHT/4*3)
 
 #draws in the upgrade circle
 def drawUpgrade(upgrade:classes.Upgrade, x:float, y:float):
-    upgradeArea = pygame.draw.rect(screen, Colors.black, (x - 55, y - 28, 250, 50)) 
+    upgradeArea = pygame.draw.rect(screen, Colors.black, (x - 55, y - 28, 250, 70)) 
     screen.blit(font.render("Cost: " + upgrade.getCostString(), True, Colors.white), (x-20, y))
+    screen.blit(font.render("Effect: " + str(upgrade.getEffect()), True, Colors.white), (x-20, y + 20))
     screen.blit(font.render(upgrade.getName(), True, Colors.white), (x-20, y-20))
     return upgradeArea
 
-def drawNextMine():
-    mine = gameData.getNextMine()
+def drawMineSwitcher(mine, x, y): 
     if mine:
-        nextMine = pygame.draw.circle(screen, Colors.black, (50, 350), 20, 20)
+        mineSwitch = pygame.draw.rect(screen, Colors.black, (x, y, 180, 55))
         if mine.isUnlocked():
-            screen.blit(font.render("Go to " + mine.getName() + " mine", True, Colors.white), (50, 350))
+            screen.blit(font.render("Go to " + mine.getName() + " mine", True, Colors.white), (x + 5, y + 20))
         else:
-            screen.blit(font.render("Unlock " + mine.getName() + " mine", True, Colors.white), (50, 330))
-            screen.blit(font.render("Cost: " + numberScaling(mine.getUnlockCost()) + " coins", True, Colors.white), (50, 360))
-        return nextMine
-
-
-def drawPrevMine():
-    mine = gameData.getPreviousMine()
-    if mine:
-        prevMine = pygame.draw.circle(screen, Colors.black, (50, 300), 20, 20)
-    
-        if mine.isUnlocked():
-            screen.blit(font.render("Go to " + mine.getName() + " mine", True, Colors.white), (50, 300))
-        else:
-            screen.blit(font.render("Unlock " + mine.getName() + " mine", True, Colors.white), (50, 290))
-            screen.blit(font.render("Cost: " + numberScaling(mine.getUnlockCost()) + " coins", True, Colors.white), (50, 310))
-        return prevMine
+            screen.blit(font.render("Unlock " + mine.getName() + " mine", True, Colors.white), (x + 5, y + 5))
+            screen.blit(font.render("Cost: " + numberScaling(mine.getUnlockCost()) + " Coins", True, Colors.white), (x + 5, y + 35))
+        return mineSwitch
 
 
 def drawLabel(labelString:str, x:int, y:int):
@@ -132,21 +118,16 @@ def drawMinerButtons(mineName:str, y:float, color):
     if gameData.getMine(mineName).isUnlocked():
         oneMiner = pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 100, y, 40, 40))
         screen.blit((font.render("1", True, Colors.white)), (SCREEN_WIDTH/2 - 85, y + 15))
-        fiveMiner = pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 0, y, 40, 40))
-        screen.blit((font.render("5", True, Colors.white)), (SCREEN_WIDTH/2 + 15, y + 15))
-        twentyFiveMiner = pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 + 100, y, 40, 40))
-        screen.blit((font.render("25", True, Colors.white)), (SCREEN_WIDTH/2 + 115, y + 15))
-        #assignMiner = pygame.draw.circle(screen, Colors.blue, (50, 150), 20, 20)
-        #screen.blit((font.render("Assign Miner", True, Colors.white)), (50-20, 150-20))
-        #screen.blit((font.render(numberScaling(gameData.getMine(mineName).getMinerCount()), True, Colors.white)), (50, 150))
-        return oneMiner, fiveMiner, twentyFiveMiner
+        fiveMiner = pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 32.5, y, 40, 40))
+        screen.blit((font.render("5", True, Colors.white)), (SCREEN_WIDTH/2 - 17.5, y + 15))
+        twentyFiveMiner = pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 + 32.5, y, 40, 40))
+        screen.blit((font.render("25", True, Colors.white)), (SCREEN_WIDTH/2 + 47.5, y + 15))
+        unAssignMiner = pygame.draw.rect(screen, Colors.green, (SCREEN_WIDTH/2 + 100, y, 40, 40))
+        screen.blit((font.render("U", True, Colors.white)), (SCREEN_WIDTH/2 + 115, y + 15))
+        return oneMiner, fiveMiner, twentyFiveMiner, unAssignMiner
     else: 
         screen.blit((font.render("Unlock This Mine First", True, Colors.black)), (SCREEN_WIDTH/2 - 85, y + 15))
-        oneMiner = None
-        fiveMiner = None
-        twentyFiveMiner = None
-        return oneMiner, fiveMiner, twentyFiveMiner
-    #, assignMiner
+        return None, None, None, None
 
 def drawBuyMinerButtons(y:float):
     drawLabel("Miners", SCREEN_WIDTH/2 - 95, 100)
@@ -156,29 +137,28 @@ def drawBuyMinerButtons(y:float):
     numberScaling(gameData.getStat("Miners Available").getValue())
     oneMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 - 100, y, 40, 40))
     screen.blit((font.render("1", True, Colors.white)), (SCREEN_WIDTH/2 - 85, y + 15))
-    fiveMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 - 0, y, 40, 40))
-    screen.blit((font.render("5", True, Colors.white)), (SCREEN_WIDTH/2 + 15, y + 15))
-    twentyFiveMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 + 100, y, 40, 40))
-    screen.blit((font.render("25", True, Colors.white)), (SCREEN_WIDTH/2 + 115, y + 15))
+    fiveMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 - 32.5, y, 40, 40))
+    screen.blit((font.render("5", True, Colors.white)), (SCREEN_WIDTH/2 - 17.5, y + 15))
+    twentyFiveMiner = pygame.draw.rect(screen, Colors.red, (SCREEN_WIDTH/2 + 32.5, y, 40, 40))
+    screen.blit((font.render("25", True, Colors.white)), (SCREEN_WIDTH/2 + 47.5, y + 15))
+    unassignAll = pygame.draw.rect(screen, Colors.green, (SCREEN_WIDTH/2 + 100, y, 40, 40))
+    screen.blit((font.render("U", True, Colors.white)), (SCREEN_WIDTH/2 + 115, y + 15))
     #assignMiner = pygame.draw.circle(screen, Colors.blue, (50, 150), 20, 20)
     #screen.blit((font.render("Assign Miner", True, Colors.white)), (50-20, 150-20))
     #screen.blit((font.render(numberScaling(gameData.getMine(mineName).getMinerCount()), True, Colors.white)), (50, 150))
-    return oneMiner, fiveMiner, twentyFiveMiner
+    return oneMiner, fiveMiner, twentyFiveMiner, unassignAll
 
-def handleAssignMiners(eventPos, oneMiner, fiveMiner, twentyFiveMiner, oreName):
-    if gameData.getMine(oreName).isUnlocked():
+def handleAssignMiners(eventPos, oneMiner, fiveMiner, twentyFiveMiner, removeMiners, oreName):
+    mine = gameData.getMine(oreName)
+    if mine.isUnlocked():
         if oneMiner.collidepoint(eventPos):
-            if (gameData.getStat("Miners Available").getValue() >= 1):
-                gameData.getStat("Miners Available").setValue(gameData.getStat("Miners Available").getValue() - 1)
-                gameData.getMine(oreName).assignMiners(1)
+            gameData.assignMiners(mine, 1)
         if fiveMiner.collidepoint(eventPos):
-            if (gameData.getStat("Miners Available").getValue() >= 5):
-                gameData.getStat("Miners Available").setValue(gameData.getStat("Miners Available").getValue() - 5)
-                gameData.getMine(oreName).assignMiners(5)
+            gameData.assignMiners(mine, 5)
         if twentyFiveMiner.collidepoint(eventPos):
-            if (gameData.getStat("Miners Available").getValue() >= 25):
-                gameData.getStat("Miners Available").setValue(gameData.getStat("Miners Available").getValue() - 25)
-                gameData.getMine(oreName).assignMiners(25)
+            gameData.assignMiners(mine, 25)
+        if removeMiners.collidepoint(eventPos):
+            gameData.unassignAllMiners(mine)
 
 def handleSellers(eventPos, tenSeller, fiftySeller, allSeller, oreName):
     if tenSeller.collidepoint(eventPos):
@@ -256,25 +236,28 @@ if __name__ == "__main__":
                     if twentyFiveMiner.collidepoint(event.pos):
                         for x in range(25):
                             gameData.buyMiner()
+                    if unassignAll.collidepoint(event.pos):
+                        for mine in gameData.getAllMines():
+                            gameData.unassignAllMiners(mine)
                     #COPPER Assign HANDLERS
-                    handleAssignMiners(event.pos, oneMinerCopper, fiveMinerCopper, twentyFiveMinerCopper, "Copper")
+                    handleAssignMiners(event.pos, oneMinerCopper, fiveMinerCopper, twentyFiveMinerCopper, removeCopper, "Copper")
                     #IRON Assign HANDLERS
-                    handleAssignMiners(event.pos, oneMinerIron, fiveMinerIron, twentyFiveMinerIron, "Iron")
-                    #GOLD Assign HANDLERS
-                    handleAssignMiners(event.pos, oneMinerGold, fiveMinerGold, twentyFiveMinerGold, "Gold")
+                    handleAssignMiners(event.pos, oneMinerIron, fiveMinerIron, twentyFiveMinerIron, removeIron, "Iron")
                     #SILVER Assign HANDLERS
-                    handleAssignMiners(event.pos, oneMinerSilver, fiveMinerSilver, twentyFiveMinerSilver, "Silver")
+                    handleAssignMiners(event.pos, oneMinerSilver, fiveMinerSilver, twentyFiveMinerSilver, removeSilver, "Silver")
+                    #GOLD Assign HANDLERS
+                    handleAssignMiners(event.pos, oneMinerGold, fiveMinerGold, twentyFiveMinerGold, removeGold, "Gold")
                     #DIAMOND Assign HANDLERS
-                    handleAssignMiners(event.pos, oneMinerDiamond, fiveMinerDiamond, twentyFiveMinerDiamond, "Diamond")
+                    handleAssignMiners(event.pos, oneMinerDiamond, fiveMinerDiamond, twentyFiveMinerDiamond, removeDiamond, "Diamond")
                     if clickBaseUpgrade.collidepoint(event.pos):
                         gameData.getUpgrade("Click_Base_Count").buyUpgrade()
                     #decreases coin amount by 10, and increases the multiplier by one (buys an incerase in a multipier for 10 coins)
                     if clickMultUpgrade.collidepoint(event.pos):
                         gameData.getUpgrade("Click_Multiplier").buyUpgrade()
                     if workSpeed.collidepoint(event.pos):
-                            gameData.getUpgrade("Miner_Speed").buyUpgrade()
+                        gameData.getUpgrade("Miner_Speed").buyUpgrade()
                     if workCost.collidepoint(event.pos):
-                            gameData.getUpgrade("Miner_Cost").buyUpgrade()
+                        gameData.getUpgrade("Miner_Cost").buyUpgrade()
                     if swapScreenToMine.collidepoint(event.pos):
                         toChangeScreen = MINE_SCREEN
                         tfChangeScreen = True
@@ -299,9 +282,7 @@ if __name__ == "__main__":
             screen.fill(background)
             drawWallet()
             drawLabel(gameData.activeMine.getName(), (SCREEN_WIDTH/2 - 65), (SCREEN_HEIGHT/4))
-            mineArea = drawMine()
-            nextMine = drawNextMine()
-            previousMine = drawPrevMine()
+            mineArea, nextMine, previousMine = drawMine()
             swapScreenToSmith = drawButton("To Smithing", 600, 600)
             swapScreenToStats = drawButton("To Stats", 700, 600)
         if activeScreen == SMITH_SCREEN:
@@ -319,12 +300,12 @@ if __name__ == "__main__":
             sellTenPercentGold, sellFiftyPercentGold, sellAllGold = drawConversion("Gold", 25, 350, Colors.gold)
             sellTenPercentDiamond, sellFiftyPercentDiamond, sellAllDiamond = drawConversion("Diamond", 25, 400, Colors.diamond)
 
-            oneMiner, fiveMiner, twentyFiveMiner = drawBuyMinerButtons(200)
-            oneMinerCopper, fiveMinerCopper, twentyFiveMinerCopper = drawMinerButtons("Copper", 275, Colors.copper)
-            oneMinerIron, fiveMinerIron, twentyFiveMinerIron = drawMinerButtons("Iron", 350, Colors.iron)
-            oneMinerSilver, fiveMinerSilver, twentyFiveMinerSilver = drawMinerButtons("Silver", 425, Colors.silver)
-            oneMinerGold, fiveMinerGold, twentyFiveMinerGold = drawMinerButtons("Gold", 500, Colors.gold)
-            oneMinerDiamond, fiveMinerDiamond, twentyFiveMinerDiamond = drawMinerButtons("Diamond", 575, Colors.diamond)
+            oneMiner, fiveMiner, twentyFiveMiner, unassignAll = drawBuyMinerButtons(200)
+            oneMinerCopper, fiveMinerCopper, twentyFiveMinerCopper, removeCopper = drawMinerButtons("Copper", 275, Colors.copper)
+            oneMinerIron, fiveMinerIron, twentyFiveMinerIron, removeIron = drawMinerButtons("Iron", 350, Colors.iron)
+            oneMinerSilver, fiveMinerSilver, twentyFiveMinerSilver, removeSilver = drawMinerButtons("Silver", 425, Colors.silver)
+            oneMinerGold, fiveMinerGold, twentyFiveMinerGold, removeGold = drawMinerButtons("Gold", 500, Colors.gold)
+            oneMinerDiamond, fiveMinerDiamond, twentyFiveMinerDiamond, removeDiamond = drawMinerButtons("Diamond", 575, Colors.diamond)
             swapScreenToMine = drawButton("To Mine", 100, 600)
             #buyCopperMiners, assignCopperMiners = drawMiners()
             drawUpgradesHeader()
@@ -332,14 +313,14 @@ if __name__ == "__main__":
             pass
         if activeScreen == STAT_SCREEN:
             screen.fill(background)
-            screen.blit(font.render(numberScaling(gameData.getStat("Total Clicks").getValue()), True, Colors.white), (700, 100)) #TO move
-            screen.blit(font.render(numberScaling(gameData.getStat("Total Coin Earned").getValue()), True, Colors.white), (700, 200)) #TO move
-            screen.blit(font.render(str(round(gameData.getStat("Time Played").getValue(), 2)), True, Colors.white), (700, 300)) #TO move
-            screen.blit(font.render(numberScaling(gameData.getStat("Total Copper Earned").getValue()), True, Colors.white), (700, 400)) #TO move
-            screen.blit(font.render(numberScaling(gameData.getStat("Total Iron Earned").getValue()), True, Colors.white), (900, 100)) #TO move
-            screen.blit(font.render(numberScaling(gameData.getStat("Total Silver Earned").getValue()), True, Colors.white), (900, 200)) #TO move
-            screen.blit(font.render(numberScaling(gameData.getStat("Total Gold Earned").getValue()), True, Colors.white), (900, 300)) #TO move
-            screen.blit(font.render(numberScaling(gameData.getStat("Total Diamond Earned").getValue()), True, Colors.white), (900, 400)) #TO move
+            screen.blit(font.render("Total Clicks: " + numberScaling(gameData.getStat("Total Clicks").getValue()), True, Colors.white), (700, 100)) #TO move
+            screen.blit(font.render("Total Coins: " + numberScaling(gameData.getStat("Total Coin Earned").getValue()), True, Colors.white), (700, 200)) #TO move
+            screen.blit(font.render("Seconds played: " + numberScaling(gameData.getStat("Time Played").getValue()), True, Colors.white), (700, 300)) #TO move
+            screen.blit(font.render("Total Copper Earned: " + numberScaling(gameData.getStat("Total Copper Earned").getValue()), True, Colors.white), (700, 400)) #TO move
+            screen.blit(font.render("Total Iron Earned: " + numberScaling(gameData.getStat("Total Iron Earned").getValue()), True, Colors.white), (950, 100)) #TO move
+            screen.blit(font.render("Total Silver Earned: " + numberScaling(gameData.getStat("Total Silver Earned").getValue()), True, Colors.white), (950, 200)) #TO move
+            screen.blit(font.render("Total Gold Earned: " + numberScaling(gameData.getStat("Total Gold Earned").getValue()), True, Colors.white), (950, 300)) #TO move
+            screen.blit(font.render("Total Diamond Earned: " + numberScaling(gameData.getStat("Total Diamond Earned").getValue()), True, Colors.white), (950, 400)) #TO move
             swapScreenToMine = drawButton("To Mine", 700, 600)
         if activeScreen == RETIRE_SCREEN:
             pass

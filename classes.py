@@ -13,17 +13,18 @@ numScaleList = ["", "K", "M", "B", "t", "q", "Q", "s", "S", "o", "n", "d", "U", 
 def numberScaling(input):
     x = input
     amount = 0
-    while x >= 1000:
+    while x >= 1000 or x <=-1000:
         x = x / 1000
         amount += 1
     return str(round(x, 2)) + numScaleList[amount]
 
 class OreType:
-    def __init__(self, name:str, image:str, value:float):
+    def __init__(self, name:str, image:str, value:float, colMod:float):
         self.name = name
         self.image = image
         self.amount = 0
         self.value = value
+        self.collectionModifier = colMod
 
     def setAmount(self, amount):
         self.amount = amount
@@ -34,6 +35,9 @@ class OreType:
     def getImage(self):
         return self.image
     
+    def getCollectionModifier(self):
+        return self.collectionModifier
+
     def getAmount(self):
         return self.amount
     
@@ -135,7 +139,12 @@ class Upgrade:
         return self.name
 
     def getEffect(self):
-        return self.count * self.magnitude
+        mod = ""
+        if self.type == "Add" and self.magnitude > 0:
+            mod = "+"
+        if self.type == "Mutiply":
+            mod = "x"
+        return mod + numberScaling(self.count * self.magnitude * 100) + "%"
 
     def getStatModified(self):
         return self.statModified
@@ -157,12 +166,12 @@ class Upgrade:
 
     def canAfford(self):
         for rate in self.getCost():
-            if rate.getRate() > rate.getOre().amount:
+            if rate.getRate() > rate.getOre().getAmount():
                 return False
         return True
 
     def buyUpgrade(self):
-        if self.canAfford() and self.cap < 0 or self.count < self.cap:
+        if self.canAfford() and (self.cap < 0 or self.count < self.cap):
             for rate in self.getCost():
                 rate.getOre().addOre(-rate.getRate())
             self.count += 1
@@ -209,7 +218,7 @@ class StatHolder:
 
 class Data:
     def __init__(self) -> None:
-        self.coin = OreType("Coin", "", 0)
+        self.coin = OreType("Coin", "", 0, 1)
 
         self.stats = StatHolder()
 
@@ -217,11 +226,11 @@ class Data:
 
         # Initializes a list of OreType objects
         self.ores = {
-            "Copper": OreType("Copper", "", 2),
-            "Iron": OreType("Iron", "", 5),
-            "Silver": OreType("Silver", "", 25),
-            "Gold": OreType("Gold", "", 100),
-            "Diamond": OreType("Diamond", "", 500)
+            "Copper": OreType("Copper", "", 2, 1),
+            "Iron": OreType("Iron", "", 5, 0.25),
+            "Silver": OreType("Silver", "", 25, 0.05),
+            "Gold": OreType("Gold", "", 100, 0.001),
+            "Diamond": OreType("Diamond", "", 500, 0.00001)
         }
 
         # Stores all of the mine values
@@ -238,8 +247,8 @@ class Data:
         self.upgrades = {
             "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1)], 10, self.getStat("Click Multiplier"), 10, "Multiply", -1),
             "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 1)], 1.2, self.getStat("Base Click Value"), 1, "Add", -1),
-            "Miner_Speed": Upgrade("Miner Speed", [OreRate(self.ores["Copper"], 1)], 1.2, self.getStat("Miner Speed"), -5, "Add", 19),
-            "Miner_Cost": Upgrade("Miner Cost", [OreRate(self.ores["Copper"], 1)], 1.2, self.getStat("Miner Cost Reduce"), 0.5, "Multiply", 1)
+            "Miner_Speed": Upgrade("Miner Speed Reduction", [OreRate(self.ores["Copper"], 1)], 1.2, self.getStat("Miner Speed"), -5, "Add", 19),
+            "Miner_Cost": Upgrade("Miner Cost Multiplier", [OreRate(self.ores["Copper"], 1)], 1.2, self.getStat("Miner Cost Reduce"), 0.5, "Multiply", 1)
         }
 
         self.activeMine = self.mines["Copper"]
@@ -272,17 +281,19 @@ class Data:
 
     #if the player has enough miners available, assign x miners to the mine given.
     def assignMiners(self, mine:MineType, x:int=1):
-        if self.getStat("Miners Available").getValue() >= x:
+        available = self.getStat("Miners Available").getValue()
+        if available >= x:
             mine.assignMiners(x)
-            self.getStat("Miners Available").setValue(self.getStat("Miners Available") - x)
+            self.getStat("Miners Available").setValue(available - x)
         else:
-            mine.assignMiners(self.getStat("Miners Available"))
+            mine.assignMiners(available)
             self.getStat("Miners Available").setValue(0)
 
     #Player unassignes all miners of a specific mine.
     def unassignAllMiners(self, mine:MineType):
+        self.getStat("Miners Available").setValue(self.getStat("Miners Available").getValue() + mine.getMinerCount())
         mine.unassignMiners(mine.getMinerCount())
-        self.getStat("Miners Available").setValue(self.getStat("Miners Available") + mine.getMinerCount())
+        
 
     #if there is one, set activeMine to the mine after the current activeMine
     def setNextMine(self):
@@ -325,6 +336,15 @@ class Data:
         self.getStat("Total Coin Earned").setValue(self.getStat("Total Coin Earned").getValue() + oreSold * ore.getValue())
         self.coin.addOre(oreSold * ore.getValue())
 
+    def getMinerValue(self, mine:MineType, ore:OreType):
+        return self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount() * ore.getCollectionModifier()
+        
+    def getClickValue(self, ore:OreType=None):
+        if ore:
+            return self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue() * ore.getCollectionModifier()
+        else:
+            return self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()
+
     #Commits mine action on mine passed in
     def mineAction(self, mine:MineType, isMiner=False):
         ore = []
@@ -334,29 +354,29 @@ class Data:
             probability.append(rate.getRate())
         obtainedOre = choice(ore, p=probability)
         if isMiner:
-            obtainedOre.amount += self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()
+            obtainedOre.amount += self.getMinerValue(mine, obtainedOre)
             if obtainedOre.getName() == "Copper":
-                self.getStat("Total Copper Earned").setValue(self.getStat("Total Copper Earned").getValue() + (self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()))
+                self.getStat("Total Copper Earned").setValue(self.getStat("Total Copper Earned").getValue() + (self.getMinerValue(mine, obtainedOre)))
             elif obtainedOre.getName() == "Iron":
-                self.getStat("Total Iron Earned").setValue(self.getStat("Total Iron Earned").getValue() + (self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()))
+                self.getStat("Total Iron Earned").setValue(self.getStat("Total Iron Earned").getValue() + (self.getMinerValue(mine, obtainedOre)))
             elif obtainedOre.getName() == "Silver":
-                self.getStat("Total Silver Earned").setValue(self.getStat("Total Silver Earned").getValue() + (self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()))
+                self.getStat("Total Silver Earned").setValue(self.getStat("Total Silver Earned").getValue() + (self.getMinerValue(mine, obtainedOre)))
             elif obtainedOre.getName() == "Gold":
-                self.getStat("Total Gold Earned").setValue(self.getStat("Total Gold Earned").getValue() + (self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()))
+                self.getStat("Total Gold Earned").setValue(self.getStat("Total Gold Earned").getValue() + (self.getMinerValue(mine, obtainedOre)))
             elif obtainedOre.getName() == "Diamond":
-                self.getStat("Total Diamond Earned").setValue(self.getStat("Total Diamond Earned").getValue() + (self.getStat("Miner Value Multiplier").getValue() * mine.getMinerCount()))
+                self.getStat("Total Diamond Earned").setValue(self.getStat("Total Diamond Earned").getValue() + (self.getMinerValue(mine, obtainedOre)))
         else: 
-            obtainedOre.amount += self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()
+            obtainedOre.amount += self.getClickValue(obtainedOre)
             if obtainedOre.getName() == "Copper":
-                self.getStat("Total Copper Earned").setValue(self.getStat("Total Copper Earned").getValue() + (self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()))
+                self.getStat("Total Copper Earned").setValue(self.getStat("Total Copper Earned").getValue() + (self.getClickValue(obtainedOre)))
             elif obtainedOre.getName() == "Iron":
-                self.getStat("Total Iron Earned").setValue(self.getStat("Total Iron Earned").getValue() + (self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()))
+                self.getStat("Total Iron Earned").setValue(self.getStat("Total Iron Earned").getValue() + (self.getClickValue(obtainedOre)))
             elif obtainedOre.getName() == "Silver":
-                self.getStat("Total Silver Earned").setValue(self.getStat("Total Silver Earned").getValue() + (self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()))
+                self.getStat("Total Silver Earned").setValue(self.getStat("Total Silver Earned").getValue() + (self.getClickValue(obtainedOre)))
             elif obtainedOre.getName() == "Gold":
-                self.getStat("Total Gold Earned").setValue(self.getStat("Total Gold Earned").getValue() + (self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()))
+                self.getStat("Total Gold Earned").setValue(self.getStat("Total Gold Earned").getValue() + (self.getClickValue(obtainedOre)))
             elif obtainedOre.getName() == "Diamond":
-                self.getStat("Total Diamond Earned").setValue(self.getStat("Total Diamond Earned").getValue() + (self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()))
+                self.getStat("Total Diamond Earned").setValue(self.getStat("Total Diamond Earned").getValue() + (self.getClickValue(obtainedOre)))
 
 
     #makes the miners work
