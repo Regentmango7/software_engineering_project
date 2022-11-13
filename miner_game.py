@@ -178,6 +178,8 @@ def save():
 
     print("Game is Saved")
 
+save()
+
 if os.path.exists("./local_data.json"):
     with open("./local_data.json", "r") as file:
         gameData.dataLoad(json.load(file))

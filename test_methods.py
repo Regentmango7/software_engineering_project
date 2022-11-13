@@ -26,11 +26,27 @@ def testSellOre():
     #beginning
     assert 10 == testSellData.getOre("Copper").getAmount()  #is copper amount 10 after setup?
     assert 0 == testSellData.coin.getAmount()  #is coin amount 0 after setup?
+
     #test
     testSellData.sellOre(testSellData.getOre("Copper"), 1)
     #ending
     assert 0 == testSellData.getOre("Copper").getAmount() #is copper all gone after sell?
     assert 20 == testSellData.coin.getAmount()  #is coin 20 after selling 10 copper?
+
+    #setup again for testSellOre
+    testSellData.getOre("Copper").setAmount(10)
+    testSellData.coin.setAmount(0)
+
+    #testing
+    #beginning
+    assert 10 == testSellData.getOre("Copper").getAmount()  #is copper amount 10 after setup?
+    assert 0 == testSellData.coin.getAmount()  #is coin amount 0 after setup?
+
+    #test
+    testSellData.sellOre(testSellData.getOre("Copper"), .5)
+    #ending
+    assert 5 == testSellData.getOre("Copper").getAmount() #is copper all gone after sell?
+    assert 10 == testSellData.coin.getAmount()  #is coin 20 after selling 10 copper?
 
     return
 
@@ -150,6 +166,31 @@ def testGetCost():
     assert 100 == baseList[0].getRate() # Copper cost is 100
 
     #end
+
+
+    #setup for "worker speed" upgrade
+
+    #testing for "worker speed" upgrade
+    #begining
+
+    mineSpeed = testGetCostData.getUpgrade("Miner_Speed")
+
+    baseList = mineSpeed.getCost()
+    #TESTING Miner_Speed UPGRADE
+    assert "Copper" == baseList[0].getOre().getName()  #First ore is Copper
+    assert 1.2 == baseList[0].getRate() # Copper cost is 1.2 initially
+
+    testGetCostData.getOre("Copper").setAmount(5)
+
+    mineSpeed.buyUpgrade()
+
+    #COPPER COST SHOULD BE 2.4 after 1 upgrade
+    baseList = mineSpeed.getCost()
+    assert "Copper" == baseList[0].getOre().getName()  #First ore is Copper
+    assert 2.4 == baseList[0].getRate() # Copper cost is 2.4 after first upgrade
+
+
+    #end
     return
 
 #function to test canAfford
@@ -190,6 +231,40 @@ def testCanAfford():
     assert 1001 == testAffordData.getOre("Copper").getAmount()
     #end
     assert True == testAffordData.getUpgrade("Click_Multiplier").canAfford()
+
+    # TESTING FOR Miner_Speed:
+
+    #setup for no money
+    testAffordData.getOre("Copper").setAmount(0)
+    #TESTING WITH NO ORE
+    #beginning
+    assert 0 == testAffordData.getOre("Copper").getAmount()
+    #end
+    assert False == testAffordData.getUpgrade("Miner_Speed").canAfford()
+    #setup for enough money
+    testAffordData.getOre("Copper").setAmount(1001)
+    #TESTING WITH ENOUGH ORE
+    #beginning
+    assert 1001 == testAffordData.getOre("Copper").getAmount()
+    #end
+    assert True == testAffordData.getUpgrade("Miner_Speed").canAfford()
+
+     # TESTING FOR Miner_Cost:
+
+    #setup for no money
+    testAffordData.getOre("Copper").setAmount(0)
+    #TESTING WITH NO ORE
+    #beginning
+    assert 0 == testAffordData.getOre("Copper").getAmount()
+    #end
+    assert False == testAffordData.getUpgrade("Miner_Cost").canAfford()
+    #setup for enough money
+    testAffordData.getOre("Copper").setAmount(1001)
+    #TESTING WITH ENOUGH ORE
+    #beginning
+    assert 1001 == testAffordData.getOre("Copper").getAmount()
+    #end
+    assert True == testAffordData.getUpgrade("Miner_Cost").canAfford()
 
     return 
 
@@ -249,10 +324,76 @@ def testBuyUpgrade():
     #end
     assert 991 == testBuyUpData.getOre("Copper").getAmount()
     assert 10 == testBuyUpData.getStat("Click Multiplier").getValue()
+
+
+    #TESTING FOR Miner_Speed:
+
+    #setup for no money
+    testBuyUpData.getOre("Copper").setAmount(0)
+    #TESTING WITH NO ORE
+    #beginning
+    assert 0 == testBuyUpData.getOre("Copper").getAmount()
+    assert 100 == testBuyUpData.getStat("Miner Speed").getValue()
+    #test
+    testBuyUpData.getUpgrade("Miner_Speed").buyUpgrade()
+    #end
+    assert 0 == testBuyUpData.getOre("Copper").getAmount()
+    assert 100 == testBuyUpData.getStat("Miner Speed").getValue()
+
+    #setup for enough money
+    testBuyUpData.getOre("Copper").setAmount(1001)
+    #TESTING WITH ENOUGH ORE
+    #beginning
+    assert 1001 == testBuyUpData.getOre("Copper").getAmount()
+    assert 100 == testBuyUpData.getStat("Miner Speed").getValue()
+    #test
+    testBuyUpData.getUpgrade("Miner_Speed").buyUpgrade()
+    #end
+    assert 999.8 == testBuyUpData.getOre("Copper").getAmount()
+    assert 95 == testBuyUpData.getStat("Miner Speed").getValue()
+
+
+    #TESTING FOR Miner_Cost:
+
+    #setup for no money
+    testBuyUpData.getOre("Copper").setAmount(0)
+    #TESTING WITH NO ORE
+    #beginning
+    assert 0 == testBuyUpData.getOre("Copper").getAmount()
+    assert 1.0 == testBuyUpData.getStat("Miner Cost Reduce").getValue()
+    #test
+    testBuyUpData.getUpgrade("Miner_Cost").buyUpgrade()
+    #end
+    assert 0 == testBuyUpData.getOre("Copper").getAmount()
+    assert 1.0 == testBuyUpData.getStat("Miner Cost Reduce").getValue()
+
+    #setup for enough money
+    testBuyUpData.getOre("Copper").setAmount(1001)
+    #TESTING WITH ENOUGH ORE
+    #beginning
+    assert 1001 == testBuyUpData.getOre("Copper").getAmount()
+    assert 1.0 == testBuyUpData.getStat("Miner Cost Reduce").getValue()
+    #test
+    testBuyUpData.getUpgrade("Miner_Cost").buyUpgrade()
+    #end
+    assert 999.8 == testBuyUpData.getOre("Copper").getAmount()
+    assert 0.5 == testBuyUpData.getStat("Miner Cost Reduce").getValue()
+    return
+
+def testNumScaling():
+    #test for zero
+    assert "0" == classes.numberScaling(0)
+    #test for 1
+    assert "1" == classes.numberScaling(1)
+    #test for many (both positive and negative)
+    assert "10.0K" == classes.numberScaling(10000)
+    assert "-10.0K" == classes.numberScaling(-10000)
+    assert "1.0B" == classes.numberScaling(1000000000)
     return
 
 #main method to run the test functions
 def main():
+    testNumScaling()
     testSellOre() #working!
     testBuyMiner() #working!
     testWork() #working!

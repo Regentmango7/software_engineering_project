@@ -189,7 +189,7 @@ class StatHolder:
             Stat("Miners Available", 0, True), 
             Stat("Total Miners", 0, True), 
             Stat("Miner Speed", 100, True),
-            Stat("Miner Time Upgradable", 100, True),
+            Stat("Miner Time Upgradable", 100, True), #Where is this used?? I think it may be redundant
             Stat("Miner Cost Reduce", 1.0, True),
             Stat("Total Clicks", 0, False),
             Stat("Total Coin Earned", 0, False),
@@ -394,21 +394,7 @@ class Data:
             self.coin.addOre(-mine.getUnlockCost())
             mine.unlock()
 
-    def dataLoad(self, data:dict):
-        self.coin.setAmount(data["Coins"])
-        for mineName, count in data["Miners Assigned"].items():
-            self.getMine(mineName).assignMiners(count)
-        for mineName, unlock in data["Mines Unlocked"].items():
-            if unlock:
-                self.getMine(mineName).unlock()
-        for oreName, amount in data["Ores"].items():
-            self.getOre(oreName).addOre(amount)
-        for name, count in data["Upgrades"].items():
-            self.getUpgrade(name).count = count
-        self.activeMine = self.getMine(data["Active Mine"])
-        for statName, value in data["Stats"].items():
-            self.getStat(statName).setValue(value)
-        
+  
 
     def dataDump(self):
         data = {}
@@ -428,3 +414,19 @@ class Data:
         data["Active Mine"] = self.activeMine.getName()
         data["Stats"] = self.stats.dumpStats()
         return data
+
+    def dataLoad(self, data:dict):
+        self.coin.setAmount(data["Coins"])
+        for mineName, count in data["Miners Assigned"].items():
+            self.getMine(mineName).assignMiners(count)
+        for mineName, unlock in data["Mines Unlocked"].items():
+            if unlock:
+                self.getMine(mineName).unlock()
+        for oreName, amount in data["Ores"].items():
+            self.getOre(oreName).addOre(amount)
+        for name, count in data["Upgrades"].items():
+            self.getUpgrade(name).count = count
+        self.activeMine = self.getMine(data["Active Mine"])
+        for statName, value in data["Stats"].items():
+            self.getStat(statName).setValue(value)
+        
