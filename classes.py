@@ -130,7 +130,7 @@ class Upgrade:
     def getCostString(self):
         if self.cap > 0 and self.count >= self.cap:
             return "Upgrade Maxed"
-        costString = "Cost: "
+        costString = ""
         for rate in self.getCost():   
             costString += numberScaling(rate.getRate()) + " " + rate.getOre().getName()
         return costString
