@@ -120,10 +120,7 @@ class Upgrade:
     def getCost(self):
         sellRate = []
         for rate in self.costOres:
-            if self.type == "Add":
-                totCost = (self.count+1) * self.costMult * rate.getRate()
-            elif self.type == "Multiply":
-                totCost = pow((self.costMult * rate.getRate()), (self.count+1)) 
+            totCost = self.costMult * pow(rate.getRate(), self.count)
             sellRate.append(OreRate(rate.getOre(), round(totCost, 2)))
         return sellRate
 
@@ -245,10 +242,10 @@ class Data:
         self.MINE_ORDER = ["Copper", "Iron", "Silver", "Gold", "Diamond"]
 
         self.upgrades = {
-            "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1)], 10, self.getStat("Click Multiplier"), 10, "Multiply", -1),
-            "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 1)], 1.2, self.getStat("Base Click Value"), 1, "Add", -1),
-            "Miner_Speed": Upgrade("Miner Speed Reduction", [OreRate(self.ores["Copper"], 1)], 1.2, self.getStat("Miner Speed"), -5, "Add", 19),
-            "Miner_Cost": Upgrade("Miner Cost Multiplier", [OreRate(self.ores["Copper"], 1)], 1.2, self.getStat("Miner Cost Reduce"), 0.5, "Multiply", 1)
+            "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 10)], 1000, self.getStat("Click Multiplier"), 2, "Multiply", 3),
+            "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 1.1)], 20, self.getStat("Base Click Value"), 1, "Add", 15),
+            "Miner_Speed": Upgrade("Miner Speed Reduction", [OreRate(self.ores["Copper"], 1.5)], 100, self.getStat("Miner Speed"), -5, "Add", 19),
+            "Miner_Cost": Upgrade("Miner Cost Multiplier", [OreRate(self.ores["Copper"], 100)], 50, self.getStat("Miner Cost Reduce"), 0.5, "Multiply", 1)
         }
 
         self.activeMine = self.mines["Copper"]
@@ -345,14 +342,18 @@ class Data:
         else:
             return self.getStat("Base Click Value").getValue() * self.getStat("Click Multiplier").getValue()
 
-    #Commits mine action on mine passed in
-    def mineAction(self, mine:MineType, isMiner=False):
+    #Randomly selects ore based on the rate that the ores appears in the mine.
+    def random_ore(self, mine:MineType):
         ore = []
         probability = []
         for rate in mine.getOreRates():
             ore.append(rate.getOre())
             probability.append(rate.getRate())
-        obtainedOre = choice(ore, p=probability)
+        return choice(ore, p=probability)
+
+    #Commits mine action on mine passed in
+    def mineAction(self, mine:MineType, isMiner=False):
+        obtainedOre = self.random_ore(mine)
         if isMiner:
             obtainedOre.amount += self.getMinerValue(mine, obtainedOre)
             if obtainedOre.getName() == "Copper":
@@ -394,6 +395,12 @@ class Data:
             self.coin.addOre(-mine.getUnlockCost())
             mine.unlock()
 
+    def prestige_value(self):
+        pass
+        return 
+
+    def execute_prestige(self):
+        pass
   
 
     def dataDump(self):
