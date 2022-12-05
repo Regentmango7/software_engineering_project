@@ -18,6 +18,38 @@ def numberScaling(input):
         amount += 1
     return str(round(x, 2)) + numScaleList[amount]
 
+class Contract:
+    def __init__(self, scaling, typeOre, name):
+        self.scaling = scaling
+        self.cost = self.scaling * 10
+        self.typeOre = typeOre
+        self.name = name
+
+    def getCostType(self):
+        return self.typeOre
+    
+    def getCost(self):
+        return self.cost
+    
+    def getScaling(self):
+        return self.scaling
+    
+    def getName(self):
+        return self.name
+    
+    def getCostString(self):
+        return numberScaling(self.cost)
+
+    def getPayoutString(self):
+        return numberScaling(self.getScaling() * self.getScaling())
+
+    """
+    takes in player progress, and etremines how much of how high of a currency it should ask for
+
+    so it needs player progress (use mines unlockedd), 
+    needs a contracts completed number (but probably make in the event pos function thingy, and have it go into scaling)
+    """
+
 class OreType:
     def __init__(self, name:str, image:str, value:float, colMod:float):
         self.name = name
@@ -195,7 +227,10 @@ class StatHolder:
             Stat("Total Iron Earned", 0, False),
             Stat("Total Silver Earned", 0, False),
             Stat("Total Gold Earned", 0, False),
-            Stat("Total Diamond Earned", 0, False) 
+            Stat("Total Diamond Earned", 0, False),
+            Stat("Contract1 Scaling", 25, False),
+            Stat("Contract2 Scaling", 25, False),
+            Stat("Contract3 Scaling", 25, False)
         ]
     
     def adjustStat(self, statName:str, amount:float):
@@ -249,6 +284,20 @@ class Data:
         }
 
         self.activeMine = self.mines["Copper"]
+
+        #if I delcare this here, doesnt that mean they are immutable?
+        self.contracts = {
+            "Contract1": Contract(self.getStat("Contract1 Scaling").getValue(), self.random_ore(self.mostRecentlyUnlocked()), "Contract1"),
+            "Contract2": Contract(self.getStat("Contract2 Scaling").getValue(), self.random_ore(self.mostRecentlyUnlocked()), "Contract2"),
+            "Contract3": Contract(self.getStat("Contract3 Scaling").getValue(), self.random_ore(self.mostRecentlyUnlocked()), "Contract3")
+        }
+
+    def buyContract(self, contract, inputOre):
+        if inputOre >= contract.getCost():
+            print(contract)
+            self.contracts[contract.getName()] = Contract(self.getStat(contract.getName() + " Scaling").getValue() * 2, self.random_ore(self.mostRecentlyUnlocked()), contract.getName())
+            return contract.getScaling() * contract.getScaling()
+        return 0 
 
     def getOre(self, ore:str):
         return self.ores[ore]
@@ -436,4 +485,14 @@ class Data:
         self.activeMine = self.getMine(data["Active Mine"])
         for statName, value in data["Stats"].items():
             self.getStat(statName).setValue(value)
-        
+
+
+    def mostRecentlyUnlocked(self):
+        mineUnlocked = self.mines[self.MINE_ORDER[0]]
+        i = 0
+        while i < len(self.MINE_ORDER):
+            if self.mines[self.MINE_ORDER[i]].isUnlocked() == False:
+                mineUnlocked = self.mines[self.MINE_ORDER[i]]
+                i = len(self.MINE_ORDER)
+            i += 1
+        return mineUnlocked
