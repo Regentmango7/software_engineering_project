@@ -521,8 +521,6 @@ class Data:
         for key, ore in self.ores.items():
             data["Ores"][key] = ore.getAmount()
         data["Upgrades"] = {}
-        for name, upgrade in self.retire_upgrades.items():
-            data["Upgrades"][name] = upgrade.getCount()
         for name, upgrade in self.upgrades.items():
             data["Upgrades"][name] = upgrade.getCount()
         data["Active Mine"] = self.activeMine.getName()
