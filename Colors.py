@@ -15,3 +15,12 @@ iron = (165, 156, 148)
 silver = (230, 237, 245)
 gold = (203, 161, 53)
 diamond = (10, 85, 100)
+
+oreColors = {
+    "Copper": copper,
+    "Iron": iron,
+    "Silver": silver,
+    "Gold": gold,
+    "Diamond": diamond,
+    "Skill Point": purple
+}

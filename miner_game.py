@@ -63,10 +63,10 @@ def drawMine():
 
 #draws in the upgrade circle
 def drawUpgrade(upgrade:classes.Upgrade, x:float, y:float):
-    upgradeArea = pygame.draw.rect(screen, Colors.black, (x - 55, y - 28, 250, 70)) 
-    screen.blit(font.render("Cost: " + upgrade.getCostString(), True, Colors.white), (x-20, y))
-    screen.blit(font.render("Effect: " + str(upgrade.getEffect()), True, Colors.white), (x-20, y + 20))
-    screen.blit(font.render(upgrade.getName(), True, Colors.white), (x-20, y-20))
+    upgradeArea = pygame.draw.rect(screen, Colors.oreColors[upgrade.currentTier], (x - 55, y - 28, 250, 70)) 
+    screen.blit(font.render("Cost: " + upgrade.getCostString(), True, Colors.black), (x-20, y))
+    screen.blit(font.render("Effect: " + str(upgrade.getEffect()), True, Colors.black), (x-20, y + 20))
+    screen.blit(font.render(upgrade.getName(), True, Colors.black), (x-20, y-20))
     return upgradeArea
 
 def drawMineSwitcher(mine, x, y): 
@@ -87,18 +87,26 @@ def drawLabel(labelString:str, x:int, y:int):
 
 #draws in the conversion circle
 def drawConversion(oreName:str, x:int, y:int, color):
+    #Displays how many coins you get for 1 Ore
+    pygame.draw.rect(screen, Colors.black, (x, y, 110, 40))
+    screen.blit(font.render("1 " + oreName + " -> " , True, Colors.white), (x+5, y+5))
+    screen.blit(font.render(str(gameData.getOre(oreName).getValue()) + " Coins", True, Colors.white), (x+5, y+20))
+
     #Sell 10% ore button and label
-    sellTenPercent = pygame.draw.rect(screen, color, (x, y, 80, 40))
-    screen.blit(font.render("Sell 10%", True, Colors.black), (x+5, y+5))
-    screen.blit(font.render(oreName, True, Colors.black), (x+5, y+20))
+    sellTenPercent = pygame.draw.rect(screen, color, (x+120, y, 80, 40))
+    screen.blit(font.render("Sell 10%", True, Colors.black), (x+125, y+5))
+    screen.blit(font.render(oreName, True, Colors.black), (x+125, y+20))
     #Sell 50% ore button and label
-    sellFiftyPercent = pygame.draw.rect(screen, color, (x+90, y, 80, 40))
-    screen.blit(font.render("Sell 50%", True, Colors.black), (x+95, y+5))
-    screen.blit(font.render(oreName, True, Colors.black), (x+95, y+20))
+    sellFiftyPercent = pygame.draw.rect(screen, color, (x+210, y, 80, 40))
+    screen.blit(font.render("Sell 50%", True, Colors.black), (x+215, y+5))
+    screen.blit(font.render(oreName, True, Colors.black), (x+215, y+20))
     #Sell all ore button and label
-    sellAll = pygame.draw.rect(screen, color, (x+180, y, 80, 40)) #The click circle to sell ores and gain coins
-    screen.blit(font.render("Sell All" , True, Colors.black), (x+185, y+5))
-    screen.blit(font.render(oreName, True, Colors.black), (x+185, y+20))
+    sellAll = pygame.draw.rect(screen, color, (x+300, y, 80, 40)) #The click circle to sell ores and gain coins
+    screen.blit(font.render("Sell All" , True, Colors.black), (x+305, y+5))
+    screen.blit(font.render(oreName, True, Colors.black), (x+305, y+20))
+
+    
+
     return sellTenPercent, sellFiftyPercent, sellAll
 
 
@@ -132,6 +140,7 @@ def drawMinerButtons(mineName:str, y:float, color):
 
 def drawBuyMinerButtons(y:float):
     drawLabel("Miners", SCREEN_WIDTH/2 - 95, 100)
+    screen.blit((font.render("Miner Cost: " + str(numberScaling(gameData.getMinerCost())), True, Colors.black)), (SCREEN_WIDTH/2 - 100, y-30))
     pygame.draw.rect(screen, Colors.black, (SCREEN_WIDTH/2 - 210, y - 5, 360, 50))
     screen.blit((font.render("Buy Miners", True, Colors.white)), (SCREEN_WIDTH/2 - 200, y))
     screen.blit((font.render(numberScaling(gameData.getStat("Miners Available").getValue()), True, Colors.white)), (SCREEN_WIDTH/2 - 200, y+25))
@@ -316,6 +325,8 @@ if __name__ == "__main__":
                         gameData.getUpgrade("Miner_Speed").buyUpgrade()
                     if workCost.collidepoint(event.pos):
                         gameData.getUpgrade("Miner_Cost").buyUpgrade()
+                    if workValue.collidepoint(event.pos):
+                        gameData.getUpgrade("Miner_Multiplier").buyUpgrade()
                     if swapScreenToMine.collidepoint(event.pos):
                         toChangeScreen = MINE_SCREEN
                         tfChangeScreen = True
@@ -351,11 +362,7 @@ if __name__ == "__main__":
             screen.fill(background)
             drawWallet()
             #SELLERS
-            drawLabel("Sell Ores", 95, 100)
-            clickBaseUpgrade = drawUpgrade(gameData.getUpgrade("Click_Base_Count"), (SCREEN_WIDTH * 3) / 4, 250)
-            clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), (SCREEN_WIDTH * 3) / 4, 350)
-            workSpeed = drawUpgrade(gameData.getUpgrade("Miner_Speed"), (SCREEN_WIDTH * 3) / 4, 450)
-            workCost = drawUpgrade(gameData.getUpgrade("Miner_Cost"), (SCREEN_WIDTH * 3) / 4, 550)
+            drawLabel("Sell Ores", 125, 100)
             sellTenPercentCopper, sellFiftyPercentCopper, sellAllCopper = drawConversion("Copper", 25, 200, Colors.copper)
             sellTenPercentIron, sellFiftyPercentIron, sellAllIron = drawConversion("Iron", 25, 250, Colors.iron)
             sellTenPercentSilver, sellFiftyPercentSilver, sellAllSilver = drawConversion("Silver", 25, 300, Colors.silver)
@@ -368,9 +375,15 @@ if __name__ == "__main__":
             oneMinerSilver, fiveMinerSilver, twentyFiveMinerSilver, removeSilver = drawMinerButtons("Silver", 425, Colors.silver)
             oneMinerGold, fiveMinerGold, twentyFiveMinerGold, removeGold = drawMinerButtons("Gold", 500, Colors.gold)
             oneMinerDiamond, fiveMinerDiamond, twentyFiveMinerDiamond, removeDiamond = drawMinerButtons("Diamond", 575, Colors.diamond)
+
+            drawLabel("Upgrades", (SCREEN_WIDTH * 3) / 4, 100)
+            clickBaseUpgrade = drawUpgrade(gameData.getUpgrade("Click_Base_Count"), (SCREEN_WIDTH * 3) / 4, 220)
+            clickMultUpgrade = drawUpgrade(gameData.getUpgrade("Click_Multiplier"), (SCREEN_WIDTH * 3) / 4, 300)
+            workSpeed = drawUpgrade(gameData.getUpgrade("Miner_Speed"), (SCREEN_WIDTH * 3) / 4, 380)
+            workCost = drawUpgrade(gameData.getUpgrade("Miner_Cost"), (SCREEN_WIDTH * 3) / 4, 460)
+            workValue = drawUpgrade(gameData.getUpgrade("Miner_Multiplier"), (SCREEN_WIDTH * 3) / 4, 540)
+
             swapScreenToMine = drawButton("To Mine", 100, 600)
-            #buyCopperMiners, assignCopperMiners = drawMiners()
-            drawUpgradesHeader()
         if activeScreen == CONTRACT_SCREEN:
             pass
         if activeScreen == STAT_SCREEN:
