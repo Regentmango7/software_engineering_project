@@ -50,7 +50,7 @@ def drawWallet():
     screen.blit(totDiamond, (150, 45))
 
 def drawButton(title:str, x:int, y:int):
-    swapArea = pygame.draw.circle(screen, Colors.black, (x, y), 30, 30)
+    swapArea = pygame.draw.rect(screen, Colors.black, (x, y, 95, 30))
     text = font.render(title, True, Colors.white)
     screen.blit(text, (x, y))
     return swapArea
@@ -262,6 +262,7 @@ if __name__ == "__main__":
                     if gameData.getNextMine() and nextMine.collidepoint(event.pos):
                         tfChangeMine = True
                         mineChange = "NEXT"
+
                     if swapScreenToSmith.collidepoint(event.pos):
                         toChangeScreen = SMITH_SCREEN
                         tfChangeScreen = True
@@ -269,6 +270,15 @@ if __name__ == "__main__":
                     if swapScreenToStats.collidepoint(event.pos):
                         toChangeScreen = STAT_SCREEN
                         tfChangeScreen = True
+                    
+                    if swapScreenToRetire.collidepoint(event.pos):
+                        toChangeScreen = RETIRE_SCREEN
+                        tfChangeScreen = True
+                    
+                    if swapScreenToGuilds.collidepoint(event.pos):
+                        #toChangeScreen = GUILD_SCREEN
+                        #tfChangeScreen = True
+                        pass #TO FIX
 
                     #Contracts
                     if cont1.collidepoint(event.pos):
@@ -352,8 +362,10 @@ if __name__ == "__main__":
             drawWallet()
             drawLabel(gameData.activeMine.getName(), (SCREEN_WIDTH/2 - 65), (SCREEN_HEIGHT/4))
             mineArea, nextMine, previousMine = drawMine()
-            swapScreenToSmith = drawButton("To Smithing", 600, 600)
-            swapScreenToStats = drawButton("To Stats", 700, 600)
+            swapScreenToSmith = drawButton("To Smithing", 550, 550)
+            swapScreenToStats = drawButton("To Stats", 650, 550)
+            swapScreenToRetire = drawButton("To Retire", 550, 600)
+            swapScreenToGuilds = drawButton("To Guilds", 650, 600)
             cont1 = drawContract1(gameData.contracts["Contract1"])
             cont2 = drawContract2(gameData.contracts["Contract2"])
             cont3 = drawContract3(gameData.contracts["Contract3"])
@@ -398,6 +410,7 @@ if __name__ == "__main__":
             screen.blit(font.render("Total Diamond Earned: " + numberScaling(gameData.getStat("Total Diamond Earned").getValue()), True, Colors.white), (950, 400)) #TO move
             swapScreenToMine = drawButton("To Mine", 700, 600)
         if activeScreen == RETIRE_SCREEN:
+            #swapScreenToMine = drawButton("To Mine", 700, 600)
             pass
 
 
