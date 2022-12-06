@@ -185,6 +185,10 @@ def drawContract3(contract):
 def drawRetire():
     retireRect = pygame.draw.rect(screen, Colors.baige, (1000, 300, 200, 55))
     title = font.render("Retire", True, Colors.black)#font.render("Coins: " + numberScaling(gameData.coin.getAmount()), True, Colors.black)
+    skillz = font.render("Skill Points: " + str(gameData.skillpoint.getAmountString()), True, Colors.black)
+    retire_value = font.render("Retirement Value: " + str((gameData.retire_value_string())), True, Colors.black)
+    screen.blit(skillz, (1005, 335))
+    screen.blit(retire_value, (1005, 320))
     screen.blit(title, (1005, 305))
     return retireRect
 

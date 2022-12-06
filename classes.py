@@ -77,6 +77,9 @@ class OreType:
     def getAmount(self):
         return self.amount
     
+    def getAmountString(self):
+        return numberScaling(self.getAmount())
+    
     def getValue(self):
         return self.value
     
@@ -334,6 +337,8 @@ class Data:
         payout = self.returnPayout(contract, inputOre)
         if payout != 0:
             self.coin.addOre(payout) 
+            print("Total " + str(contract.getCostType()) + " Earned")
+            contract.getCostType().addOre(-contract.getCost()) 
             self.getStat("Total Coin Earned").setValue(self.getStat("Total Coin Earned").getValue() + payout * self.coin.getValue())
             self.getStat(contract.getName() + " Scaling").setValue(self.contracts[contract.getName()].getScaling() * 2)
 
@@ -490,6 +495,9 @@ class Data:
         if coinValue == 0:
             return 0
         return (math.log(coinValue))
+    
+    def retire_value_string(self):
+        return numberScaling(self.retire_value())
 
     def execute_retire(self):
         self.skillpoint.addOre(self.retire_value())
