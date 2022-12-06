@@ -228,9 +228,9 @@ class StatHolder:
             Stat("Total Silver Earned", 0, False),
             Stat("Total Gold Earned", 0, False),
             Stat("Total Diamond Earned", 0, False),
-            Stat("Contract1 Scaling", 25, False),
-            Stat("Contract2 Scaling", 25, False),
-            Stat("Contract3 Scaling", 25, False)
+            Stat("Contract1 Scaling", 25, False), #need to change to whatever is saved
+            Stat("Contract2 Scaling", 25, False), #need to change to whatever is saved
+            Stat("Contract3 Scaling", 25, False)  #need to change to whatever is saved
         ]
     
     def adjustStat(self, statName:str, amount:float):
@@ -292,12 +292,18 @@ class Data:
             "Contract3": Contract(self.getStat("Contract3 Scaling").getValue(), self.random_ore(self.mostRecentlyUnlocked()), "Contract3")
         }
 
-    def buyContract(self, contract, inputOre):
+    def returnPayout(self, contract, inputOre):
         if inputOre >= contract.getCost():
-            print(contract)
             self.contracts[contract.getName()] = Contract(self.getStat(contract.getName() + " Scaling").getValue() * 2, self.random_ore(self.mostRecentlyUnlocked()), contract.getName())
             return contract.getScaling() * contract.getScaling()
         return 0 
+
+    def buyContract(self, contract, inputOre):
+        payout = self.returnPayout(contract, inputOre)
+        if payout != 0:
+            self.coin.addOre(payout) 
+            self.getStat("Total Coin Earned").setValue(self.getStat("Total Coin Earned").getValue() + payout * self.coin.getValue())
+            self.getStat(contract.getName() + " Scaling").setValue(self.contracts[contract.getName()].getScaling() * 2)
 
     def getOre(self, ore:str):
         return self.ores[ore]
@@ -486,13 +492,13 @@ class Data:
         for statName, value in data["Stats"].items():
             self.getStat(statName).setValue(value)
 
-
     def mostRecentlyUnlocked(self):
         mineUnlocked = self.mines[self.MINE_ORDER[0]]
         i = 0
         while i < len(self.MINE_ORDER):
             if self.mines[self.MINE_ORDER[i]].isUnlocked() == False:
-                mineUnlocked = self.mines[self.MINE_ORDER[i]]
+                #print(self.MINE_ORDER[i - 1]) #testing
+                mineUnlocked = self.mines[self.MINE_ORDER[i - 1]]
                 i = len(self.MINE_ORDER)
             i += 1
         return mineUnlocked

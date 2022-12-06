@@ -149,6 +149,8 @@ def drawBuyMinerButtons(y:float):
     #screen.blit((font.render(numberScaling(gameData.getMine(mineName).getMinerCount()), True, Colors.white)), (50, 150))
     return oneMiner, fiveMiner, twentyFiveMiner, unassignAll
 
+
+#modify for one function
 def drawContract1(contract):
     cont1 = pygame.draw.rect(screen, Colors.baige, (10, 200, 200, 55))
     title = font.render("Contract 1", True, Colors.black)#font.render("Coins: " + numberScaling(gameData.coin.getAmount()), True, Colors.black)
@@ -178,6 +180,8 @@ def drawContract3(contract):
     screen.blit(cost, (15, 420))
     screen.blit(payout, (15, 435))
     return cont3
+
+
 
 
 def handleAssignMiners(eventPos, oneMiner, fiveMiner, twentyFiveMiner, removeMiners, oreName):
@@ -251,21 +255,12 @@ if __name__ == "__main__":
 
                     #currently working on stuff below
                     if cont1.collidepoint(event.pos):
-                        payout = gameData.buyContract(gameData.contracts["Contract1"], gameData.contracts["Contract1"].getCostType().getAmount())
-                        print(payout)
-                        if payout != 0:
-                            gameData.getStat("Total " + gameData.contracts["Contract1"].getCostType().getName() + " Earned").setValue(gameData.getStat("Total " + gameData.contracts["Contract1"].getCostType().getName() + " Earned").getValue() + (gameData.contracts["Contract1"].getScaling() * gameData.contracts["Contract1"].getScaling()))
-                            #gameData.getStat("Contract1 Scaling").setValue(gameData.contracts["Contract1"].getScaling() * 2)
+                        gameData.buyContract(gameData.contracts["Contract1"], gameData.contracts["Contract1"].getCostType().getAmount())
                     if cont2.collidepoint(event.pos):
-                        payout = gameData.buyContract(gameData.contracts["Contract2"], gameData.contracts["Contract2"].getCostType().getAmount())
-                        if payout != 0:
-                            gameData.getStat("Total " + gameData.contracts["Contract2"].getCostType().getName() + " Earned").setValue(gameData.getStat("Total " + gameData.contracts["Contract2"].getCostType().getName() + " Earned").getValue() + (gameData.contracts["Contract2"].getScaling() * gameData.contracts["Contract2"].getScaling()))
-                            #gameData.getStat("Contract2 Scaling").setValue(gameData.contracts["Contract2"].getScaling() * 2)
+                        gameData.buyContract(gameData.contracts["Contract2"], gameData.contracts["Contract2"].getCostType().getAmount())
                     if cont3.collidepoint(event.pos):
-                        payout = gameData.buyContract(gameData.contracts["Contract3"], gameData.contracts["Contract3"].getCostType().getAmount())
-                        if payout != 0:
-                            gameData.getStat("Total " + gameData.contracts["Contract3"].getCostType().getName() + " Earned").setValue(gameData.getStat("Total " + gameData.contracts["Contract3"].getCostType().getName() + " Earned").getValue() + (gameData.contracts["Contract3"].getScaling() * gameData.contracts["Contract3"].getScaling()))
-                            #gameData.getStat("Contract3 Scaling").setValue(gameData.contracts["Contract3"].getScaling() * 2)
+                        gameData.buyContract(gameData.contracts["Contract3"], gameData.contracts["Contract3"].getCostType().getAmount())
+                            
 
             if activeScreen == SMITH_SCREEN:
                 if event.type == pygame.MOUSEBUTTONDOWN:
