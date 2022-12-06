@@ -313,11 +313,11 @@ class Data:
             "Pres_Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.skillpoint, 1.1)], 20, self.getStat("Base Click Value"), 1, "Add", 15),
             "Pres_Miner_Speed": Upgrade("Miner Speed Reduction", [OreRate(self.skillpoint, 1.5)], 100, self.getStat("Miner Speed"), -5, "Add", 19),
             "Pres_Miner_Cost": Upgrade("Miner Cost Multiplier", [OreRate(self.skillpoint, 100)], 50, self.getStat("Miner Cost Reduce"), 0.1, "Multiply", 1)
+
         }
 
         self.activeMine = self.mines["Copper"]
 
-        #if I delcare this here, doesnt that mean they are immutable?
         self.contracts = {
             "Contract1": Contract(self.getStat("Contract1 Scaling").getValue(), self.random_ore(self.mostRecentlyUnlocked()), "Contract1"),
             "Contract2": Contract(self.getStat("Contract2 Scaling").getValue(), self.random_ore(self.mostRecentlyUnlocked()), "Contract2"),
@@ -487,6 +487,8 @@ class Data:
 
     def retire_value(self):
         coinValue = self.getStat("Total Coin Value Gained This Retire").getValue()
+        if coinValue == 0:
+            return 0
         return (math.log(coinValue))
 
     def execute_retire(self):
@@ -494,11 +496,11 @@ class Data:
         self.coin.setAmount(0)
 
         for mine in self.mines:
-            mine.retire()
+            self.mines[mine].retire()
         for ore in self.ores:
-            ore.retire()
+            self.ores[ore].retire()
         for upgrade in self.upgrades:
-            upgrade.retire()
+            self.upgrades[upgrade].retire()
         self.stats.retire_stats()
         self.activeMine = self.getMine("Copper")
 

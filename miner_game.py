@@ -182,6 +182,11 @@ def drawContract3(contract):
     return cont3
 
 
+def drawRetire():
+    retireRect = pygame.draw.rect(screen, Colors.baige, (1000, 300, 200, 55))
+    title = font.render("Retire", True, Colors.black)#font.render("Coins: " + numberScaling(gameData.coin.getAmount()), True, Colors.black)
+    screen.blit(title, (1005, 305))
+    return retireRect
 
 
 def handleAssignMiners(eventPos, oneMiner, fiveMiner, twentyFiveMiner, removeMiners, oreName):
@@ -213,10 +218,9 @@ def save():
         json.dump(dataDump, saveFile, indent=4)
 
     print("Game is Saved")
-
 if os.path.exists("./local_data.json"):
     with open("./local_data.json", "r") as file:
-        gameData.dataLoad(json.load(file))
+        gameData.dataLoad(json.load(file)) 
 if __name__ == "__main__":
     # Main body of code
     toChangeScreen = 0
@@ -253,13 +257,17 @@ if __name__ == "__main__":
                         toChangeScreen = STAT_SCREEN
                         tfChangeScreen = True
 
-                    #currently working on stuff below
+                    #Contracts
                     if cont1.collidepoint(event.pos):
                         gameData.buyContract(gameData.contracts["Contract1"], gameData.contracts["Contract1"].getCostType().getAmount())
                     if cont2.collidepoint(event.pos):
                         gameData.buyContract(gameData.contracts["Contract2"], gameData.contracts["Contract2"].getCostType().getAmount())
                     if cont3.collidepoint(event.pos):
                         gameData.buyContract(gameData.contracts["Contract3"], gameData.contracts["Contract3"].getCostType().getAmount())
+
+                    #retirement
+                    if retire.collidepoint(event.pos):
+                        gameData.execute_retire()
                             
 
             if activeScreen == SMITH_SCREEN:
@@ -334,6 +342,7 @@ if __name__ == "__main__":
             cont1 = drawContract1(gameData.contracts["Contract1"])
             cont2 = drawContract2(gameData.contracts["Contract2"])
             cont3 = drawContract3(gameData.contracts["Contract3"])
+            retire = drawRetire()
         if activeScreen == SMITH_SCREEN:
             screen.fill(background)
             drawWallet()
