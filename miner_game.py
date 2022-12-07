@@ -10,7 +10,7 @@ pygame.init()
 
 MINE_SCREEN = 0
 SMITH_SCREEN = 1
-CONTRACT_SCREEN = 2
+GUILD_SCREEN = 2
 RETIRE_SCREEN = 3
 STAT_SCREEN = 4
 
@@ -50,9 +50,9 @@ def drawWallet():
     screen.blit(totDiamond, (150, 45))
 
 def drawButton(title:str, x:int, y:int):
-    swapArea = pygame.draw.rect(screen, Colors.black, (x, y, 95, 30))
+    swapArea = pygame.draw.rect(screen, Colors.black, (x, y, 105, 40))
     text = font.render(title, True, Colors.white)
-    screen.blit(text, (x, y))
+    screen.blit(text, (x+5, y+10))
     return swapArea
 
 #draws in the mine clicking area, and displays the ores per click
@@ -276,17 +276,16 @@ if __name__ == "__main__":
                         tfChangeScreen = True
                     
                     if swapScreenToGuilds.collidepoint(event.pos):
-                        #toChangeScreen = GUILD_SCREEN
-                        #tfChangeScreen = True
-                        pass #TO FIX
+                        toChangeScreen = GUILD_SCREEN
+                        tfChangeScreen = True
 
                     #Contracts
                     if cont1.collidepoint(event.pos):
-                        gameData.buyContract(gameData.contracts["Contract1"], gameData.contracts["Contract1"].getCostType().getAmount())
+                        gameData.buyContract(gameData.getContract("Contract1"), gameData.contracts["Contract1"].getCostType().getAmount())
                     if cont2.collidepoint(event.pos):
-                        gameData.buyContract(gameData.contracts["Contract2"], gameData.contracts["Contract2"].getCostType().getAmount())
+                        gameData.buyContract(gameData.getContract("Contract2"), gameData.getContract("Contract2").getCostType().getAmount())
                     if cont3.collidepoint(event.pos):
-                        gameData.buyContract(gameData.contracts["Contract3"], gameData.contracts["Contract3"].getCostType().getAmount())
+                        gameData.buyContract(gameData.getContract("Contract3"), gameData.getContract("Contract3").getCostType().getAmount())
 
                     #retirement
                     if retire.collidepoint(event.pos):
@@ -345,6 +344,16 @@ if __name__ == "__main__":
                     if swapScreenToMine.collidepoint(event.pos):
                         toChangeScreen = MINE_SCREEN
                         tfChangeScreen = True
+            if activeScreen == GUILD_SCREEN:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if swapScreenToMine.collidepoint(event.pos):
+                        toChangeScreen = MINE_SCREEN
+                        tfChangeScreen = True
+            if activeScreen == RETIRE_SCREEN:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if swapScreenToMine.collidepoint(event.pos):
+                        toChangeScreen = MINE_SCREEN
+                        tfChangeScreen = True
             if tfChangeScreen:
                 activeScreen = toChangeScreen
                 tfChangeScreen = False
@@ -362,10 +371,10 @@ if __name__ == "__main__":
             drawWallet()
             drawLabel(gameData.activeMine.getName(), (SCREEN_WIDTH/2 - 65), (SCREEN_HEIGHT/4))
             mineArea, nextMine, previousMine = drawMine()
-            swapScreenToSmith = drawButton("To Smithing", 550, 550)
-            swapScreenToStats = drawButton("To Stats", 650, 550)
-            swapScreenToRetire = drawButton("To Retire", 550, 600)
-            swapScreenToGuilds = drawButton("To Guilds", 650, 600)
+            swapScreenToSmith = drawButton("To Smithing", 535, 550)
+            swapScreenToStats = drawButton("To Stats", 645, 550)
+            swapScreenToRetire = drawButton("To Retire", 535, 600)
+            swapScreenToGuilds = drawButton("To Guilds", 645, 600)
             cont1 = drawContract1(gameData.contracts["Contract1"])
             cont2 = drawContract2(gameData.contracts["Contract2"])
             cont3 = drawContract3(gameData.contracts["Contract3"])
@@ -396,8 +405,7 @@ if __name__ == "__main__":
             workValue = drawUpgrade(gameData.getUpgrade("Miner_Multiplier"), (SCREEN_WIDTH * 3) / 4, 540)
 
             swapScreenToMine = drawButton("To Mine", 100, 600)
-        if activeScreen == CONTRACT_SCREEN:
-            pass
+        
         if activeScreen == STAT_SCREEN:
             screen.fill(background)
             screen.blit(font.render("Total Clicks: " + numberScaling(gameData.getStat("Total Clicks").getValue()), True, Colors.white), (700, 100)) #TO move
@@ -409,9 +417,13 @@ if __name__ == "__main__":
             screen.blit(font.render("Total Gold Earned: " + numberScaling(gameData.getStat("Total Gold Earned").getValue()), True, Colors.white), (950, 300)) #TO move
             screen.blit(font.render("Total Diamond Earned: " + numberScaling(gameData.getStat("Total Diamond Earned").getValue()), True, Colors.white), (950, 400)) #TO move
             swapScreenToMine = drawButton("To Mine", 700, 600)
+        if activeScreen == GUILD_SCREEN:
+            screen.fill(background)
+            swapScreenToMine = drawButton("To Mine", 700, 600)
         if activeScreen == RETIRE_SCREEN:
-            #swapScreenToMine = drawButton("To Mine", 700, 600)
-            pass
+            screen.fill(background)
+
+            swapScreenToMine = drawButton("To Mine", 700, 600)
 
 
         gameData.work()

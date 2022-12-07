@@ -11,11 +11,14 @@ import math
 numScaleList = ["", "K", "M", "B", "t", "q", "Q", "s", "S", "o", "n", "d", "U", "D", "T", "Qt", "Qd", "Sd", "St", "O", "N", "v", "c"]
 
 #scales the numbers appropriately for the wallet to look nice
-def numberScaling(input):
+def numberScaling(input, percent=False):
     if input < 0:
         return "0"
-    elif input < 1000:
+    elif input < 1000 and not percent:
         return str(int(input))
+    elif input < 1 and percent:
+        if percent:
+            return str(round(input * 100, 2)) + "%"
     x = input
     amount = 0
     while x >= 1000 or x <=-1000:
@@ -23,37 +26,7 @@ def numberScaling(input):
         amount += 1
     return str(round(x, 2)) + numScaleList[amount]
 
-class Contract:
-    def __init__(self, scaling, typeOre, name):
-        self.scaling = scaling
-        self.cost = self.scaling * 10
-        self.typeOre = typeOre
-        self.name = name
 
-    def getCostType(self):
-        return self.typeOre
-    
-    def getCost(self):
-        return self.cost
-    
-    def getScaling(self):
-        return self.scaling
-    
-    def getName(self):
-        return self.name
-    
-    def getCostString(self):
-        return numberScaling(self.cost)
-
-    def getPayoutString(self):
-        return numberScaling(self.getScaling() * self.getScaling())
-
-    """
-    takes in player progress, and etremines how much of how high of a currency it should ask for
-
-    so it needs player progress (use mines unlockedd), 
-    needs a contracts completed number (but probably make in the event pos function thingy, and have it go into scaling)
-    """
 
 class OreType:
     def __init__(self, name:str, image:str, value:float, colMod:float):
@@ -145,7 +118,6 @@ class Stat:
         self.value = value
         self.default = value
         self.toReset = toReset
-        self.retire_value = 0
     
     def reset_stat(self):
         if self.toReset:
@@ -155,10 +127,7 @@ class Stat:
         return self.name
     
     def getValue(self):
-        return self.value + self.retire_value
-
-    def setRetireValue(self, x):
-        self.retire_value = x
+        return self.value
 
     def setValue(self, x):
         self.value = x
@@ -174,11 +143,14 @@ class Upgrade:
         self.magnitude = magnitude
         self.type = upType
         self.cap = cap
+        self.initialCap = cap
         self.currentTier = costOres[0].getOre().getName()
 
 
     def retire(self):
         self.count = 0
+        self.currentTier = self.costOres[0].getOre().getName()
+        self.cap = self.initialCap
     
     def getCost(self):
         for rate in self.costOres:
@@ -199,11 +171,15 @@ class Upgrade:
 
     def getEffect(self):
         mod = ""
+        amount = self.magnitude * self.count
         if self.type == "Add" and self.magnitude > 0:
             mod = "+"
+            
         if self.type == "Multiply":
             mod = "x"
-        return mod + numberScaling(self.count * self.magnitude)
+            amount = pow(self.magnitude, self.count)
+
+        return mod + numberScaling(amount, True)
 
     def getStatModified(self):
         return self.statModified
@@ -232,7 +208,7 @@ class Upgrade:
         for currency in self.costOres:
             if currency.getOre().getName() == self.currentTier and self.costOres.index(currency) < len(self.costOres) - 1:
                 self.currentTier = self.costOres[self.costOres.index(currency) + 1].getOre().getName() 
-                self.count = 0
+                self.cap += self.initialCap
     
     def buyUpgrade(self):
         if self.canAfford() and (self.cap < 0 or self.count < self.cap):
@@ -245,6 +221,42 @@ class Upgrade:
                 self.statModified.value *= self.magnitude
             if self.count == self.cap:
                 self.nextTier()
+
+class Contract:
+    def __init__(self, scaling:Stat, typeOre:str, name:str):
+        self.scaling = scaling
+        self.typeOre = typeOre
+        self.name = name
+
+    def getCostType(self):
+        return self.typeOre
+    
+    def getCost(self):
+        return self.getScaling() * 10
+    
+    def getScaling(self):
+        return self.scaling.getValue()
+
+    def getPayout(self):
+        return pow(self.getScaling(), 2) * self.typeOre.getValue() / 2
+
+    
+    
+    def getName(self):
+        return self.name
+    
+    def getCostString(self):
+        return numberScaling(self.getCost())
+
+    def getPayoutString(self):
+        return numberScaling(self.getPayout())
+
+    """
+    takes in player progress, and detremines how much of how high of a currency it should ask for
+
+    so it needs player progress (use mines unlockedd), 
+    needs a contracts completed number (but probably make in the event pos function thingy, and have it go into scaling)
+    """
 
 class StatHolder:
     def __init__(self):
@@ -341,24 +353,23 @@ class Data:
         self.activeMine = self.mines["Copper"]
 
         self.contracts = {
-            "Contract1": Contract(self.getStat("Contract1 Scaling").getValue(), self.random_ore(self.mostRecentlyUnlocked()), "Contract1"),
-            "Contract2": Contract(self.getStat("Contract2 Scaling").getValue(), self.random_ore(self.mostRecentlyUnlocked()), "Contract2"),
-            "Contract3": Contract(self.getStat("Contract3 Scaling").getValue(), self.random_ore(self.mostRecentlyUnlocked()), "Contract3")
+            "Contract1": Contract(self.getStat("Contract1 Scaling"), self.random_ore(self.mostRecentlyUnlocked()), "Contract1"),
+            "Contract2": Contract(self.getStat("Contract2 Scaling"), self.random_ore(self.mostRecentlyUnlocked()), "Contract2"),
+            "Contract3": Contract(self.getStat("Contract3 Scaling"), self.random_ore(self.mostRecentlyUnlocked()), "Contract3")
         }
 
-    def returnPayout(self, contract, inputOre):
-        if inputOre >= contract.getCost():
-            self.contracts[contract.getName()] = Contract(self.getStat(contract.getName() + " Scaling").getValue() * 2, self.random_ore(self.mostRecentlyUnlocked()), contract.getName())
-            return contract.getScaling() * contract.getScaling()
-        return 0 
+    def getContract(self, name:str):
+        return self.contracts[name]
 
-    def buyContract(self, contract, inputOre):
-        payout = self.returnPayout(contract, inputOre)
-        if payout != 0:
-            self.coin.addOre(payout) 
-            print("Total " + str(contract.getCostType()) + " Earned")
-            contract.getCostType().addOre(-contract.getCost()) 
-            self.getStat("Total Coin Earned").setValue(self.getStat("Total Coin Earned").getValue() + payout * self.coin.getValue())
+    def buyContract(self, contract:Contract, inputOre:float):
+        if inputOre >= contract.getCost():
+            payout = contract.getPayout()
+            self.coin.addOre(payout)
+            contract.getCostType().addOre(-contract.getCost())
+            contract.scaling.value *= 2
+            contract.oreType = self.random_ore(self.mostRecentlyUnlocked())
+            self.getStat("Total Coin Value Gained This Retire").setValue(self.getStat("Total Coin Earned").getValue() + payout)
+            self.getStat("Total Coin Earned").setValue(self.getStat("Total Coin Earned").getValue() + payout)
             self.getStat(contract.getName() + " Scaling").setValue(self.contracts[contract.getName()].getScaling() * 2)
 
     def getOre(self, ore:str):
@@ -447,15 +458,12 @@ class Data:
         self.getStat("Total Coin Earned").setValue(self.getStat("Total Coin Earned").getValue() + oreSold * ore.getValue())
         self.coin.addOre(oreSold * ore.getValue())
 
-    def getMinerValue(self, mine:MineType, ore:OreType):
-        return self.getStat("Miner Value Multiplier").getValue() * self.getStat("Retire Miner Value Multiplier").getValue() * mine.getMinerCount() * ore.getCollectionModifier()
+    def getMinerValue(self, mine:MineType, ore:OreType=None):
+        return self.getStat("Miner Value Multiplier").getValue() * self.getStat("Retire Miner Value Multiplier").getValue() * mine.getMinerCount()
         
     def getClickValue(self, ore:OreType=None):
         if ore:
-            return (self.getStat("Base Click Value").getValue() + self.getStat("Retire Base Click Value").getValue()) * self.getStat("Retire Click Multiplier").getValue() * self.getStat("Click Multiplier").getValue() * ore.getCollectionModifier()
-        else:
-            return (self.getStat("Base Click Value").getValue() + self.getStat("Retire Base Click Value").getValue()) * self.getStat("Retire Click Multiplier").getValue()* self.getStat("Click Multiplier").getValue()
-
+            return (self.getStat("Base Click Value").getValue() + self.getStat("Retire Base Click Value").getValue()) * self.getStat("Retire Click Multiplier").getValue() * self.getStat("Click Multiplier").getValue()
     #Randomly selects ore based on the rate that the ores appears in the mine.
     def random_ore(self, mine:MineType):
         ore = []
@@ -522,7 +530,7 @@ class Data:
         return numberScaling(self.retire_value())
 
     def execute_retire(self):
-        self.skillpoint.addOre(self.retire_value())
+        self.skillpoint.addOre(int(self.retire_value()))
         self.coin.setAmount(0)
 
         for mine in self.mines.values():
@@ -555,6 +563,20 @@ class Data:
         data["Upgrades"] = {}
         for name, upgrade in self.upgrades.items():
             data["Upgrades"][name] = {"Count": upgrade.getCount(), "Tier": upgrade.currentTier}
+
+        data["Contracts"] = {
+            "Contract1": {
+                "OreType": self.getContract("Contract1").getCostType().getName(),
+            },
+            "Contract2": {
+                "OreType": self.getContract("Contract2").getCostType().getName(),
+            },
+            "Contract3": {
+                "OreType": self.getContract("Contract3").getCostType().getName(),
+            },
+        }
+        
+
         data["Active Mine"] = self.activeMine.getName()
         data["Stats"] = self.stats.dumpStats()
         return data
@@ -576,12 +598,16 @@ class Data:
         for statName, value in data["Stats"].items():
             self.getStat(statName).setValue(value)
 
+        self.getContract("Contract1").typeOre = self.getOre(data["Contracts"]["Contract1"]["OreType"])
+        self.getContract("Contract2").typeOre = self.getOre(data["Contracts"]["Contract2"]["OreType"])
+        self.getContract("Contract3").typeOre = self.getOre(data["Contracts"]["Contract3"]["OreType"])
+
     def mostRecentlyUnlocked(self):
         mineUnlocked = self.mines[self.MINE_ORDER[0]]
         i = 0
         while i < len(self.MINE_ORDER):
             if self.mines[self.MINE_ORDER[i]].isUnlocked() == False:
-                #print(self.MINE_ORDER[i - 1]) #testing
+                print(self.MINE_ORDER[i - 1]) #testing
                 mineUnlocked = self.mines[self.MINE_ORDER[i - 1]]
                 i = len(self.MINE_ORDER)
             i += 1
