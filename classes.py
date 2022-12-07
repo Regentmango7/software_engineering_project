@@ -340,7 +340,7 @@ class Data:
             "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1000)], 5, self.getStat("Click Multiplier"), 2, "Multiply", 3),
             "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 20), OreRate(self.ores["Iron"], 2000)], 1.2, self.getStat("Base Click Value"), 1, "Add", 20),
             "Miner_Speed": Upgrade("Miner Speed Reduction", [OreRate(self.ores["Copper"], 100)], 1.5, self.getStat("Miner Speed Multi"), 0.9, "Multiply", 19),
-            "Miner_Cost": Upgrade("Miner Cost Multiplier", [OreRate(self.ores["Copper"], 50), OreRate(self.ores["Iron"], 2000)], 100, self.getStat("Miner Cost Reduce"), 0.5, "Multiply", 1),
+            "Miner_Cost": Upgrade("Miner Cost Multiplier", [OreRate(self.ores["Copper"], 50), OreRate(self.ores["Iron"], 2000), OreRate(self.ores["Silver"], 2000), OreRate(self.ores["Gold"], 2000), OreRate(self.ores["Diamond"], 2000)], 100, self.getStat("Miner Cost Reduce"), 0.5, "Multiply", 1),
             "Miner_Multiplier": Upgrade("Miner Value Multiplier", [OreRate(self.ores["Copper"], 10)], 1.5, self.getStat("Miner Value Multiplier"), 2, "Multiply", 20),
             "Pres_Click_Multiplier":Upgrade("Click Multiplier", [OreRate(self.skillpoint, 1.5)], 10, self.getStat("Retire Click Multiplier"), 5, "Multiply", 10),
             "Pres_Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.skillpoint, 1.1)], 20, self.getStat("Retire Base Click Value"), 10, "Add", 10),
@@ -462,8 +462,7 @@ class Data:
         return self.getStat("Miner Value Multiplier").getValue() * self.getStat("Retire Miner Value Multiplier").getValue() * mine.getMinerCount()
         
     def getClickValue(self, ore:OreType=None):
-        if ore:
-            return (self.getStat("Base Click Value").getValue() + self.getStat("Retire Base Click Value").getValue()) * self.getStat("Retire Click Multiplier").getValue() * self.getStat("Click Multiplier").getValue()
+        return (self.getStat("Base Click Value").getValue() + self.getStat("Retire Base Click Value").getValue()) * self.getStat("Retire Click Multiplier").getValue() * self.getStat("Click Multiplier").getValue()
     #Randomly selects ore based on the rate that the ores appears in the mine.
     def random_ore(self, mine:MineType):
         ore = []

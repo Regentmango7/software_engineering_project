@@ -57,8 +57,8 @@ def drawButton(title:str, x:int, y:int):
 
 #draws in the mine clicking area, and displays the ores per click
 def drawMine():
-    mineArea = pygame.draw.circle(screen, Colors.black, (SCREEN_WIDTH/2, SCREEN_HEIGHT/5*3), 90, 90) #The click circle to generate ores
-    screen.blit(font.render(numberScaling(gameData.getClickValue()), True, Colors.white), (SCREEN_WIDTH/2 - 5, SCREEN_HEIGHT/5*3))
+    mineArea = pygame.draw.circle(screen, Colors.oreColors[gameData.activeMine.getName()], (SCREEN_WIDTH/2, SCREEN_HEIGHT/5*3), 90, 90) #The click circle to generate ores
+    screen.blit(font.render(numberScaling(gameData.getClickValue()), True, Colors.black), (SCREEN_WIDTH/2 - 5, SCREEN_HEIGHT/5*3))
     return mineArea, drawMineSwitcher(gameData.getNextMine(), SCREEN_WIDTH/2 + 120, SCREEN_HEIGHT/4*3), drawMineSwitcher(gameData.getPreviousMine(), SCREEN_WIDTH/2 - 300, SCREEN_HEIGHT/4*3)
 
 #draws in the upgrade circle
