@@ -111,7 +111,7 @@ def drawConversion(oreName:str, x:int, y:int, color):
 
 
 def drawGuild(x:int, y:int, guild:classes.GuildUpgrade):
-    rectangle = pygame.draw.rect(screen, Colors.black, (x, y, 110, 40))
+    rectangle = pygame.draw.rect(screen, Colors.black, (x, y, 150, 40))
     screen.blit(font.render(guild.getName(), True, Colors.white), (x+5, y+5))
     screen.blit(font.render(guild.getThresholdString(), True, Colors.white), (x+20, y+20))
     return rectangle

@@ -429,12 +429,17 @@ class Data:
 
     def buyGuild(self, guild:GuildUpgrade):
         if self.getStat("Total Coin Value Gained This Retire").getValue() >= guild.getThreshold() and guild.getIsUnlocked():
-            print("here1:")
-            print(self.getStat("Guild Better Sell Rate").getValue())
             guild.flipIsUnlocked() 
             guild.getCounterpart().flipIsUnlocked() 
-            print("here2:")
-            print(self.getStat("Guild Better Sell Rate").getValue())
+            if self.getGuild("Guild_Miner_On_Click").getName() == guild.getName():
+                self.getStat("Guild Miner On Click").setValue(True)
+            elif self.getGuild("Guild_Miner_Mult_Click").getName() == guild.getName():
+                self.getStat("Guild Multiply Click By Miners").setValue(True)
+            elif self.getGuild("Guild_Drop_Rate").getName() == guild.getName():
+                self.getStat("Guild Better Drop Rate").setValue(True)
+            elif self.getGuild("Guild_Sell_Rate").getName() == guild.getName():
+                self.getStat("Guild Better Sell Rate").setValue(True)
+
 
     def getContract(self, name:str):
         return self.contracts[name]
@@ -553,7 +558,7 @@ class Data:
         
     def getClickValue(self, ore:OreType=None):
         multiplier = 1
-        if self.getStat("Guild Multiply Click By Miners").getValue() == True:
+        if self.getStat("Guild Multiply Click By Miners").getValue() == True and self.getStat("Total Miners").getValue() != 0:
             multiplier = self.getStat("Total Miners").getValue()
         return (self.getStat("Base Click Value").getValue() + self.getStat("Retire Base Click Value").getValue()) * self.getStat("Retire Click Multiplier").getValue() * self.getStat("Click Multiplier").getValue() * multiplier
 
@@ -572,7 +577,6 @@ class Data:
         obtainedOre = self.random_ore(mine)
         if self.getStat("Guild Better Drop Rate").getValue() == True: #maybe dont do always?
             obtainedOre = self.ores[self.MINE_ORDER[len(mine.getOreRates()) - 1]]
-            #print(obtainedOre.getName())
         if isMiner:
             obtainedOre.amount += self.getMinerValue(mine, obtainedOre)
             self.getStat("Total Coin Value Gained This Retire").setValue(self.getStat("Total Coin Value Gained This Retire").getValue() + (self.getMinerValue(mine, obtainedOre) * obtainedOre.getValue()))
@@ -588,21 +592,17 @@ class Data:
                 self.getStat("Total Diamond Earned").setValue(self.getStat("Total Diamond Earned").getValue() + (self.getMinerValue(mine, obtainedOre)))
 
         else: 
-            obtainedOre.amount += self.getClickValue(obtainedOre)
             if self.getStat("Guild Miner On Click").getValue() == True:
                 self.freeMiner()
+            obtainedOre.amount += self.getClickValue(obtainedOre)
             self.getStat("Total Coin Value Gained This Retire").setValue(self.getStat("Total Coin Value Gained This Retire").getValue() + (self.getClickValue(obtainedOre) * obtainedOre.getValue()))
             if obtainedOre.getName() == "Copper":
-                #print(self.getClickValue(obtainedOre) * multiplier)
                 self.getStat("Total Copper Earned").setValue(self.getStat("Total Copper Earned").getValue() + (self.getClickValue(obtainedOre)))
             elif obtainedOre.getName() == "Iron":
-                #print(self.getStat("Guild Multiply Click By Miners").getValue())
                 self.getStat("Total Iron Earned").setValue(self.getStat("Total Iron Earned").getValue() + (self.getClickValue(obtainedOre)))
             elif obtainedOre.getName() == "Silver":
-                #print(self.getStat("Guild Multiply Click By Miners").getValue())
                 self.getStat("Total Silver Earned").setValue(self.getStat("Total Silver Earned").getValue() + (self.getClickValue(obtainedOre)))
             elif obtainedOre.getName() == "Gold":
-                #print(self.getStat("Guild Multiply Click By Miners").getValue())
                 self.getStat("Total Gold Earned").setValue(self.getStat("Total Gold Earned").getValue() + (self.getClickValue(obtainedOre)))
             elif obtainedOre.getName() == "Diamond":
                 self.getStat("Total Diamond Earned").setValue(self.getStat("Total Diamond Earned").getValue() + (self.getClickValue(obtainedOre)))
