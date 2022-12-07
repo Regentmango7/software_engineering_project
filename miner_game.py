@@ -110,6 +110,12 @@ def drawConversion(oreName:str, x:int, y:int, color):
     return sellTenPercent, sellFiftyPercent, sellAll
 
 
+def drawGuild(x:int, y:int, guild):
+    rectangle = pygame.draw.rect(screen, Colors.black, (x, y, 110, 40))
+    screen.blit(font.render("Name " + guild.getName(), True, Colors.white), (x+5, y+5))
+    screen.blit(font.render("Threshold " + guild.getThresholdString(), True, Colors.white), (x+20, y+20))
+    return rectangle
+
 
 def drawUpgradesHeader():
     drawLabel("Upgrades", (SCREEN_WIDTH * 3) / 4, 100)
@@ -349,6 +355,14 @@ if __name__ == "__main__":
                     if swapScreenToMine.collidepoint(event.pos):
                         toChangeScreen = MINE_SCREEN
                         tfChangeScreen = True
+                    if onClick.collidepoint(event.pos):
+                        gameData.buyGuild(gameData.guilds["Guild_Miner_On_Click"])
+                    if dropRate.collidepoint(event.pos):
+                        gameData.buyGuild(gameData.guilds["Guild_Drop_Rate"])
+                    if multClick.collidepoint(event.pos):
+                        gameData.buyGuild(gameData.guilds["Guild_Miner_Mult_Click"])
+                    if sellRate.collidepoint(event.pos):
+                        gameData.buyGuild(gameData.guilds["Guild_Sell_Rate"])
             if activeScreen == RETIRE_SCREEN:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if swapScreenToMine.collidepoint(event.pos):
@@ -419,6 +433,10 @@ if __name__ == "__main__":
             swapScreenToMine = drawButton("To Mine", 700, 600)
         if activeScreen == GUILD_SCREEN:
             screen.fill(background)
+            onClick = drawGuild(100, 100, gameData.guilds["Guild_Miner_On_Click"])
+            dropRate = drawGuild(300, 100, gameData.guilds["Guild_Drop_Rate"])
+            multClick = drawGuild(100, 300, gameData.guilds["Guild_Miner_Mult_Click"])
+            sellRate = drawGuild(300, 300, gameData.guilds["Guild_Sell_Rate"])
             swapScreenToMine = drawButton("To Mine", 700, 600)
         if activeScreen == RETIRE_SCREEN:
             screen.fill(background)

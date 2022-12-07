@@ -99,6 +99,9 @@ class MineType:
     def getOreRates(self):
         return self.oreRates
 
+    def setRate(self,newRate):
+        self.oreRates = newRate
+
     def assignMiners(self, x):
         self.minerCount += x
     
@@ -248,8 +251,6 @@ class Contract:
 
     def getPayout(self):
         return pow(self.getScaling(), 2) * self.typeOre.getValue() / 2
-
-    
     
     def getName(self):
         return self.name
@@ -266,6 +267,42 @@ class Contract:
     so it needs player progress (use mines unlockedd), 
     needs a contracts completed number (but probably make in the event pos function thingy, and have it go into scaling)
     """
+
+class GuildUpgrade:
+    def __init__(self, name:str, scaling:Stat, threshold:float, statModified:Stat):
+        self.scaling = scaling
+        self.threshold = threshold
+        self.name = name
+        self.isUnlocked = True
+        self.counterpart = 0
+        self.statModified = statModified
+
+    def getThreshold(self):
+        return self.threshold
+
+    def getThresholdString(self):
+        return numberScaling(self.threshold) 
+    
+    def getName(self):
+        return self.name
+    
+    def getScaling(self):
+        return self.scaling
+    
+    def getIsUnlocked(self):
+        return self.isUnlocked
+    
+    def flipIsUnlocked(self):
+        self.isUnlocked = False
+    
+    def getCounterpart(self):
+        return self.counterpart
+    
+    def setCounterpart(self, inputGuild):
+        self.counterpart = inputGuild
+
+    def getStatModified(self):
+        return self.statModified
 
 class StatHolder:
     def __init__(self):
@@ -287,14 +324,18 @@ class StatHolder:
             Stat("Total Gold Earned", 0, False),
             Stat("Total Diamond Earned", 0, False),
             Stat("Retire Count", 0, False),
-            Stat("Contract1 Scaling", 25, False), #need to change to whatever is saved
-            Stat("Contract2 Scaling", 25, False), #need to change to whatever is saved
-            Stat("Contract3 Scaling", 25, False),  #need to change to whatever is saved
+            Stat("Contract1 Scaling", 25, False), 
+            Stat("Contract2 Scaling", 25, False), 
+            Stat("Contract3 Scaling", 25, False),  
             Stat("Retire Miner Value Multiplier", 1.0, False),
             Stat("Retire Miner Speed Multi", 1.0, False),
             Stat("Retire Miner Cost Reduce", 1.0, False),
             Stat("Retire Click Multiplier", 1.0, False),
             Stat("Retire Base Click Value", 0, False),
+            Stat("Guild Miner On Click", 0, False),
+            Stat("Guild Multiply Click By Miners", 0, False),
+            Stat("Guild Better Drop Rate", 0, False),
+            Stat("Guild Better Sell Rate", 1, False)
         ]
 
     def retire_stats(self):
@@ -346,18 +387,30 @@ class Data:
         self.MINE_ORDER = ["Copper", "Iron", "Silver", "Gold", "Diamond"]
 
         self.upgrades = {
-            "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1000), OreRate(self.ores["Iron"], 1000000000), OreRate(self.ores["Silver"], 20000000000000), OreRate(self.ores["Gold"], 100000000000000000000), OreRate(self.ores["Diamond"], 100000000000000000000000000000)], 5, self.getStat("Click Multiplier"), 2, "Multiply", 3),
-            "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 20), OreRate(self.ores["Iron"], 20000000), OreRate(self.ores["Silver"], 4000000000000), OreRate(self.ores["Gold"], 2000000000000000000), OreRate(self.ores["Diamond"], 2000000000000000000000000000)], 1.2, self.getStat("Base Click Value"), 1, "Add", 20),
-            "Miner_Speed": Upgrade("Miner Speed Reduction", [OreRate(self.ores["Copper"], 100), OreRate(self.ores["Iron"], 100000000), OreRate(self.ores["Silver"], 20000000000000), OreRate(self.ores["Gold"], 10000000000000000000), OreRate(self.ores["Diamond"], 10000000000000000000000000000)], 1.5, self.getStat("Miner Speed Multi"), 0.9, "Multiply", 5),
-            "Miner_Cost": Upgrade("Miner Cost Multiplier", [OreRate(self.ores["Copper"], 50), OreRate(self.ores["Iron"], 500000000), OreRate(self.ores["Silver"], 1000000000000), OreRate(self.ores["Gold"], 5000000000000000000), OreRate(self.ores["Diamond"], 5000000000000000000000000000)], 10, self.getStat("Miner Cost Reduce"), 0.5, "Multiply", 2),
-            "Miner_Multiplier": Upgrade("Miner Value Multiplier", [OreRate(self.ores["Copper"], 10), OreRate(self.ores["Iron"], 10000000), OreRate(self.ores["Silver"], 10000000000000), OreRate(self.ores["Gold"], 1000000000000000000), OreRate(self.ores["Diamond"], 1000000000000000000000000000)], 1.5, self.getStat("Miner Value Multiplier"), 2, "Multiply", 20),
-            "Pres_Click_Multiplier":Upgrade("Click Multiplier", [OreRate(self.skillpoint, 1.5)], 10, self.getStat("Retire Click Multiplier"), 5, "Multiply", -1),
-            "Pres_Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.skillpoint, 1.1)], 20, self.getStat("Retire Base Click Value"), 10, "Add", -1),
-            "Pres_Miner_Speed": Upgrade("Miner Speed Reduction", [OreRate(self.skillpoint, 1.5)], 100, self.getStat("Retire Miner Speed Multi"), 0.5, "Multiply", -1),
-            "Pres_Miner_Cost": Upgrade("Miner Cost Multiplier", [OreRate(self.skillpoint, 100)], 50, self.getStat("Retire Miner Cost Reduce"), 0.1, "Multiply", -1),
-            "Pres_Miner_Multiplier": Upgrade("Miner Value Multiplier", [OreRate(self.skillpoint, 1.1)], 10, self.getStat("Retire Miner Value Multiplier"), 2, "Multiply", -1),
-
+            "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1000)], 5, self.getStat("Click Multiplier"), 2, "Multiply", 3),
+            "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 20), OreRate(self.ores["Iron"], 2000)], 1.2, self.getStat("Base Click Value"), 1, "Add", 20),
+            "Miner_Speed": Upgrade("Miner Speed Reduction", [OreRate(self.ores["Copper"], 100)], 1.5, self.getStat("Miner Speed Multi"), 0.9, "Multiply", 19),
+            "Miner_Cost": Upgrade("Miner Cost Multiplier", [OreRate(self.ores["Copper"], 50), OreRate(self.ores["Iron"], 2000), OreRate(self.ores["Silver"], 2000), OreRate(self.ores["Gold"], 2000), OreRate(self.ores["Diamond"], 2000)], 100, self.getStat("Miner Cost Reduce"), 0.5, "Multiply", 1),
+            "Miner_Multiplier": Upgrade("Miner Value Multiplier", [OreRate(self.ores["Copper"], 10)], 1.5, self.getStat("Miner Value Multiplier"), 2, "Multiply", 20),
+            "Pres_Click_Multiplier":Upgrade("Click Multiplier", [OreRate(self.skillpoint, 1.5)], 10, self.getStat("Retire Click Multiplier"), 5, "Multiply", 10),
+            "Pres_Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.skillpoint, 1.1)], 20, self.getStat("Retire Base Click Value"), 10, "Add", 10),
+            "Pres_Miner_Speed": Upgrade("Miner Speed Reduction", [OreRate(self.skillpoint, 1.5)], 100, self.getStat("Retire Miner Speed Multi"), 0.5, "Multiply", 10),
+            "Pres_Miner_Cost": Upgrade("Miner Cost Multiplier", [OreRate(self.skillpoint, 100)], 50, self.getStat("Retire Miner Cost Reduce"), 0.1, "Multiply", 10),
+            "Pres_Miner_Multiplier": Upgrade("Miner Value Multiplier", [OreRate(self.skillpoint, 1.1)], 10, self.getStat("Retire Miner Value Multiplier"), 2, "Multiply", 10),
+            
         }
+
+        self.guilds = {
+            "Guild_Miner_On_Click":GuildUpgrade("Miner On Click", 1, 100000000, self.getStat("Guild Miner On Click")), #what upgrade???
+            "Guild_Miner_Mult_Click": GuildUpgrade("Click Multiplier", 1.0, 10000000000000, self.getStat("Guild Multiply Click By Miners")),
+            "Guild_Drop_Rate": GuildUpgrade("Drop Rate", 1, 100000000, self.getStat("Guild Better Drop Rate")),
+            "Guild_Sell_Rate": GuildUpgrade("Sell Rate", 100, 10000000000000, self.getStat("Guild Better Sell Rate")),
+        }
+
+        self.guilds["Guild_Miner_On_Click"].setCounterpart(self.guilds["Guild_Drop_Rate"])
+        self.guilds["Guild_Drop_Rate"].setCounterpart(self.guilds["Guild_Miner_On_Click"])
+        self.guilds["Guild_Miner_Mult_Click"].setCounterpart(self.guilds["Guild_Sell_Rate"])
+        self.guilds["Guild_Sell_Rate"].setCounterpart(self.guilds["Guild_Miner_Mult_Click"])
 
         self.activeMine = self.mines["Copper"]
 
@@ -366,6 +419,12 @@ class Data:
             "Contract2": Contract(self.getStat("Contract2 Scaling"), self.random_ore(self.mostRecentlyUnlocked()), "Contract2"),
             "Contract3": Contract(self.getStat("Contract3 Scaling"), self.random_ore(self.mostRecentlyUnlocked()), "Contract3")
         }
+
+    def buyGuild(self, guild:GuildUpgrade):
+        if self.getStat("Total Coin Value Gained This Retire").getValue() >= guild.getThreshold() and guild.getIsUnlocked():
+            guild.getStatModified().setValue(guild.getScaling())
+            guild.flipIsUnlocked() 
+            guild.getCounterpart().flipIsUnlocked() 
 
     def getContract(self, name:str):
         return self.contracts[name]
@@ -410,6 +469,10 @@ class Data:
             self.getStat("Miners Available").value += 1
             self.coin.addOre(-cost)
 
+    def freeMiner(self):
+        self.getStat("Total Miners").value += 1
+        self.getStat("Miners Available").value += 1
+
     #if the player has enough miners available, assign x miners to the mine given.
     def assignMiners(self, mine:MineType, x:int=1):
         available = self.getStat("Miners Available").getValue()
@@ -424,7 +487,6 @@ class Data:
     def unassignAllMiners(self, mine:MineType):
         self.getStat("Miners Available").setValue(self.getStat("Miners Available").getValue() + mine.getMinerCount())
         mine.unassignMiners(mine.getMinerCount())
-        
 
     #if there is one, set activeMine to the mine after the current activeMine
     def setNextMine(self):
@@ -464,7 +526,7 @@ class Data:
         oreLeft = ore.getAmount() * (1-ratio)
         oreSold = ore.getAmount() * ratio
         ore.setAmount(oreLeft)
-        self.getStat("Total Coin Earned").setValue(self.getStat("Total Coin Earned").getValue() + oreSold * ore.getValue())
+        self.getStat("Total Coin Earned").setValue(self.getStat("Total Coin Earned").getValue() + oreSold * ore.getValue() * self.getStat("Guild Better Sell Rate").getValue())
         self.coin.addOre(oreSold * ore.getValue())
 
     def getMinerValue(self, mine:MineType, ore:OreType=None):
@@ -472,6 +534,7 @@ class Data:
         
     def getClickValue(self, ore:OreType=None):
         return (self.getStat("Base Click Value").getValue() + self.getStat("Retire Base Click Value").getValue()) * self.getStat("Retire Click Multiplier").getValue() * self.getStat("Click Multiplier").getValue()
+
     #Randomly selects ore based on the rate that the ores appears in the mine.
     def random_ore(self, mine:MineType):
         ore = []
@@ -483,7 +546,10 @@ class Data:
 
     #Commits mine action on mine passed in
     def mineAction(self, mine:MineType, isMiner=False):
+
         obtainedOre = self.random_ore(mine)
+        if self.getStat("Guild Better Drop Rate").getValue() == 1: #maybe dont do always?
+            obtainedOre = self.ores[self.MINE_ORDER[len(mine.getOreRates())]]
         if isMiner:
             obtainedOre.amount += self.getMinerValue(mine, obtainedOre)
             self.getStat("Total Coin Value Gained This Retire").setValue(self.getStat("Total Coin Value Gained This Retire").getValue() + (self.getMinerValue(mine, obtainedOre) * obtainedOre.getValue()))
@@ -500,17 +566,26 @@ class Data:
 
         else: 
             obtainedOre.amount += self.getClickValue(obtainedOre)
+            if self.getStat("Guild Miner On Click").getValue() == 1:
+                self.freeMiner()
             self.getStat("Total Coin Value Gained This Retire").setValue(self.getStat("Total Coin Value Gained This Retire").getValue() + (self.getClickValue(obtainedOre) * obtainedOre.getValue()))
+            multiplier = 1
+            if self.getStat("Guild Multiply Click By Miners").getValue() == 1:
+                multiplier = self.getStat("Total Miners").getValue()
             if obtainedOre.getName() == "Copper":
-                self.getStat("Total Copper Earned").setValue(self.getStat("Total Copper Earned").getValue() + (self.getClickValue(obtainedOre)))
+                #print(self.getClickValue(obtainedOre) * multiplier)
+                self.getStat("Total Copper Earned").setValue(self.getStat("Total Copper Earned").getValue() + (self.getClickValue(obtainedOre) * multiplier))
             elif obtainedOre.getName() == "Iron":
-                self.getStat("Total Iron Earned").setValue(self.getStat("Total Iron Earned").getValue() + (self.getClickValue(obtainedOre)))
+                print(self.getStat("Guild Multiply Click By Miners").getValue())
+                self.getStat("Total Iron Earned").setValue(self.getStat("Total Iron Earned").getValue() + (self.getClickValue(obtainedOre) * multiplier))
             elif obtainedOre.getName() == "Silver":
-                self.getStat("Total Silver Earned").setValue(self.getStat("Total Silver Earned").getValue() + (self.getClickValue(obtainedOre)))
+                print(self.getStat("Guild Multiply Click By Miners").getValue())
+                self.getStat("Total Silver Earned").setValue(self.getStat("Total Silver Earned").getValue() + (self.getClickValue(obtainedOre) * multiplier))
             elif obtainedOre.getName() == "Gold":
-                self.getStat("Total Gold Earned").setValue(self.getStat("Total Gold Earned").getValue() + (self.getClickValue(obtainedOre)))
+                print(self.getStat("Guild Multiply Click By Miners").getValue())
+                self.getStat("Total Gold Earned").setValue(self.getStat("Total Gold Earned").getValue() + (self.getClickValue(obtainedOre) * multiplier))
             elif obtainedOre.getName() == "Diamond":
-                self.getStat("Total Diamond Earned").setValue(self.getStat("Total Diamond Earned").getValue() + (self.getClickValue(obtainedOre)))
+                self.getStat("Total Diamond Earned").setValue(self.getStat("Total Diamond Earned").getValue() + (self.getClickValue(obtainedOre) * multiplier))
 
 
     #makes the miners work
