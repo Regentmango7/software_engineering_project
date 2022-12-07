@@ -403,7 +403,6 @@ if __name__ == "__main__":
             cont1 = drawContract1(gameData.getContract("Contract1"))
             cont2 = drawContract2(gameData.getContract("Contract2"))
             cont3 = drawContract3(gameData.getContract("Contract3"))
-            retire = drawRetire()
         if activeScreen == SMITH_SCREEN:
             screen.fill(background)
             drawWallet()
