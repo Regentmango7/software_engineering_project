@@ -332,10 +332,10 @@ class StatHolder:
             Stat("Retire Miner Cost Reduce", 1.0, False),
             Stat("Retire Click Multiplier", 1.0, False),
             Stat("Retire Base Click Value", 0, False),
-            Stat("Guild Miner On Click", 0, False),
-            Stat("Guild Multiply Click By Miners", 0, False),
-            Stat("Guild Better Drop Rate", 0, False),
-            Stat("Guild Better Sell Rate", 1, False)
+            Stat("Guild Miner On Click", False, True),
+            Stat("Guild Multiply Click By Miners", False, True),
+            Stat("Guild Better Drop Rate", False, True),
+            Stat("Guild Better Sell Rate", False, True)
         ]
 
     def retire_stats(self):
@@ -401,10 +401,10 @@ class Data:
         }
 
         self.guilds = {
-            "Guild_Miner_On_Click":GuildUpgrade("Miner On Click", 1, 100000000, self.getStat("Guild Miner On Click")), #what upgrade???
-            "Guild_Miner_Mult_Click": GuildUpgrade("Click Multiplier", 1.0, 10000000000000, self.getStat("Guild Multiply Click By Miners")),
-            "Guild_Drop_Rate": GuildUpgrade("Drop Rate", 1, 100000000, self.getStat("Guild Better Drop Rate")),
-            "Guild_Sell_Rate": GuildUpgrade("Sell Rate", 100, 10000000000000, self.getStat("Guild Better Sell Rate")),
+            "Guild_Miner_On_Click":GuildUpgrade("Miner On Click", True, 100000000, self.getStat("Guild Miner On Click")), #what upgrade???
+            "Guild_Miner_Mult_Click": GuildUpgrade("Click Multiplier", True, 10000000000000, self.getStat("Guild Multiply Click By Miners")),
+            "Guild_Drop_Rate": GuildUpgrade("Drop Rate", True, 100000000, self.getStat("Guild Better Drop Rate")),
+            "Guild_Sell_Rate": GuildUpgrade("Sell Rate", True, 10000000000000, self.getStat("Guild Better Sell Rate")),
         }
 
         self.guilds["Guild_Miner_On_Click"].setCounterpart(self.guilds["Guild_Drop_Rate"])
@@ -422,9 +422,13 @@ class Data:
 
     def buyGuild(self, guild:GuildUpgrade):
         if self.getStat("Total Coin Value Gained This Retire").getValue() >= guild.getThreshold() and guild.getIsUnlocked():
+            print("here1:")
+            print(self.getStat("Guild Better Sell Rate").getValue())
             guild.getStatModified().setValue(guild.getScaling())
             guild.flipIsUnlocked() 
             guild.getCounterpart().flipIsUnlocked() 
+            print("here2:")
+            print(self.getStat("Guild Better Sell Rate").getValue())
 
     def getContract(self, name:str):
         return self.contracts[name]
@@ -526,14 +530,22 @@ class Data:
         oreLeft = ore.getAmount() * (1-ratio)
         oreSold = ore.getAmount() * ratio
         ore.setAmount(oreLeft)
-        self.getStat("Total Coin Earned").setValue(self.getStat("Total Coin Earned").getValue() + oreSold * ore.getValue() * self.getStat("Guild Better Sell Rate").getValue())
+        """
+        sellrate = 1
+        if self.getStat("Guild Better Sell Rate").getValue() == True:
+            sellrate = 100
+        """
+        self.getStat("Total Coin Earned").setValue(self.getStat("Total Coin Earned").getValue() + oreSold * ore.getValue())
         self.coin.addOre(oreSold * ore.getValue())
 
     def getMinerValue(self, mine:MineType, ore:OreType=None):
         return self.getStat("Miner Value Multiplier").getValue() * self.getStat("Retire Miner Value Multiplier").getValue() * mine.getMinerCount()
         
     def getClickValue(self, ore:OreType=None):
-        return (self.getStat("Base Click Value").getValue() + self.getStat("Retire Base Click Value").getValue()) * self.getStat("Retire Click Multiplier").getValue() * self.getStat("Click Multiplier").getValue()
+        multiplier = 1
+        if self.getStat("Guild Multiply Click By Miners").getValue() == True:
+            multiplier = self.getStat("Total Miners").getValue()
+        return (self.getStat("Base Click Value").getValue() + self.getStat("Retire Base Click Value").getValue()) * self.getStat("Retire Click Multiplier").getValue() * self.getStat("Click Multiplier").getValue() * multiplier
 
     #Randomly selects ore based on the rate that the ores appears in the mine.
     def random_ore(self, mine:MineType):
@@ -548,8 +560,9 @@ class Data:
     def mineAction(self, mine:MineType, isMiner=False):
 
         obtainedOre = self.random_ore(mine)
-        if self.getStat("Guild Better Drop Rate").getValue() == 1: #maybe dont do always?
-            obtainedOre = self.ores[self.MINE_ORDER[len(mine.getOreRates())]]
+        if self.getStat("Guild Better Drop Rate").getValue() == True: #maybe dont do always?
+            obtainedOre = self.ores[self.MINE_ORDER[len(mine.getOreRates()) - 1]]
+            #print(obtainedOre.getName())
         if isMiner:
             obtainedOre.amount += self.getMinerValue(mine, obtainedOre)
             self.getStat("Total Coin Value Gained This Retire").setValue(self.getStat("Total Coin Value Gained This Retire").getValue() + (self.getMinerValue(mine, obtainedOre) * obtainedOre.getValue()))
@@ -566,26 +579,23 @@ class Data:
 
         else: 
             obtainedOre.amount += self.getClickValue(obtainedOre)
-            if self.getStat("Guild Miner On Click").getValue() == 1:
+            if self.getStat("Guild Miner On Click").getValue() == True:
                 self.freeMiner()
             self.getStat("Total Coin Value Gained This Retire").setValue(self.getStat("Total Coin Value Gained This Retire").getValue() + (self.getClickValue(obtainedOre) * obtainedOre.getValue()))
-            multiplier = 1
-            if self.getStat("Guild Multiply Click By Miners").getValue() == 1:
-                multiplier = self.getStat("Total Miners").getValue()
             if obtainedOre.getName() == "Copper":
                 #print(self.getClickValue(obtainedOre) * multiplier)
-                self.getStat("Total Copper Earned").setValue(self.getStat("Total Copper Earned").getValue() + (self.getClickValue(obtainedOre) * multiplier))
+                self.getStat("Total Copper Earned").setValue(self.getStat("Total Copper Earned").getValue() + (self.getClickValue(obtainedOre)))
             elif obtainedOre.getName() == "Iron":
-                print(self.getStat("Guild Multiply Click By Miners").getValue())
-                self.getStat("Total Iron Earned").setValue(self.getStat("Total Iron Earned").getValue() + (self.getClickValue(obtainedOre) * multiplier))
+                #print(self.getStat("Guild Multiply Click By Miners").getValue())
+                self.getStat("Total Iron Earned").setValue(self.getStat("Total Iron Earned").getValue() + (self.getClickValue(obtainedOre)))
             elif obtainedOre.getName() == "Silver":
-                print(self.getStat("Guild Multiply Click By Miners").getValue())
-                self.getStat("Total Silver Earned").setValue(self.getStat("Total Silver Earned").getValue() + (self.getClickValue(obtainedOre) * multiplier))
+                #print(self.getStat("Guild Multiply Click By Miners").getValue())
+                self.getStat("Total Silver Earned").setValue(self.getStat("Total Silver Earned").getValue() + (self.getClickValue(obtainedOre)))
             elif obtainedOre.getName() == "Gold":
-                print(self.getStat("Guild Multiply Click By Miners").getValue())
-                self.getStat("Total Gold Earned").setValue(self.getStat("Total Gold Earned").getValue() + (self.getClickValue(obtainedOre) * multiplier))
+                #print(self.getStat("Guild Multiply Click By Miners").getValue())
+                self.getStat("Total Gold Earned").setValue(self.getStat("Total Gold Earned").getValue() + (self.getClickValue(obtainedOre)))
             elif obtainedOre.getName() == "Diamond":
-                self.getStat("Total Diamond Earned").setValue(self.getStat("Total Diamond Earned").getValue() + (self.getClickValue(obtainedOre) * multiplier))
+                self.getStat("Total Diamond Earned").setValue(self.getStat("Total Diamond Earned").getValue() + (self.getClickValue(obtainedOre)))
 
 
     #makes the miners work
