@@ -198,13 +198,13 @@ def drawContract3(contract):
 
 
 def drawRetire():
-    retireRect = pygame.draw.rect(screen, Colors.baige, (1000, 300, 200, 55))
+    retireRect = pygame.draw.rect(screen, Colors.baige, ((SCREEN_WIDTH) / 3, 380, 200, 55))
     title = font.render("Retire", True, Colors.black)#font.render("Coins: " + numberScaling(gameData.coin.getAmount()), True, Colors.black)
     skillz = font.render("Skill Points: " + str(gameData.skillpoint.getAmountString()), True, Colors.black)
     retire_value = font.render("Retirement Value: " + str((gameData.retire_value_string())), True, Colors.black)
-    screen.blit(skillz, (1005, 335))
-    screen.blit(retire_value, (1005, 320))
-    screen.blit(title, (1005, 305))
+    screen.blit(skillz, ((SCREEN_WIDTH) / 3 + 5, 415))
+    screen.blit(retire_value, ((SCREEN_WIDTH) / 3 + 5, 400))
+    screen.blit(title, ((SCREEN_WIDTH) / 3 + 5, 385))
     return retireRect
 
 
@@ -293,9 +293,7 @@ if __name__ == "__main__":
                     if cont3.collidepoint(event.pos):
                         gameData.buyContract(gameData.getContract("Contract3"), gameData.getContract("Contract3").getCostType().getAmount())
 
-                    #retirement
-                    if retire.collidepoint(event.pos):
-                        gameData.execute_retire()
+                    
                             
 
             if activeScreen == SMITH_SCREEN:
@@ -368,6 +366,19 @@ if __name__ == "__main__":
                     if swapScreenToMine.collidepoint(event.pos):
                         toChangeScreen = MINE_SCREEN
                         tfChangeScreen = True
+                    if presClickMultiplier.collidepoint(event.pos):
+                        gameData.getUpgrade("Pres_Click_Multiplier").buyUpgrade()         
+                    if presClickBaseCount.collidepoint(event.pos):
+                        gameData.getUpgrade("Pres_Click_Base_Count").buyUpgrade()         
+                    if presMinerSpeed.collidepoint(event.pos):
+                        gameData.getUpgrade("Pres_Miner_Speed").buyUpgrade()
+                    if presMinerCost.collidepoint(event.pos):
+                        gameData.getUpgrade("Pres_Miner_Cost").buyUpgrade()
+                    if presMinerMultiplier.collidepoint(event.pos):
+                        gameData.getUpgrade("Pres_Miner_Multiplier").buyUpgrade()
+                    #retirement
+                    if retire.collidepoint(event.pos):
+                        gameData.execute_retire()
             if tfChangeScreen:
                 activeScreen = toChangeScreen
                 tfChangeScreen = False
@@ -392,7 +403,7 @@ if __name__ == "__main__":
             cont1 = drawContract1(gameData.contracts["Contract1"])
             cont2 = drawContract2(gameData.contracts["Contract2"])
             cont3 = drawContract3(gameData.contracts["Contract3"])
-            retire = drawRetire()
+            
         if activeScreen == SMITH_SCREEN:
             screen.fill(background)
             drawWallet()
@@ -440,7 +451,13 @@ if __name__ == "__main__":
             swapScreenToMine = drawButton("To Mine", 700, 600)
         if activeScreen == RETIRE_SCREEN:
             screen.fill(background)
-
+            drawLabel("Prestige", (SCREEN_WIDTH * 2) / 3, 100)
+            presClickMultiplier = drawUpgrade(gameData.getUpgrade("Pres_Click_Multiplier"), (SCREEN_WIDTH * 2) / 3, 220)
+            presClickBaseCount = drawUpgrade(gameData.getUpgrade("Pres_Click_Base_Count"), (SCREEN_WIDTH * 2) / 3, 300)
+            presMinerSpeed = drawUpgrade(gameData.getUpgrade("Pres_Miner_Speed"), (SCREEN_WIDTH * 2) / 3, 380)
+            presMinerCost = drawUpgrade(gameData.getUpgrade("Pres_Miner_Cost"), (SCREEN_WIDTH * 2) / 3, 460)
+            presMinerMultiplier = drawUpgrade(gameData.getUpgrade("Pres_Miner_Multiplier"), (SCREEN_WIDTH * 2) / 3, 540)
+            retire = drawRetire()
             swapScreenToMine = drawButton("To Mine", 700, 600)
 
 
