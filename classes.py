@@ -16,9 +16,17 @@ def numberScaling(input, percent=False):
         return "0"
     elif input < 1000 and not percent:
         return str(int(input))
-    elif input < 1 and percent:
+    elif 0 < input < 0.0001 and percent:
+        x = input * 100
+        amount = 0
+        while x < 1:
+            x *= 10
+            amount += 1
+        return str(round(x, 2)) + "e-" + amount + "%"
+    elif 0 < input < 1 and percent:
         if percent:
             return str(round(input * 100, 2)) + "%"
+    
     x = input
     amount = 0
     while x >= 1000 or x <=-1000:
@@ -209,6 +217,7 @@ class Upgrade:
             if currency.getOre().getName() == self.currentTier and self.costOres.index(currency) < len(self.costOres) - 1:
                 self.currentTier = self.costOres[self.costOres.index(currency) + 1].getOre().getName() 
                 self.cap += self.initialCap
+                return
     
     def buyUpgrade(self):
         if self.canAfford() and (self.cap < 0 or self.count < self.cap):
@@ -337,11 +346,11 @@ class Data:
         self.MINE_ORDER = ["Copper", "Iron", "Silver", "Gold", "Diamond"]
 
         self.upgrades = {
-            "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1000), OreRate(self.ores["Iron"], 2000), OreRate(self.ores["Silver"], 2000), OreRate(self.ores["Gold"], 2000), OreRate(self.ores["Diamond"], 2000)], 5, self.getStat("Click Multiplier"), 2, "Multiply", 3),
-            "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 20), OreRate(self.ores["Iron"], 2000), OreRate(self.ores["Silver"], 2000), OreRate(self.ores["Gold"], 2000), OreRate(self.ores["Diamond"], 2000)], 1.2, self.getStat("Base Click Value"), 1, "Add", 20),
-            "Miner_Speed": Upgrade("Miner Speed Reduction", [OreRate(self.ores["Copper"], 100), OreRate(self.ores["Iron"], 2000), OreRate(self.ores["Silver"], 2000), OreRate(self.ores["Gold"], 2000), OreRate(self.ores["Diamond"], 2000)], 1.5, self.getStat("Miner Speed Multi"), 0.9, "Multiply", 19),
-            "Miner_Cost": Upgrade("Miner Cost Multiplier", [OreRate(self.ores["Copper"], 50), OreRate(self.ores["Iron"], 2000), OreRate(self.ores["Silver"], 2000), OreRate(self.ores["Gold"], 2000), OreRate(self.ores["Diamond"], 2000)], 100, self.getStat("Miner Cost Reduce"), 0.5, "Multiply", 1),
-            "Miner_Multiplier": Upgrade("Miner Value Multiplier", [OreRate(self.ores["Copper"], 10), OreRate(self.ores["Iron"], 2000), OreRate(self.ores["Silver"], 2000), OreRate(self.ores["Gold"], 2000), OreRate(self.ores["Diamond"], 2000)], 1.5, self.getStat("Miner Value Multiplier"), 2, "Multiply", 20),
+            "Click_Multiplier": Upgrade("Click Multiplier", [OreRate(self.ores["Copper"], 1000), OreRate(self.ores["Iron"], 1000000000), OreRate(self.ores["Silver"], 20000000000000), OreRate(self.ores["Gold"], 100000000000000000000), OreRate(self.ores["Diamond"], 100000000000000000000000000000)], 5, self.getStat("Click Multiplier"), 2, "Multiply", 3),
+            "Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.ores["Copper"], 20), OreRate(self.ores["Iron"], 20000000), OreRate(self.ores["Silver"], 4000000000000), OreRate(self.ores["Gold"], 2000000000000000000), OreRate(self.ores["Diamond"], 2000000000000000000000000000)], 1.2, self.getStat("Base Click Value"), 1, "Add", 20),
+            "Miner_Speed": Upgrade("Miner Speed Reduction", [OreRate(self.ores["Copper"], 100), OreRate(self.ores["Iron"], 100000000), OreRate(self.ores["Silver"], 20000000000000), OreRate(self.ores["Gold"], 10000000000000000000), OreRate(self.ores["Diamond"], 10000000000000000000000000000)], 1.5, self.getStat("Miner Speed Multi"), 0.9, "Multiply", 5),
+            "Miner_Cost": Upgrade("Miner Cost Multiplier", [OreRate(self.ores["Copper"], 50), OreRate(self.ores["Iron"], 500000000), OreRate(self.ores["Silver"], 1000000000000), OreRate(self.ores["Gold"], 5000000000000000000), OreRate(self.ores["Diamond"], 5000000000000000000000000000)], 10, self.getStat("Miner Cost Reduce"), 0.5, "Multiply", 2),
+            "Miner_Multiplier": Upgrade("Miner Value Multiplier", [OreRate(self.ores["Copper"], 10), OreRate(self.ores["Iron"], 10000000), OreRate(self.ores["Silver"], 10000000000000), OreRate(self.ores["Gold"], 1000000000000000000), OreRate(self.ores["Diamond"], 1000000000000000000000000000)], 1.5, self.getStat("Miner Value Multiplier"), 2, "Multiply", 20),
             "Pres_Click_Multiplier":Upgrade("Click Multiplier", [OreRate(self.skillpoint, 1.5)], 10, self.getStat("Retire Click Multiplier"), 5, "Multiply", -1),
             "Pres_Click_Base_Count": Upgrade("Base Click Value", [OreRate(self.skillpoint, 1.1)], 20, self.getStat("Retire Base Click Value"), 10, "Add", -1),
             "Pres_Miner_Speed": Upgrade("Miner Speed Reduction", [OreRate(self.skillpoint, 1.5)], 100, self.getStat("Retire Miner Speed Multi"), 0.5, "Multiply", -1),
@@ -391,7 +400,7 @@ class Data:
         return mineList
 
     def getMinerCost(self):
-        return pow(10, self.getStat("Total Miners").getValue() + 1) * self.getStat("Miner Cost Reduce").getValue() * self.getStat("Retire Miner Cost Reduce").getValue()
+        return pow(10, math.sqrt(self.getStat("Total Miners").getValue() + 1)) * self.getStat("Miner Cost Reduce").getValue() * self.getStat("Retire Miner Cost Reduce").getValue()
 
     #if the player has enough coins, buy the next Miner
     def buyMiner(self):
@@ -606,7 +615,7 @@ class Data:
         i = 0
         while i < len(self.MINE_ORDER):
             if self.mines[self.MINE_ORDER[i]].isUnlocked() == False:
-                print(self.MINE_ORDER[i - 1]) #testing
+                self.MINE_ORDER[i - 1] #testing
                 mineUnlocked = self.mines[self.MINE_ORDER[i - 1]]
                 i = len(self.MINE_ORDER)
             i += 1
