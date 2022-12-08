@@ -22,7 +22,7 @@ def numberScaling(input, percent=False):
         while x < 1:
             x *= 10
             amount += 1
-        return str(round(x, 2)) + "e-" + amount + "%"
+        return str(round(x, 2)) + "e-" + str(amount) + "%"
     elif 0 < input < 1 and percent:
         if percent:
             return str(round(input * 100, 2)) + "%"
