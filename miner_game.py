@@ -111,7 +111,7 @@ def drawConversion(oreName:str, x:int, y:int, color):
 
 
 def drawGuild(x:int, y:int, guild:classes.GuildUpgrade):
-    rectangle = pygame.draw.rect(screen, Colors.black, (x, y, 150, 40))
+    rectangle = pygame.draw.rect(screen, Colors.black, (x, y, 250, 40))
     screen.blit(font.render(guild.getName(), True, Colors.white), (x+5, y+5))
     screen.blit(font.render(guild.getThresholdString(), True, Colors.white), (x+20, y+20))
     return rectangle
@@ -443,10 +443,11 @@ if __name__ == "__main__":
             swapScreenToMine = drawButton("To Mine", 700, 600)
         if activeScreen == GUILD_SCREEN:
             screen.fill(background)
-            onClick = drawGuild(100, 100, gameData.getGuild("Guild_Miner_On_Click"))
-            dropRate = drawGuild(300, 100, gameData.getGuild("Guild_Drop_Rate"))
-            multClick = drawGuild(100, 300, gameData.getGuild("Guild_Miner_Mult_Click"))
-            sellRate = drawGuild(300, 300, gameData.getGuild("Guild_Sell_Rate"))
+            drawLabel("Guilds", (SCREEN_WIDTH ) / 2 - 65, 100)
+            onClick = drawGuild(SCREEN_WIDTH/2 - 350, 200, gameData.getGuild("Guild_Miner_On_Click"))
+            dropRate = drawGuild(SCREEN_WIDTH/2 + 100, 200, gameData.getGuild("Guild_Drop_Rate"))
+            multClick = drawGuild(SCREEN_WIDTH/2 - 350, 400, gameData.getGuild("Guild_Miner_Mult_Click"))
+            sellRate = drawGuild(SCREEN_WIDTH/2 + 100, 400, gameData.getGuild("Guild_Sell_Rate"))
             swapScreenToMine = drawButton("To Mine", 700, 600)
         if activeScreen == RETIRE_SCREEN:
             screen.fill(background)
