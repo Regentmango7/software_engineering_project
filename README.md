@@ -15,6 +15,25 @@ The retirement page takes the entirety of a player's accomplishments, and conver
 
 # How to Run
 
+This application has two main dependencies that must be installed in order to run, they are pygame and numpy.  If you are missing these, they can be installed with the following commands:
+<br><br>
+pygame has different install requirements for Windows vs Mac.<br> 
+- If you are running Windows, use:
+```
+py -m pip install -U pygame --user
+```
+- If you are running Mac OS X run the following:
+```
+python3 -m install -U pygame --user
+```
+- If you are running Anaconda run the following:
+```
+pythonw -m install -U pygame --user
+```
+To install numpy run the followin:
+```
+pip install numpy
+```
 You can run the Click Miners game by cloning the repo and then calling the following on your command line:
 
 ```
