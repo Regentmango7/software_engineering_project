@@ -1,10 +1,10 @@
 {
     "Miners Assigned": {
-        "Copper": 4,
-        "Iron": 16,
-        "Silver": 5,
-        "Gold": 10,
-        "Diamond": 20
+        "Copper": 20,
+        "Iron": 0,
+        "Silver": 0,
+        "Gold": 0,
+        "Diamond": 30
     },
     "Mines Unlocked": {
         "Copper": true,
@@ -13,55 +13,65 @@
         "Gold": true,
         "Diamond": true
     },
-    "Coins": 1000000000000000000000000,
-    "Skill Points": 0,
+    "Coins": 10000000000000000000000000,
+    "Skill Points": 1000000000,
     "Ores": {
-        "Copper": 1000000000000000000000000,
-        "Iron": 1000000000000000000000000,
-        "Silver": 1000000000000000000000000,
-        "Gold": 1000000000000000000000000,
-        "Diamond": 1000000000000000000000000
+        "Copper": 470087849000000000000000,
+        "Iron": 100000000000000000000,
+        "Silver": 200000000000000000000000,
+        "Gold": 10000000000000000000,
+        "Diamond": 100000000000000000000
     },
     "Upgrades": {
         "Click_Multiplier": {
-            "Count": 0,
-            "Tier": "Copper"
+            "Count": 1,
+            "Tier": "Copper",
+            "Cap": 3
         },
         "Click_Base_Count": {
-            "Count": 0,
-            "Tier": "Copper"
+            "Count": 3,
+            "Tier": "Copper",
+            "Cap": 20
         },
         "Miner_Speed": {
-            "Count": 0,
-            "Tier": "Copper"
+            "Count": 5,
+            "Tier": "Iron",
+            "Cap": 10
         },
         "Miner_Cost": {
-            "Count": 0,
-            "Tier": "Copper"
+            "Count": 2,
+            "Tier": "Iron",
+            "Cap": 4
         },
         "Miner_Multiplier": {
-            "Count": 0,
-            "Tier": "Copper"
+            "Count": 18,
+            "Tier": "Copper",
+            "Cap": 20
         },
         "Pres_Click_Multiplier": {
-            "Count": 0,
-            "Tier": "Skill Point"
+            "Count": 3,
+            "Tier": "Skill Point",
+            "Cap": 10
         },
         "Pres_Click_Base_Count": {
-            "Count": 0,
-            "Tier": "Skill Point"
+            "Count": 2,
+            "Tier": "Skill Point",
+            "Cap": 10
         },
         "Pres_Miner_Speed": {
-            "Count": 0,
-            "Tier": "Skill Point"
+            "Count": 2,
+            "Tier": "Skill Point",
+            "Cap": 10
         },
         "Pres_Miner_Cost": {
-            "Count": 0,
-            "Tier": "Skill Point"
+            "Count": 1,
+            "Tier": "Skill Point",
+            "Cap": 10
         },
         "Pres_Miner_Multiplier": {
-            "Count": 0,
-            "Tier": "Skill Point"
+            "Count": 3,
+            "Tier": "Skill Point",
+            "Cap": 10
         }
     },
     "Contracts": {
@@ -75,32 +85,51 @@
             "OreType": "Copper"
         }
     },
+    "Guilds": {
+        "Guild_Miner_On_Click": {
+            "isUnlocked": true
+        },
+        "Guild_Miner_Mult_Click": {
+            "isUnlocked": true
+        },
+        "Guild_Drop_Rate": {
+            "isUnlocked": true
+        },
+        "Guild_Sell_Rate": {
+            "isUnlocked": true
+        }
+    },
     "Active Mine": "Diamond",
     "Stats": {
-        "Base Click Value": 1,
-        "Click Multiplier": 1,
-        "Miner Value Multiplier": 1,
+        "Base Click Value": 4,
+        "Click Multiplier": 2,
+        "Miner Value Multiplier": 1477.8918800354004,
         "Miners Available": 0,
-        "Total Miners": 55,
-        "Miner Speed Multi": 1.0,
-        "Miner Cost Reduce": 1.0,
-        "Total Coin Value Gained This Retire": 0,
-        "Total Clicks": 0,
-        "Total Coin Earned": 0,
-        "Time Played": 15.386999999999938,
-        "Total Copper Earned": 0,
-        "Total Iron Earned": 0,
+        "Total Miners": 50,
+        "Miner Speed Multi": 0.5904900000000002,
+        "Miner Cost Reduce": 0.25,
+        "Total Coin Value Gained This Retire": 100000000000940243948.4033203,
+        "Total Clicks": 128,
+        "Total Coin Earned": 1.005001557862186e+22,
+        "Time Played": 1132.5840000003575,
+        "Total Copper Earned": 911010707.8368177,
+        "Total Iron Earned": 103564989.3811568,
         "Total Silver Earned": 0,
         "Total Gold Earned": 0,
         "Total Diamond Earned": 0,
-        "Retire Count": 0,
-        "Contract1 Scaling": 25,
-        "Contract2 Scaling": 25,
+        "Retire Count": 2,
+        "Contract1 Scaling": 419430400,
+        "Contract2 Scaling": 400,
         "Contract3 Scaling": 25,
-        "Retire Miner Value Multiplier": 1.0,
-        "Retire Miner Speed Multi": 1.0,
-        "Retire Miner Cost Reduce": 1.0,
-        "Retire Click Multiplier": 1.0,
-        "Retire Base Click Value": 0
+        "Retire Miner Value Multiplier": 8.0,
+        "Retire Miner Speed Multi": 0.25,
+        "Retire Miner Cost Reduce": 0.1,
+        "Retire Click Multiplier": 125.0,
+        "Retire Base Click Value": 20,
+        "Guild Miner On Click": false,
+        "Guild Multiply Click By Miners": false,
+        "Guild Better Drop Rate": false,
+        "Guild Better Sell Rate": false,
+        "Miners Purchased": 20
     }
 }

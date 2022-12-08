@@ -5,7 +5,7 @@ Unit testing for miner_game
 
 #import the file we are testing
 import pytest
-import miner_game
+import click_miners
 import classes
 import pygame
 import coverage
