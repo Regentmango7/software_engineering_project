@@ -18,5 +18,5 @@ The retirement page takes the entirety of a player's accomplishments, and conver
 You can run the Click Miners game by cloning the repo and then calling the following on your command line:
 
 ```
-py [path]/miner_game.py
+py {path}/miner_game.py
 ```
